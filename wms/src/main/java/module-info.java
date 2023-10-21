@@ -9,6 +9,7 @@ module bg.tuvarna.sit.wms {
   requires org.kordamp.bootstrapfx.core;
   requires org.apache.logging.log4j;
   requires org.hibernate.orm.core;
+  requires lombok;
 
   opens bg.tuvarna.sit.wms to javafx.fxml;
   exports bg.tuvarna.sit.wms;
