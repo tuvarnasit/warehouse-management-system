@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
+    <persistence-unit name="wms">
+        <class>bg.tuvarna.sit.wms.entities.Administrator</class>
+        <class>bg.tuvarna.sit.wms.entities.Agent</class>
+        <class>bg.tuvarna.sit.wms.entities.AgentNotification</class>
+        <class>bg.tuvarna.sit.wms.entities.Owner</class>
+        <class>bg.tuvarna.sit.wms.entities.OwnerNotification</class>
+        <class>bg.tuvarna.sit.wms.entities.OwnerToAgentReview</class>
+        <class>bg.tuvarna.sit.wms.entities.Tenant</class>
+        <class>bg.tuvarna.sit.wms.entities.TenantNotification</class>
+        <class>bg.tuvarna.sit.wms.entities.TenantToAgentReview</class>
+        <properties>
+            <property name="hibernate.connection.url"
+                      value="jdbc:mysql://mysql-wms-db.csgbwv0s3cd4.eu-west-1.rds.amazonaws.com/wmsdev"/>
+            <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="hibernate.connection.username" value="admin"/>
+            <property name="hibernate.connection.password" value="DadK8&amp;5x6RyfHk^x"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+            <property name="hibernate.show_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

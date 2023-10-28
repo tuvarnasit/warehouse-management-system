@@ -3,7 +3,7 @@ package bg.tuvarna.sit.wms;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-public class HelloController {
+public class FxmlController {
   @FXML
   private Label welcomeText;
 
