@@ -2,15 +2,11 @@ package bg.tuvarna.sit;
 
 import bg.tuvarna.sit.wms.util.JpaUtil;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 
 public class MainApp extends Application {
