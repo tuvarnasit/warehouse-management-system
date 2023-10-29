@@ -1,6 +1,9 @@
 package bg.tuvarna.sit;
 
+import bg.tuvarna.sit.wms.util.JpaUtil;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -24,8 +27,7 @@ public class MainApp extends Application {
 
   public static void main(String[] args) {
 
-    EntityManagerFactory factory = Persistence.createEntityManagerFactory("wms");
-    EntityManager entityManager = factory.createEntityManager();
+    EntityManager entityManager = JpaUtil.getEntityManager();
     launch();
   }
 }
