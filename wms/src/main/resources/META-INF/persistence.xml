@@ -4,15 +4,22 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
     <persistence-unit name="wms">
+        <class>bg.tuvarna.sit.wms.entities.Address</class>
         <class>bg.tuvarna.sit.wms.entities.Administrator</class>
         <class>bg.tuvarna.sit.wms.entities.Agent</class>
         <class>bg.tuvarna.sit.wms.entities.AgentNotification</class>
+        <class>bg.tuvarna.sit.wms.entities.City</class>
+        <class>bg.tuvarna.sit.wms.entities.Country</class>
         <class>bg.tuvarna.sit.wms.entities.Owner</class>
         <class>bg.tuvarna.sit.wms.entities.OwnerNotification</class>
         <class>bg.tuvarna.sit.wms.entities.OwnerToAgentReview</class>
+        <class>bg.tuvarna.sit.wms.entities.RentalAgreement</class>
+        <class>bg.tuvarna.sit.wms.entities.StorageType</class>
         <class>bg.tuvarna.sit.wms.entities.Tenant</class>
         <class>bg.tuvarna.sit.wms.entities.TenantNotification</class>
         <class>bg.tuvarna.sit.wms.entities.TenantToAgentReview</class>
+        <class>bg.tuvarna.sit.wms.entities.Warehouse</class>
+        <class>bg.tuvarna.sit.wms.entities.WarehouseRentalRequest</class>
         <properties>
             <property name="hibernate.connection.url" value="${DB_CONNECTION_URL}"/>
             <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>

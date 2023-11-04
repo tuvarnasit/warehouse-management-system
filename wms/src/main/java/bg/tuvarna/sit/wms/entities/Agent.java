@@ -36,4 +36,10 @@ public class Agent extends BaseUser {
 
   @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<AgentNotification> notifications;
+
+  @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
+  private Set<WarehouseRentalRequest> warehouseRentalRequests;
+
+  @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
+  private Set<RentalAgreement> rentalAgreements;
 }
