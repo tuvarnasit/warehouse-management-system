@@ -30,4 +30,7 @@ public class Owner extends BaseUser {
 
   @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<OwnerNotification> notifications;
+
+  @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<Warehouse> warehouses;
 }

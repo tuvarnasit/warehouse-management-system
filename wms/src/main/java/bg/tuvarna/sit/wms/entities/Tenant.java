@@ -30,4 +30,7 @@ public class Tenant extends BaseUser {
 
   @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<TenantNotification> notifications;
+
+  @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL)
+  private Set<RentalAgreement> rentalAgreements;
 }
