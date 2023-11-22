@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bg.tuvarna.sit.wms.controllers.RegistrationController">
+    <TextField fx:id="firstNameField" promptText="First Name" />
+    <TextField fx:id="lastNameField" promptText="Last Name" />
+    <TextField fx:id="emailField" promptText="Email" />
+    <PasswordField fx:id="passwordField" promptText="Password" />
+    <TextField fx:id="phoneField" promptText="Phone" />
+    <ComboBox fx:id="roleBox" promptText="Role">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="OWNER" />
+                <String fx:value="AGENT" />
+                <String fx:value="TENANT" />
+            </FXCollections>
+        </items>
+    </ComboBox>
+    <Button text="Register" onAction="#handleRegistration" />
+</VBox>

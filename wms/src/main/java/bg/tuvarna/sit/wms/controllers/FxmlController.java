@@ -1,4 +1,4 @@
-package bg.tuvarna.sit.wms;
+package bg.tuvarna.sit.wms.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
