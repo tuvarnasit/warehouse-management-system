@@ -1,0 +1,27 @@
+.text-field, .password-field, .combo-box {
+    -fx-pref-width: 200px;
+    -fx-pref-height: 35px;
+    -fx-font-size: 14px;
+    -fx-margin: 5px;
+}
+
+.button {
+    -fx-background-color: #5cb85c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+}
+
+.button:hover {
+    -fx-background-color: #4cae4c;
+}
+
+.vbox {
+    -fx-background-color: #f2f2f2;
+    -fx-padding: 15px;
+    -fx-spacing: 10px; /* space between children nodes */
+}
+
+.combo-box .list-cell {
+    -fx-padding: 5px 10px;
+}

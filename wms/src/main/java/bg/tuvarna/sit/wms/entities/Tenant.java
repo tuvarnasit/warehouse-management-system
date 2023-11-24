@@ -1,6 +1,5 @@
 package bg.tuvarna.sit.wms.entities;
 
-import bg.tuvarna.sit.wms.entities.base.BaseUser;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -14,23 +13,23 @@ import lombok.Setter;
  * <p>
  * Tenants are users who lease or rent properties. They have the ability
  * to receive notifications pertinent to them. This entity inherits the
- * common user attributes from the {@link BaseUser} class. Each tenant
+ * common user attributes from the {@link User} class. Each tenant
  * can have multiple notifications associated with their account.
  * </p>
  *
  * @author Yavor Chamov
  * @since 1.0.0
- * @see BaseUser
+ * @see User
  */
 @Entity
 @Table(name = "tenants")
 @Getter
 @Setter
-public class Tenant extends BaseUser {
-
-  @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<TenantNotification> notifications;
+public class Tenant extends User {
 
   @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL)
   private Set<RentalAgreement> rentalAgreements;
+
+  @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+  private Set<Review> sentReviews;
 }

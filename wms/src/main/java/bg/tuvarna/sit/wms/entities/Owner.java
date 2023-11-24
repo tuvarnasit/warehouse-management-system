@@ -1,6 +1,5 @@
 package bg.tuvarna.sit.wms.entities;
 
-import bg.tuvarna.sit.wms.entities.base.BaseUser;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -14,23 +13,23 @@ import lombok.Setter;
  * <p>
  * Owners may possess or manage properties and have the ability to receive
  * notifications. This entity inherits the common user attributes from
- * the {@link BaseUser} class. Each owner can have multiple notifications
+ * the {@link User} class. Each owner can have multiple notifications
  * associated with them.
  * </p>
  *
  * @author Yavor Chamov
  * @since 1.0.0
- * @see BaseUser
+ * @see User
  */
 @Entity
 @Table(name = "owners")
 @Getter
 @Setter
-public class Owner extends BaseUser {
-
-  @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<OwnerNotification> notifications;
+public class Owner extends User {
 
   @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<Warehouse> warehouses;
+
+  @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+  private Set<Review> sentReviews;
 }
