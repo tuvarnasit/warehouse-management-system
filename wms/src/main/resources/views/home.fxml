@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bg.tuvarna.sit.wms.controllers.HomeController"
+      spacing="20" alignment="CENTER" prefWidth="300" prefHeight="200" stylesheets="@../styles/home.css">
+    <Text text="Welcome to the WMS application!" styleClass="heading"/>
+    <Button text="Register" onAction="#handleRegisterAction" fx:id="registerButton"/>
+</VBox>

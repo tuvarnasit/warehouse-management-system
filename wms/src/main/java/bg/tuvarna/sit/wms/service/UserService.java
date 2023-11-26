@@ -7,6 +7,8 @@ import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.Tenant;
 import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.enums.Role;
+import bg.tuvarna.sit.wms.exceptions.RegistrationException;
+import bg.tuvarna.sit.wms.exceptions.UserPersistenceException;
 import static bg.tuvarna.sit.wms.util.PasswordUtil.generateStrongPasswordHash;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -20,29 +22,41 @@ public class UserService {
 
   private static final Logger LOGGER = LogManager.getLogger(UserService.class);
 
-  public void registerUser(UserRegistrationDto registrationDto) {
+  public void registerUser(UserRegistrationDto registrationDto) throws RegistrationException {
 
     Optional<User> userOptional = getUserBasedOnRole(registrationDto.getRole());
 
-    userOptional.ifPresentOrElse(
-            user -> {
-              user.setFirstName(registrationDto.getFirstName());
-              user.setLastName(registrationDto.getLastName());
-              user.setEmail(registrationDto.getEmail());
-              try {
-                user.setPassword(generateStrongPasswordHash(registrationDto.getPassword()));
-              } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                LOGGER.error("Error hashing password", e);
-                throw new RuntimeException(e);
-              }
-              user.setPhone(registrationDto.getPhone());
-              user.setRole(Role.valueOf(registrationDto.getRole()));
-              userDao.saveUser(user);
-            },
-            () -> {
-              LOGGER.error("Invalid role");
-            }
-    );
+    if (userOptional.isEmpty()) {
+      String errorMessage = "Invalid role provided for user registration.";
+      LOGGER.error(errorMessage);
+      throw new RegistrationException(errorMessage);
+    }
+
+    User user = userOptional.get();
+    user.setFirstName(registrationDto.getFirstName());
+    user.setLastName(registrationDto.getLastName());
+    user.setEmail(registrationDto.getEmail());
+
+    try {
+      String hashedPassword = generateStrongPasswordHash(registrationDto.getPassword());
+      user.setPassword(hashedPassword);
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+      String errorMessage = "Error hashing password for user registration.";
+      LOGGER.error(errorMessage, e);
+      throw new RegistrationException(errorMessage, e);
+    }
+
+    user.setPhone(registrationDto.getPhone());
+    user.setRole(Role.valueOf(registrationDto.getRole()));
+
+    try {
+      userDao.saveUser(user);
+      LOGGER.info("User saved successfully: " + user.getEmail());
+    } catch (UserPersistenceException e) {
+      String errorMessage = "Error persisting user during registration.";
+      LOGGER.error(errorMessage, e);
+      throw new RegistrationException(errorMessage, e);
+    }
   }
 
   private Optional<User> getUserBasedOnRole(String role) {

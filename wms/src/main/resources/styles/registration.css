@@ -25,3 +25,8 @@
 .combo-box .list-cell {
     -fx-padding: 5px 10px;
 }
+
+.error-label {
+    -fx-text-fill: red;
+    -fx-font-size: 10px;
+}
