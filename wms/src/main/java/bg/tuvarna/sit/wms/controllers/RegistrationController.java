@@ -11,7 +11,13 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 
-
+/**
+ * Controller for handling the user registration process.
+ * This class manages user input validation, error display, and submission of user registration data.
+ *
+ * @author Yavor Chamov
+ * @version 1.0.0
+ */
 public class RegistrationController {
 
   private final UserService userService = new UserService();
@@ -41,9 +47,13 @@ public class RegistrationController {
   @FXML
   private Label roleErrorLabel;
 
-  // This will cause the label to not take up layout space when it's not visible
+  /**
+   * Initializes the controller. This method is called after the FXML fields are populated.
+   * It binds the visibility of error labels to their managed properties so that space is not
+   * reserved in the layout when they are invisible.
+   */
   @FXML
-  public void initialize() {
+  protected void initialize() {
 
     bindManagedToVisible(firstNameErrorLabel);
     bindManagedToVisible(lastNameErrorLabel);
@@ -53,6 +63,11 @@ public class RegistrationController {
     bindManagedToVisible(roleErrorLabel);
   }
 
+  /**
+   * Handles the registration action when the registration button is clicked.
+   * Validates user input, collects data into a DTO, and attempts to register the user
+   * using the user service.
+   */
   @FXML
   protected void handleRegistration() {
 
@@ -69,6 +84,11 @@ public class RegistrationController {
     }
   }
 
+  /**
+   * Collects user input from form fields and creates a DTO for user registration.
+   *
+   * @return UserRegistrationDto populated with user input data.
+   */
   private UserRegistrationDto getUserRegistrationDto() {
 
     UserRegistrationDto registrationDto = new UserRegistrationDto();
@@ -106,6 +126,13 @@ public class RegistrationController {
   }
 
 
+  /**
+   * Validates the input of a given text field based on provided validation criteria.
+   *
+   * @param field              The text input control to validate.
+   * @param validationCriteria The regex pattern the input must match.
+   * @return true if the field is valid, false otherwise.
+   */
   private boolean validateField(TextInputControl field, String validationCriteria) {
 
     boolean isValid = !field.getText().trim().isEmpty() && field.getText().trim().matches(validationCriteria);
@@ -114,6 +141,12 @@ public class RegistrationController {
     return isValid;
   }
 
+  /**
+   * Validates if a value has been selected in the given combo box.
+   *
+   * @param comboBox The combo box to validate.
+   * @return true if a value is selected, false otherwise.
+   */
   private boolean validateComboBox(ComboBox<?> comboBox) {
 
     boolean isValid = comboBox.getValue() != null;
@@ -122,17 +155,36 @@ public class RegistrationController {
     return isValid;
   }
 
+  /**
+   * Binds the managed property of a label to its visibility property.
+   * This ensures that the label does not reserve layout space when it is not visible.
+   *
+   * @param label The label to bind.
+   */
   private void bindManagedToVisible(Label label) {
 
     label.managedProperty().bind(label.visibleProperty());
   }
 
+  /**
+   * Updates the visibility and text of an error label based on a boolean flag.
+   *
+   * @param label   The label to update.
+   * @param message The error message to display on the label.
+   * @param show    A flag indicating whether the error message should be shown or not.
+   */
   private void showErrorLabel(Label label, String message, boolean show) {
 
     label.setText(message);
     label.setVisible(show);
   }
 
+  /**
+   * Shows a confirmation dialog with the specified title and content.
+   *
+   * @param title   The title of the dialog.
+   * @param content The content message to be displayed in the dialog.
+   */
   private void showConfirmationDialog(String title, String content) {
 
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -142,6 +194,12 @@ public class RegistrationController {
     alert.showAndWait();
   }
 
+  /**
+   * Shows an error dialog with the specified title and content.
+   *
+   * @param title   The title of the dialog.
+   * @param content The content message to be displayed in the dialog.
+   */
   private void showErrorDialog(String title, String content) {
 
     Alert alert = new Alert(Alert.AlertType.ERROR);

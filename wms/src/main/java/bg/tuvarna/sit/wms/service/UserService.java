@@ -16,15 +16,40 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Service class for handling user registration.
+ * This class manages the process of registering a new user, including input validation,
+ * password hashing, and persisting user data.
+ */
 public class UserService {
 
   private final UserDao userDao = new UserDao();
 
   private static final Logger LOGGER = LogManager.getLogger(UserService.class);
 
+  /**
+   * Registers a new user based on the provided registration data.
+   *
+   * @param registrationDto Data Transfer Object containing user registration details.
+   * @throws RegistrationException if there is a problem with user registration, such as invalid input or persistence errors.
+   */
   public void registerUser(UserRegistrationDto registrationDto) throws RegistrationException {
 
-    Optional<User> userOptional = getUserBasedOnRole(registrationDto.getRole());
+    User user = createUserFromDto(registrationDto);
+    setUserPassword(user, registrationDto.getPassword());
+    saveUser(user);
+  }
+
+  /**
+   * Creates a User entity from a UserRegistrationDto.
+   *
+   * @param dto User registration data transfer object.
+   * @return A User entity populated with data from the DTO.
+   * @throws RegistrationException if the provided role is invalid.
+   */
+  private User createUserFromDto(UserRegistrationDto dto) throws RegistrationException {
+
+    Optional<User> userOptional = getUserBasedOnRole(dto.getRole());
 
     if (userOptional.isEmpty()) {
       String errorMessage = "Invalid role provided for user registration.";
@@ -33,21 +58,53 @@ public class UserService {
     }
 
     User user = userOptional.get();
-    user.setFirstName(registrationDto.getFirstName());
-    user.setLastName(registrationDto.getLastName());
-    user.setEmail(registrationDto.getEmail());
+    user.setFirstName(dto.getFirstName());
+    user.setLastName(dto.getLastName());
+    user.setEmail(dto.getEmail());
+    user.setPhone(dto.getPhone());
+    user.setRole(Role.valueOf(dto.getRole()));
+
+    return user;
+  }
+
+  /**
+   * Hashes a password using a secure cryptographic algorithm.
+   *
+   * @param password The password to hash.
+   * @return The hashed password.
+   * @throws RegistrationException if there is an error during password hashing.
+   */
+  private String hashPassword(String password) throws RegistrationException {
 
     try {
-      String hashedPassword = generateStrongPasswordHash(registrationDto.getPassword());
-      user.setPassword(hashedPassword);
+      return generateStrongPasswordHash(password);
     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
       String errorMessage = "Error hashing password for user registration.";
       LOGGER.error(errorMessage, e);
       throw new RegistrationException(errorMessage, e);
     }
+  }
 
-    user.setPhone(registrationDto.getPhone());
-    user.setRole(Role.valueOf(registrationDto.getRole()));
+  /**
+   * Sets the user's password after hashing it.
+   *
+   * @param user     The user whose password is to be set.
+   * @param password The user's plaintext password.
+   * @throws RegistrationException if there is an error during password hashing.
+   */
+  private void setUserPassword(User user, String password) throws RegistrationException {
+
+    String hashedPassword = hashPassword(password);
+    user.setPassword(hashedPassword);
+  }
+
+  /**
+   * Saves the user entity to the database.
+   *
+   * @param user The user entity to save.
+   * @throws RegistrationException if there is an error while persisting the user.
+   */
+  private void saveUser(User user) throws RegistrationException {
 
     try {
       userDao.saveUser(user);
@@ -59,6 +116,12 @@ public class UserService {
     }
   }
 
+  /**
+   * Retrieves a user entity based on the specified role.
+   *
+   * @param role The role of the user.
+   * @return An Optional containing the User entity if the role is valid, otherwise an empty Optional.
+   */
   private Optional<User> getUserBasedOnRole(String role) {
 
     return switch (role.toUpperCase()) {
