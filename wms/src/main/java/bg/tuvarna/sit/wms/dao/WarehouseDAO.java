@@ -1,16 +1,17 @@
 package bg.tuvarna.sit.wms.dao;
 
+import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.Warehouse;
+import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
 import bg.tuvarna.sit.wms.util.JpaUtil;
 
 import javax.persistence.EntityManager;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public class WarehouseDAO {
 
-  public void save(Warehouse warehouse) {
+  public void save(Warehouse warehouse) throws WarehouseDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
     try {
@@ -18,13 +19,13 @@ public class WarehouseDAO {
       em.persist(warehouse);
       em.getTransaction().commit();
     } catch (Exception e) {
-      handleException(em, e);
+      throw handleExceptionAndRollback(em, "Error saving warehouse entity", e);
     } finally {
       em.close();
     }
   }
 
-  public void update(Warehouse warehouse) {
+  public void update(Warehouse warehouse) throws WarehouseDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
     try {
@@ -32,13 +33,13 @@ public class WarehouseDAO {
       em.merge(warehouse);
       em.getTransaction().commit();
     } catch (Exception e) {
-      handleException(em, e);
+      throw handleExceptionAndRollback(em, "Error updating warehouse entity", e);
     } finally {
       em.close();
     }
   }
 
-  public void delete(Warehouse warehouse) {
+  public void delete(Warehouse warehouse) throws WarehouseDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
     try {
@@ -50,13 +51,13 @@ public class WarehouseDAO {
       }
       em.getTransaction().commit();
     } catch (Exception e) {
-      handleException(em, e);
+      throw handleExceptionAndRollback(em, "Error deleting warehouse entity", e);
     } finally {
       em.close();
     }
   }
 
-  public Optional<Warehouse> getById(Long id) {
+  public Optional<Warehouse> getById(Long id) throws WarehouseDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
     try {
@@ -66,15 +67,14 @@ public class WarehouseDAO {
 
       return Optional.ofNullable(warehouse);
     } catch (Exception e) {
-      handleException(em, e);
-      return Optional.empty();
+      throw handleExceptionAndRollback(em, "Error retrieving warehouse", e);
     } finally {
       em.close();
     }
   }
 
 
-  public List<Warehouse> getAll() {
+  public List<Warehouse> getAll() throws WarehouseDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
     try {
@@ -84,19 +84,35 @@ public class WarehouseDAO {
 
       return warehouses;
     } catch (Exception e) {
-      handleException(em, e);
-      return Collections.emptyList();
+      throw handleExceptionAndRollback(em, "Error retrieving warehouse entities", e);
     } finally {
       em.close();
     }
   }
 
-  private void handleException(EntityManager em, Exception e) {
+  public List<Warehouse> getWarehousesByOwner(Owner owner) throws WarehouseDAOException {
+
+    EntityManager em = JpaUtil.getEntityManager();
+    try {
+      em.getTransaction().begin();
+      List<Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w WHERE w.owner = :owner", Warehouse.class)
+          .setParameter("owner", owner)
+          .getResultList();
+      em.getTransaction().commit();
+
+      return warehouses;
+    } catch (Exception e) {
+      throw handleExceptionAndRollback(em,"Error retrieving warehouse entities", e);
+    } finally {
+      em.close();
+    }
+  }
+
+  private WarehouseDAOException handleExceptionAndRollback(EntityManager em, String message, Exception e) {
 
     if (em.getTransaction().isActive()) {
       em.getTransaction().rollback();
     }
-    e.printStackTrace();
-    // TODO: log
+    return new WarehouseDAOException(message, e);
   }
 }

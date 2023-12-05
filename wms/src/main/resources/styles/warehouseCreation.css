@@ -1,0 +1,24 @@
+Text {
+    -fx-font-size: 14;
+}
+
+HBox {
+    -fx-alignment: center;
+    -fx-spacing: 8;
+    -fx-padding: 0 32;
+}
+
+HBox#buttons-wrapper {
+    -fx-spacing: 64;
+}
+
+.button {
+    -fx-text-alignment: center;
+    -fx-font-size: 16;
+}
+
+.text-field {
+    -fx-pref-height: 30;
+    -fx-pref-width: 1000;
+}
+

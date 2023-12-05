@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.util.Set;
 
 /**
@@ -29,10 +30,13 @@ import java.util.Set;
  * @since 1.0.0
  */
 @Entity
-@Table(name = "warehouses")
+@Table(name = "warehouses", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "owner_id"})})
 @Getter
 @Setter
 public class Warehouse extends BaseEntity {
+
+  @Column(name="name", nullable = false)
+  private String name;
 
   @ManyToOne
   @JoinColumn(name = "owner_id", nullable = false, referencedColumnName = "id")
@@ -47,7 +51,7 @@ public class Warehouse extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(name = "status", nullable = false)
-  private WarehouseStatus status = WarehouseStatus.AVAILABLE;
+  private WarehouseStatus status;
 
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "storage_type_id", nullable = false, referencedColumnName = "id")

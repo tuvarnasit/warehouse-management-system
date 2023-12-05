@@ -1,17 +1,17 @@
 package bg.tuvarna.sit.wms.dao;
 
 import bg.tuvarna.sit.wms.entities.Country;
+import bg.tuvarna.sit.wms.exceptions.CountryDAOException;
 import bg.tuvarna.sit.wms.util.JpaUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public class CountryDAO {
 
-  public void save(Country country) {
+  public void save(Country country) throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
     try {
@@ -19,13 +19,13 @@ public class CountryDAO {
       em.persist(country);
       em.getTransaction().commit();
     } catch (Exception e) {
-      handleException(em, e);
+      throw handleExceptionAndRollback(em,"Error saving country entity", e);
     } finally {
       em.close();
     }
   }
 
-  public void update(Country country) {
+  public void update(Country country) throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
     try {
@@ -33,13 +33,13 @@ public class CountryDAO {
       em.merge(country);
       em.getTransaction().commit();
     } catch (Exception e) {
-      handleException(em, e);
+      throw handleExceptionAndRollback(em,"Error updating country entity", e);
     } finally {
       em.close();
     }
   }
 
-  public void delete(Country country) {
+  public void delete(Country country) throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
     try {
@@ -51,13 +51,13 @@ public class CountryDAO {
       }
       em.getTransaction().commit();
     } catch (Exception e) {
-      handleException(em, e);
+      throw handleExceptionAndRollback(em,"Error deleting country entity", e);
     } finally {
       em.close();
     }
   }
 
-  public Optional<Country> getById(Long id) {
+  public Optional<Country> getById(Long id) throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
     try {
@@ -67,14 +67,13 @@ public class CountryDAO {
 
       return Optional.ofNullable(country);
     } catch (Exception e) {
-      handleException(em, e);
-      return Optional.empty();
+      throw handleExceptionAndRollback(em,"Error retrieving country entity", e);
     } finally {
       em.close();
     }
   }
 
-  public Optional<Country> getByName(String name) {
+  public Optional<Country> getByName(String name) throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
     try {
@@ -87,14 +86,13 @@ public class CountryDAO {
     } catch (NoResultException e) {
       return Optional.empty();
     } catch (Exception e) {
-      handleException(em, e);
-      throw new RuntimeException("Error retrieving country by name", e);
+      throw handleExceptionAndRollback(em, "Error retrieving country entity by name", e);
     } finally {
       em.close();
     }
   }
 
-  public List<Country> getAll() {
+  public List<Country> getAll() throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
     try {
@@ -104,20 +102,18 @@ public class CountryDAO {
 
       return countries;
     } catch (Exception e) {
-      handleException(em, e);
-      return Collections.emptyList();
+      throw handleExceptionAndRollback(em, "Error retrieving country entities", e);
     } finally {
       em.close();
     }
   }
 
-  private void handleException(EntityManager em, Exception e) {
+  private CountryDAOException handleExceptionAndRollback(EntityManager em, String message, Exception e) {
 
     if (em.getTransaction().isActive()) {
       em.getTransaction().rollback();
     }
-    e.printStackTrace();
-    // TODO: log
+    return new CountryDAOException(message, e);
   }
 }
 
