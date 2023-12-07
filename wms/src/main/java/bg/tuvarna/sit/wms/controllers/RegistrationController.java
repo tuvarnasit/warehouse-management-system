@@ -1,7 +1,9 @@
 package bg.tuvarna.sit.wms.controllers;
 
+import bg.tuvarna.sit.wms.dao.UserDao;
 import bg.tuvarna.sit.wms.dto.UserRegistrationDto;
 import bg.tuvarna.sit.wms.exceptions.RegistrationException;
+import bg.tuvarna.sit.wms.service.PasswordHashingService;
 import bg.tuvarna.sit.wms.service.UserService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -20,7 +22,7 @@ import javafx.scene.control.TextInputControl;
  */
 public class RegistrationController {
 
-  private final UserService userService = new UserService();
+  private final UserService userService = new UserService(new UserDao(), new PasswordHashingService());
 
   @FXML
   private TextField firstNameField;
