@@ -9,7 +9,6 @@ import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.enums.Role;
 import bg.tuvarna.sit.wms.exceptions.RegistrationException;
 import bg.tuvarna.sit.wms.exceptions.UserPersistenceException;
-import static bg.tuvarna.sit.wms.util.PasswordUtil.generateStrongPasswordHash;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Optional;
@@ -23,9 +22,16 @@ import org.apache.logging.log4j.Logger;
  */
 public class UserService {
 
-  private final UserDao userDao = new UserDao();
+  private final UserDao userDao;
+  private final PasswordHashingService passwordHashingService;
 
   private static final Logger LOGGER = LogManager.getLogger(UserService.class);
+
+  public UserService(UserDao userDao, PasswordHashingService passwordHashingService) {
+
+    this.userDao = userDao;
+    this.passwordHashingService = passwordHashingService;
+  }
 
   /**
    * Registers a new user based on the provided registration data.
@@ -77,7 +83,7 @@ public class UserService {
   private String hashPassword(String password) throws RegistrationException {
 
     try {
-      return generateStrongPasswordHash(password);
+      return passwordHashingService.generateStrongPasswordHash(password);
     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
       String errorMessage = "Error hashing password for user registration.";
       LOGGER.error(errorMessage, e);
