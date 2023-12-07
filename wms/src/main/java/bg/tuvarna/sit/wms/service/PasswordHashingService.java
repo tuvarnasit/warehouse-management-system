@@ -11,7 +11,7 @@ import java.security.spec.InvalidKeySpecException;
  * Utility class for handling password hashing.
  * Provides methods to generate a strong password hash using PBKDF2 algorithm.
  */
-public class PasswordUtil {
+public class PasswordHashingService {
 
   /**
    * Generates a strong hash for a given password.
