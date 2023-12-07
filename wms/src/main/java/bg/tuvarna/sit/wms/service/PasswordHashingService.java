@@ -1,4 +1,4 @@
-package bg.tuvarna.sit.wms.util;
+package bg.tuvarna.sit.wms.service;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -23,7 +23,7 @@ public class PasswordHashingService {
    * @throws NoSuchAlgorithmException if the specified algorithm is not available.
    * @throws InvalidKeySpecException  if the specified key specification is inappropriate for this secret-key factory.
    */
-  public static String generateStrongPasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+  String generateStrongPasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
     int iterations = 1000;
     char[] chars = password.toCharArray();
     byte[] salt = getSalt();
@@ -36,25 +36,13 @@ public class PasswordHashingService {
   }
 
   /**
-   * Generates a random salt for use in password hashing.
-   *
-   * @return A 16-byte random salt.
-   * @throws NoSuchAlgorithmException if the SHA1PRNG algorithm is not available.
-   */
-  private static byte[] getSalt() throws NoSuchAlgorithmException {
-    SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-    byte[] salt = new byte[16];
-    sr.nextBytes(salt);
-    return salt;
-  }
-
-  /**
    * Converts a byte array to a hexadecimal string.
    *
    * @param array The byte array to convert.
    * @return A hexadecimal string representing the byte array.
    */
-  private static String toHex(byte[] array) {
+  String toHex(byte[] array) {
+
     BigInteger bi = new BigInteger(1, array);
     String hex = bi.toString(16);
     int paddingLength = (array.length * 2) - hex.length();
@@ -63,5 +51,18 @@ public class PasswordHashingService {
     } else {
       return hex;
     }
+  }
+
+  /**
+   * Generates a random salt for use in password hashing.
+   *
+   * @return A 16-byte random salt.
+   * @throws NoSuchAlgorithmException if the SHA1PRNG algorithm is not available.
+   */
+  private byte[] getSalt() throws NoSuchAlgorithmException {
+    SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+    byte[] salt = new byte[16];
+    sr.nextBytes(salt);
+    return salt;
   }
 }
