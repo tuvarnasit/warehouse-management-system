@@ -1,7 +1,5 @@
 package bg.tuvarna.sit.wms.service;
 
-import bg.tuvarna.sit.wms.dao.CityDAO;
-import bg.tuvarna.sit.wms.dao.CountryDAO;
 import bg.tuvarna.sit.wms.dao.WarehouseDAO;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.entities.Address;
@@ -11,8 +9,8 @@ import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.StorageType;
 import bg.tuvarna.sit.wms.entities.Warehouse;
 import bg.tuvarna.sit.wms.enums.WarehouseStatus;
-import bg.tuvarna.sit.wms.exceptions.CityDAOException;
-import bg.tuvarna.sit.wms.exceptions.CountryDAOException;
+import bg.tuvarna.sit.wms.exceptions.CityCreationException;
+import bg.tuvarna.sit.wms.exceptions.CountryCreationException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
 import org.apache.logging.log4j.LogManager;
@@ -23,10 +21,16 @@ import java.util.Optional;
 
 public class WarehouseService {
 
-  private final WarehouseDAO warehouseDAO = new WarehouseDAO();
-  private final CountryDAO countryDAO = new CountryDAO();
-  private final CityDAO cityDAO = new CityDAO();
+  private final WarehouseDAO warehouseDAO ;
+  private final CountryService countryService;
+  private final CityService cityService;
   private static final Logger LOGGER = LogManager.getLogger(WarehouseService.class);
+
+  public WarehouseService(WarehouseDAO warehouseDAO, CountryService countryService, CityService cityService) {
+    this.warehouseDAO = warehouseDAO;
+    this.countryService = countryService;
+    this.cityService = cityService;
+  }
 
   public void saveWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
@@ -34,15 +38,15 @@ public class WarehouseService {
     warehouse.setStatus(WarehouseStatus.AVAILABLE);
 
     try {
-      Country country = getOrCreateCountry(warehouseDTO.getCountryName());
-      City city = getOrCreateCity(warehouseDTO.getCityName(), country);
+      Country country = countryService.getOrCreateCountry(warehouseDTO.getCountryName());
+      City city = cityService.getOrCreateCity(warehouseDTO.getCityName(), country);
 
       warehouse.getAddress().setCity(city);
-    } catch (CountryDAOException e) {
+    } catch (CountryCreationException e) {
       String errorMessage = "Error creating country during warehouse persistence";
       LOGGER.error(errorMessage);
       throw new WarehouseServiceException(errorMessage, e);
-    } catch (CityDAOException e) {
+    } catch (CityCreationException e) {
       String errorMessage = "Error creating city during warehouse persistence";
       LOGGER.error(errorMessage);
       throw new WarehouseServiceException(errorMessage, e);
@@ -61,15 +65,15 @@ public class WarehouseService {
     Warehouse warehouse = mapDTOToEntity(warehouseDTO);
 
     try {
-      Country country = getOrCreateCountry(warehouseDTO.getCountryName());
-      City city = getOrCreateCity(warehouseDTO.getCityName(), country);
+      Country country = countryService.getOrCreateCountry(warehouseDTO.getCountryName());
+      City city = cityService.getOrCreateCity(warehouseDTO.getCityName(), country);
 
       warehouse.getAddress().setCity(city);
-    } catch (CountryDAOException e) {
+    } catch (CountryCreationException e) {
       String errorMessage = "Error creating country during warehouse update";
       LOGGER.error(errorMessage);
       throw new WarehouseServiceException(errorMessage, e);
-    } catch (CityDAOException e) {
+    } catch (CityCreationException e) {
       String errorMessage = "Error creating city during warehouse update";
       LOGGER.error(errorMessage);
       throw new WarehouseServiceException(errorMessage, e);
@@ -82,37 +86,6 @@ public class WarehouseService {
       LOGGER.error(errorMessage);
       throw new WarehouseServiceException(errorMessage, e);
     }
-  }
-
-  public Country getOrCreateCountry(String countryName) throws CountryDAOException {
-
-    Optional<Country> countryOptional = countryDAO.getByName(countryName);
-
-    if(countryOptional.isEmpty()) {
-      Country newCountry = new Country();
-      newCountry.setName(countryName);
-
-      countryDAO.save(newCountry);
-      return newCountry;
-    }
-
-    return countryOptional.get();
-  }
-
-  public City getOrCreateCity(String cityName, Country country) throws CityDAOException {
-
-    Optional<City> cityOptional = cityDAO.getByNameAndCity(cityName, country);
-
-    if(cityOptional.isEmpty()) {
-      City newCity = new City();
-      newCity.setName(cityName);
-      newCity.setCountry(country);
-
-      cityDAO.save(newCity);
-      return newCity;
-    }
-
-    return cityOptional.get();
   }
 
   public List<WarehouseDTO> getWarehouseDTOsByOwner(Owner owner) throws WarehouseServiceException {

@@ -74,7 +74,7 @@ public class CityDAO {
     }
   }
 
-  public Optional<City> getByNameAndCity(String name, Country country) throws CityDAOException {
+  public Optional<City> getByNameAndCountry(String name, Country country) throws CityDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
 

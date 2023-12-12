@@ -1,15 +1,23 @@
 package bg.tuvarna.sit.wms.controllers;
 
+import bg.tuvarna.sit.wms.dao.CityDAO;
+import bg.tuvarna.sit.wms.dao.CountryDAO;
+import bg.tuvarna.sit.wms.dao.WarehouseDAO;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
+import bg.tuvarna.sit.wms.service.CityService;
+import bg.tuvarna.sit.wms.service.CountryService;
 import bg.tuvarna.sit.wms.service.WarehouseService;
 import bg.tuvarna.sit.wms.util.DialogUtil;
 import javafx.fxml.FXML;
 
 public class WarehouseCreationDialogController extends BaseWarehouseDialogController {
 
-  private final WarehouseService warehouseService = new WarehouseService();
+  private final WarehouseDAO warehouseDAO = new WarehouseDAO();
+  private final CountryService countryService = new CountryService(new CountryDAO());
+  private final CityService cityService = new CityService(new CityDAO());
+  private final WarehouseService warehouseService = new WarehouseService(warehouseDAO, countryService, cityService);
 
   public WarehouseCreationDialogController(Owner owner) {
     super(owner);
