@@ -23,7 +23,7 @@ public class ValidatingTextField extends TextField {
 
       textProperty().addListener((o, oldValue, newValue) -> {
         isValid.set(!newValue.trim().isEmpty() && validationFunction.test(newValue.trim()));
-        setStyle((isValid.get()) ? "" : "-fx-border-color: red;-fx-focus-color:red;-fx-faint-focus-color: transparent;");
+        setStyle((isValid.get()) ? "" : "-fx-text-box-border: red;-fx-focus-color:red;-fx-faint-focus-color: transparent;");
         tooltipProperty().set((isValid.get()) ? null : new Tooltip(tooltipMessage));
       });
     }

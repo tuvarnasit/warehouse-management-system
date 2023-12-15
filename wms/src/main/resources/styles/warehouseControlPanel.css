@@ -11,3 +11,20 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
 }
+
+.table-cell {
+    -fx-alignment: center;
+ }
+
+.action-button {
+    -fx-cursor: hand;
+    -glyph-size: 24;
+}
+
+.edit-button {
+    -fx-fill: #008080;
+}
+
+.delete-button {
+    -fx-fill: #bf2519;
+}

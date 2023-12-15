@@ -6,6 +6,7 @@ import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
 import bg.tuvarna.sit.wms.util.JpaUtil;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,6 +104,26 @@ public class WarehouseDAO {
       return warehouses;
     } catch (Exception e) {
       throw handleExceptionAndRollback(em,"Error retrieving warehouse entities", e);
+    } finally {
+      em.close();
+    }
+  }
+
+  public Optional<Warehouse> getWarehouseByNameAndOwner(String name, Owner owner) {
+
+    EntityManager em = JpaUtil.getEntityManager();
+
+    try {
+      em.getTransaction().begin();
+      Warehouse warehouse = em.createQuery("SELECT w FROM Warehouse w WHERE w.owner = :owner AND w.name = :name", Warehouse.class)
+          .setParameter("name", name)
+          .setParameter("owner", owner)
+          .getSingleResult();
+      em.getTransaction().commit();
+
+      return Optional.ofNullable(warehouse);
+    } catch (NoResultException e) {
+      return Optional.empty();
     } finally {
       em.close();
     }

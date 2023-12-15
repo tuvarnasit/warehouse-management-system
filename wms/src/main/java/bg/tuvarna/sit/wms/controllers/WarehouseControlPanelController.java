@@ -12,12 +12,13 @@ import bg.tuvarna.sit.wms.service.CountryService;
 import bg.tuvarna.sit.wms.service.WarehouseService;
 import bg.tuvarna.sit.wms.util.DialogUtil;
 import bg.tuvarna.sit.wms.util.JpaUtil;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -90,11 +91,13 @@ public class WarehouseControlPanelController {
 
     return param -> new TableCell<>() {
 
-      final Button editButton = new Button("Edit");
-      final Button deleteButton = new Button("Delete");
+      final FontAwesomeIconView editButton = new FontAwesomeIconView(FontAwesomeIcon.PENCIL_SQUARE_ALT);
+      final FontAwesomeIconView deleteButton = new FontAwesomeIconView(FontAwesomeIcon.TRASH_ALT);
 
       {
-        editButton.setOnAction(event -> {
+        editButton.getStyleClass().addAll("action-button", "edit-button");
+        deleteButton.getStyleClass().addAll("action-button", "delete-button");
+        editButton.setOnMouseClicked(event -> {
 
           WarehouseDTO warehouseDTO = getTableView().getItems().get(getIndex());
           DialogController controller = new WarehouseUpdateDialogController(owner, warehouseDTO);
@@ -106,7 +109,7 @@ public class WarehouseControlPanelController {
           refreshTable();
         });
 
-        deleteButton.setOnAction(event -> {
+        deleteButton.setOnMouseClicked(event -> {
 
           WarehouseDTO warehouseDTO = getTableView().getItems().get(getIndex());
 

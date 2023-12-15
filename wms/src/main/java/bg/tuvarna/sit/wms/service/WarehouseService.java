@@ -34,6 +34,10 @@ public class WarehouseService {
 
   public void saveWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
+    if(!checkWarehouseUniqueName(warehouseDTO)) {
+      throw new WarehouseServiceException("Warehouse with the same name already exists");
+    }
+
     Warehouse warehouse = mapDTOToEntity(warehouseDTO);
     warehouse.setStatus(WarehouseStatus.AVAILABLE);
 
@@ -55,13 +59,18 @@ public class WarehouseService {
     try {
       warehouseDAO.save(warehouse);
     } catch (WarehouseDAOException e) {
-      String errorMessage = "Unexpected error during warehouse persistence ";
+      String errorMessage = "Unexpected error during warehouse persistence";
       LOGGER.error(errorMessage);
       throw new WarehouseServiceException(errorMessage, e);
     }
   }
 
   public void updateWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
+
+      if(!checkWarehouseUniqueName(warehouseDTO)) {
+        throw new WarehouseServiceException("Warehouse with the same name already exists");
+      }
+
     Warehouse warehouse = mapDTOToEntity(warehouseDTO);
 
     try {
@@ -125,6 +134,25 @@ public class WarehouseService {
       LOGGER.error(errorMessage);
       throw new WarehouseServiceException(errorMessage, e);
     }
+  }
+
+  private boolean checkWarehouseUniqueName(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
+
+    if(warehouseDTO.getId() != null) {
+      Optional<Warehouse> oldWarehouse;
+      try {
+        oldWarehouse = warehouseDAO.getById(warehouseDTO.getId());
+      } catch (WarehouseDAOException e) {
+        String errorMessage = "Error during warehouse name uniqueness check";
+        LOGGER.error(errorMessage);
+        throw new WarehouseServiceException(errorMessage, e);
+      }
+
+      if(oldWarehouse.isPresent() && warehouseDTO.getName().equals(oldWarehouse.get().getName())) {
+        return true;
+      }
+    }
+    return warehouseDAO.getWarehouseByNameAndOwner(warehouseDTO.getName(), warehouseDTO.getOwner()).isEmpty();
   }
 
   private Warehouse mapDTOToEntity(WarehouseDTO warehouseDTO) {

@@ -25,6 +25,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
     implementation 'com.mysql:mysql-connector-j:8.1.0'
+    implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '4.7.0-9.1.2'
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")

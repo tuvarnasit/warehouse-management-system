@@ -46,6 +46,7 @@ public class WarehouseUpdateDialogController extends BaseWarehouseDialogControll
       warehouseService.updateWarehouse(updatedWarehouseDTO);
     } catch (WarehouseServiceException e) {
       DialogUtil.showErrorAlert("Unable to update warehouse data", e.getMessage());
+      return;
     }
     getDialogStage().close();
   }

@@ -4,55 +4,54 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 
 <?import bg.tuvarna.sit.wms.validation.ValidatingTextField?>
 <?import bg.tuvarna.sit.wms.validation.ValidatingComboBox?>
+<?import javafx.scene.layout.Region?>
 <VBox prefHeight="542.0" prefWidth="331.0" stylesheets="@../styles/warehouseCreation.css"
       xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
-    <HBox prefHeight="46.0">
-        <Text text="Name" wrappingWidth="64.0"/>
+    <VBox>
+        <Text text="Name"/>
         <ValidatingTextField fx:id="nameField"/>
-    </HBox>
-    <HBox prefHeight="46.0">
-        <Text text="Street" wrappingWidth="64.0"/>
+    </VBox>
+    <VBox>
+        <Text text="Street"/>
         <ValidatingTextField fx:id="streetField"/>
+    </VBox>
+    <HBox>
+        <VBox>
+            <Text text="City"/>
+            <ValidatingTextField fx:id="cityField"/>
+        </VBox>
+        <VBox>
+            <Text text="Zip code"/>
+            <ValidatingTextField fx:id="zipCodeField"/>
+        </VBox>
+        <VBox>
+            <Text text="Country"/>
+            <ValidatingTextField fx:id="countryField"/>
+        </VBox>
     </HBox>
-    <HBox prefHeight="46.0">
-        <Text text="City" wrappingWidth="64.0"/>
-        <ValidatingTextField fx:id="cityField"/>
-    </HBox>
-    <HBox prefHeight="46.0">
-        <Text text="Zip code" wrappingWidth="64.0"/>
-        <ValidatingTextField fx:id="zipCodeField"/>
-    </HBox>
-    <HBox prefHeight="46.0">
-        <Text text="Country" wrappingWidth="64.0"/>
-        <ValidatingTextField fx:id="countryField"/>
-    </HBox>
-    <HBox prefHeight="46.0">
-        <Text text="Size" wrappingWidth="64.0"/>
+    <VBox>
+        <Text text="Size"/>
         <ValidatingTextField fx:id="sizeField"/>
-    </HBox>
-    <HBox prefHeight="46.0">
-        <Text text="Climate Condition" wrappingWidth="134.0"/>
-        <ValidatingComboBox fx:id="climateConditionComboBox" prefHeight="24.0" />
-    </HBox>
-    <HBox prefHeight="46.0">
-        <Text text="Storage Type" wrappingWidth="108.0"/>
-        <ValidatingTextField id="storage-type" fx:id="storageTypeField" />
-    </HBox>
-    <HBox prefHeight="99.0">
-        <Text text="Storage Type Description" wrappingWidth="108.0"/>
-        <TextArea fx:id="storageTypeDescArea" prefHeight="140.0" wrapText="true">
-            <HBox.margin>
-                <Insets bottom="8.0" top="8.0"/>
-            </HBox.margin>
-        </TextArea>
-    </HBox>
-    <HBox id="buttons-wrapper" prefHeight="74.0">
+    </VBox>
+    <VBox>
+        <Text text="Climate Condition"/>
+        <ValidatingComboBox fx:id="climateConditionComboBox"/>
+    </VBox>
+    <VBox>
+        <Text text="Storage Type"/>
+        <ValidatingTextField id="storage-type" fx:id="storageTypeField"/>
+    </VBox>
+    <VBox>
+        <Text text="Storage Type Description"/>
+        <TextArea fx:id="storageTypeDescArea" prefHeight="140.0" wrapText="true"/>
+    </VBox>
+    <HBox id="buttons-wrapper">
         <Button id="save" onAction="#onSave" text="Save"/>
-        <Button onAction="#onCancel" text="Cancel"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button id="cancel" onAction="#onCancel" text="Cancel"/>
     </HBox>
 </VBox>
