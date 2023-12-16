@@ -9,6 +9,7 @@ import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.enums.Role;
 import bg.tuvarna.sit.wms.exceptions.RegistrationException;
 import bg.tuvarna.sit.wms.exceptions.UserPersistenceException;
+import bg.tuvarna.sit.wms.session.UserSession;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Optional;
@@ -41,9 +42,51 @@ public class UserService {
    */
   public void registerUser(UserRegistrationDto registrationDto) throws RegistrationException {
 
+    if (userDao.findByEmail(registrationDto.getEmail()).isPresent()) {
+      throw new RegistrationException("A user with this email already exists.");
+    }
+
+    if (userDao.findByPhone(registrationDto.getPhone()).isPresent()) {
+      throw new RegistrationException("A user with this phone number already exists.");
+    }
+
     User user = createUserFromDto(registrationDto);
     setUserPassword(user, registrationDto.getPassword());
     saveUser(user);
+  }
+
+  public void initializeAdministrators() throws RegistrationException, InvalidKeySpecException, NoSuchAlgorithmException {
+
+    if (userDao.findByEmail("admin1@example.com").isEmpty()) {
+      saveUser(createAdmin("Admin1", "One", "1234567890", "admin1@example.com", "securepassword1"));
+    }
+    if (userDao.findByEmail("admin2@example.com").isEmpty()) {
+      saveUser(createAdmin("Admin2", "Two", "0987654321", "admin2@example.com", "securepassword2"));
+    }
+  }
+
+  /**
+   * Attempts to log in a user with the provided email and password.
+   *
+   * @param email    The email of the user trying to log in.
+   * @param password The password of the user.
+   * @return true if the login is successful, false otherwise.
+   */
+  public boolean login(String email, String password) {
+
+    try {
+      Optional<User> userOptional = userDao.findByEmail(email);
+
+      if (userOptional.isPresent() && passwordHashingService.validatePassword(password, userDao.getUserPasswordById(userOptional.get().getId()).get())) {
+        UserSession.getInstance().setCurrentUser(userOptional.get());
+        return true;
+      }
+
+      return false;
+    } catch (Exception e) {
+      LOGGER.error("Login error", e);
+      return false;
+    }
   }
 
   /**
@@ -137,4 +180,18 @@ public class UserService {
       default -> Optional.empty();
     };
   }
+
+  private User createAdmin(String firstName, String lastName, String phone, String email, String rawPassword) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    User admin = new User();
+
+    admin.setFirstName(firstName);
+    admin.setLastName(lastName);
+    admin.setPhone(phone);
+    admin.setEmail(email);
+    admin.setPassword(passwordHashingService.generateStrongPasswordHash(rawPassword));
+    admin.setRole(Role.ADMIN);
+
+    return admin;
+  }
+
 }
