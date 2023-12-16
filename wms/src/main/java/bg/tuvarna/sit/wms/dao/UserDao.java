@@ -2,9 +2,14 @@ package bg.tuvarna.sit.wms.dao;
 
 import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.exceptions.UserPersistenceException;
-import bg.tuvarna.sit.wms.util.JpaUtil;
+import java.util.Map;
+import java.util.Optional;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,6 +21,12 @@ public class UserDao {
 
   private static final Logger LOGGER = LogManager.getLogger(UserDao.class);
 
+  private final EntityManagerFactory entityManagerFactory;
+
+  public UserDao(EntityManagerFactory entityManagerFactory) {
+    this.entityManagerFactory = entityManagerFactory;
+  }
+
   /**
    * Persists a user entity to the database.
    * Handles transaction management and ensures the user is saved within a transaction context.
@@ -25,17 +36,18 @@ public class UserDao {
    */
   public void saveUser(User user) throws UserPersistenceException {
 
-    EntityManager entityManager = JpaUtil.getEntityManager();
+    EntityManager entityManager = entityManagerFactory.createEntityManager();
+    EntityTransaction entityTransaction = entityManager.getTransaction();
 
     try {
-      entityManager.getTransaction().begin();
+      entityTransaction.begin();
       entityManager.persist(user);
-      entityManager.getTransaction().commit();
+      entityTransaction.commit();
     } catch (PersistenceException e) {
-      handleTransactionRollback(entityManager);
+      handleTransactionRollback(entityTransaction);
       throw new UserPersistenceException("Persistence error saving user", e);
     } catch (Exception e) {
-      handleTransactionRollback(entityManager);
+      handleTransactionRollback(entityTransaction);
       throw new UserPersistenceException("Unexpected error saving user", e);
     } finally {
       if (entityManager.isOpen()) {
@@ -44,20 +56,85 @@ public class UserDao {
     }
   }
 
+  public Optional<User> findByEmail(String email) {
+
+    EntityManager entityManager = entityManagerFactory.createEntityManager();
+    Map<String, Object> properties = entityManager.getProperties();
+    try {
+      String jpql = "SELECT u FROM User u WHERE u.email = :email";
+      TypedQuery<User> query = entityManager.createQuery(jpql, User.class)
+              .setParameter("email", email);
+      User user = query.getSingleResult();
+
+      return Optional.of(user);
+    } catch (NoResultException e) {
+      return Optional.empty();
+    } finally {
+      entityManager.close();
+    }
+  }
+
+  public Optional<User> findByPhone(String phone) {
+
+    EntityManager entityManager = getEntityManager();
+
+    try {
+      String jpql = "SELECT u FROM User u WHERE u.phone = :phone";
+      TypedQuery<User> query = entityManager.createQuery(jpql, User.class)
+              .setParameter("phone", phone);
+      User user = query.getSingleResult();
+
+      return Optional.of(user);
+    } catch (NoResultException e) {
+      return Optional.empty();
+    } finally {
+      entityManager.close();
+    }
+  }
+
+  /**
+   * Retrieves the hashed password of a user by their ID.
+   *
+   * @param userId The ID of the user.
+   * @return An Optional containing the hashed password if found, or an empty Optional otherwise.
+   */
+  public Optional<String> getUserPasswordById(Long userId) {
+
+    EntityManager entityManager = getEntityManager();
+
+    try {
+      String jpql = "SELECT u.password FROM User u WHERE u.id = :userId";
+      String password = entityManager.createQuery(jpql, String.class)
+              .setParameter("userId", userId)
+              .getSingleResult();
+      return Optional.ofNullable(password);
+    } catch (NoResultException e) {
+      return Optional.empty();
+    } finally {
+      entityManager.close();
+    }
+  }
+
   /**
    * Handles the rollback of a transaction in case of an error.
    * If the transaction is active, it attempts to roll back the transaction and logs any rollback failures.
    *
-   * @param entityManager The entity manager whose transaction needs to be rolled back.
+   * @param entityTransaction The entity transaction which needs to be rolled back.
    */
-  private void handleTransactionRollback(EntityManager entityManager) {
+  private void handleTransactionRollback(EntityTransaction entityTransaction) {
 
     try {
-      if (entityManager.getTransaction().isActive()) {
-        entityManager.getTransaction().rollback();
+      if (entityTransaction.isActive()) {
+        entityTransaction.rollback();
       }
     } catch (Exception e) {
       LOGGER.error("Transaction rollback failed", e);
     }
   }
+
+  private EntityManager getEntityManager() {
+
+    return entityManagerFactory.createEntityManager();
+  }
+
 }
