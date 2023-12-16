@@ -5,13 +5,17 @@ import bg.tuvarna.sit.wms.dto.UserRegistrationDto;
 import bg.tuvarna.sit.wms.exceptions.RegistrationException;
 import bg.tuvarna.sit.wms.service.PasswordHashingService;
 import bg.tuvarna.sit.wms.service.UserService;
+import bg.tuvarna.sit.wms.util.JpaUtil;
+import static bg.tuvarna.sit.wms.util.ValidationUtils.bindManagedToVisible;
+import static bg.tuvarna.sit.wms.util.ValidationUtils.showErrorLabel;
+import static bg.tuvarna.sit.wms.util.ValidationUtils.validateComboBox;
+import static bg.tuvarna.sit.wms.util.ValidationUtils.validateField;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
 
 /**
  * Controller for handling the user registration process.
@@ -22,7 +26,9 @@ import javafx.scene.control.TextInputControl;
  */
 public class RegistrationController {
 
-  private final UserService userService = new UserService(new UserDao(), new PasswordHashingService());
+  private final UserService userService = new UserService(
+          new UserDao(JpaUtil.getEntityManagerFactory()),
+          new PasswordHashingService());
 
   @FXML
   private TextField firstNameField;
@@ -125,60 +131,6 @@ public class RegistrationController {
     showErrorLabel(roleErrorLabel, "Choosing a role is mandatory.", !isRoleValid);
 
     return isFirstNameValid && isLastNameValid && isEmailValid && isPasswordValid && isPhoneValid && isRoleValid;
-  }
-
-
-  /**
-   * Validates the input of a given text field based on provided validation criteria.
-   *
-   * @param field              The text input control to validate.
-   * @param validationCriteria The regex pattern the input must match.
-   * @return true if the field is valid, false otherwise.
-   */
-  private boolean validateField(TextInputControl field, String validationCriteria) {
-
-    boolean isValid = !field.getText().trim().isEmpty() && field.getText().trim().matches(validationCriteria);
-    field.setStyle(isValid ? "" : "-fx-border-color: red;");
-
-    return isValid;
-  }
-
-  /**
-   * Validates if a value has been selected in the given combo box.
-   *
-   * @param comboBox The combo box to validate.
-   * @return true if a value is selected, false otherwise.
-   */
-  private boolean validateComboBox(ComboBox<?> comboBox) {
-
-    boolean isValid = comboBox.getValue() != null;
-    comboBox.setStyle(isValid ? "" : "-fx-border-color: red;");
-
-    return isValid;
-  }
-
-  /**
-   * Binds the managed property of a label to its visibility property.
-   * This ensures that the label does not reserve layout space when it is not visible.
-   *
-   * @param label The label to bind.
-   */
-  private void bindManagedToVisible(Label label) {
-
-    label.managedProperty().bind(label.visibleProperty());
-  }
-
-  /**
-   * Updates the visibility and text of an error label based on a boolean flag.
-   *
-   * @param label   The label to update.
-   * @param message The error message to display on the label.
-   * @param show    A flag indicating whether the error message should be shown or not.
-   */
-  private void showErrorLabel(Label label, String message, boolean show) {
-
-    label.setText(message);
-    label.setVisible(show);
   }
 
   /**
