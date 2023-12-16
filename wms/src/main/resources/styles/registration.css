@@ -19,7 +19,7 @@
 .vbox {
     -fx-background-color: #f2f2f2;
     -fx-padding: 15px;
-    -fx-spacing: 10px; /* space between children nodes */
+    -fx-spacing: 10px;
 }
 
 .combo-box .list-cell {
@@ -28,5 +28,20 @@
 
 .error-label {
     -fx-text-fill: red;
-    -fx-font-size: 10px;
+    -fx-background-color: white;
+    -fx-padding: 5px;
+    -fx-background-radius: 5px;
+    -fx-alignment: center;
+    -fx-font-weight: bold;
 }
+
+.text-field {
+    -fx-max-width: 300px;
+}
+
+.root {
+    -fx-background-image: url('../images/background.jpg');
+    -fx-background-size: cover;
+}
+
+
