@@ -1,5 +1,6 @@
 package bg.tuvarna.sit.wms.service;
 
+import java.util.Arrays;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.math.BigInteger;
@@ -53,6 +54,21 @@ public class PasswordHashingService {
     }
   }
 
+  boolean validatePassword(String originalPassword, String storedPasswordHash)
+          throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+    String[] parts = storedPasswordHash.split(":");
+    int iterations = Integer.parseInt(parts[0]);
+    byte[] salt = fromHex(parts[1]);
+    byte[] hash = fromHex(parts[2]);
+
+    PBEKeySpec spec = new PBEKeySpec(originalPassword.toCharArray(), salt, iterations, hash.length * 8);
+    SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+    byte[] testHash = skf.generateSecret(spec).getEncoded();
+
+    return Arrays.equals(hash, testHash);
+  }
+
   /**
    * Generates a random salt for use in password hashing.
    *
@@ -64,5 +80,19 @@ public class PasswordHashingService {
     byte[] salt = new byte[16];
     sr.nextBytes(salt);
     return salt;
+  }
+
+  /**
+   * Converts a hexadecimal string to a byte array.
+   *
+   * @param hex The hexadecimal string to convert.
+   * @return A byte array representing the hexadecimal string.
+   */
+  private byte[] fromHex(String hex) {
+    byte[] bytes = new byte[hex.length() / 2];
+    for (int i = 0; i < bytes.length; i++) {
+      bytes[i] = (byte) Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+    }
+    return bytes;
   }
 }
