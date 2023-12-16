@@ -11,23 +11,23 @@
 
 <VBox prefWidth="800" prefHeight="600" spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="bg.tuvarna.sit.wms.controllers.RegistrationController"
-      alignment="TOP_CENTER"
+      alignment="CENTER"
       stylesheets="@../styles/registration.css">
 
     <TextField fx:id="firstNameField" promptText="First Name"/>
-    <Label fx:id="firstNameErrorLabel" text="" visible="false" styleClass="error-label" />
+    <Label fx:id="firstNameErrorLabel" visible="false" styleClass="error-label" />
 
     <TextField fx:id="lastNameField" promptText="Last Name"/>
-    <Label fx:id="lastNameErrorLabel" text="" visible="false" styleClass="error-label" />
+    <Label fx:id="lastNameErrorLabel" visible="false" styleClass="error-label" />
 
     <TextField fx:id="emailField" promptText="Email"/>
-    <Label fx:id="emailErrorLabel" text="" visible="false" styleClass="error-label" />
+    <Label fx:id="emailErrorLabel" visible="false" styleClass="error-label" />
 
     <PasswordField fx:id="passwordField" promptText="Password"/>
-    <Label fx:id="passwordErrorLabel" text="" visible="false" styleClass="error-label" />
+    <Label fx:id="passwordErrorLabel" visible="false" styleClass="error-label" />
 
     <TextField fx:id="phoneField" promptText="Phone"/>
-    <Label fx:id="phoneErrorLabel" text="" visible="false" styleClass="error-label" />
+    <Label fx:id="phoneErrorLabel" visible="false" styleClass="error-label" />
 
     <ComboBox fx:id="roleBox" promptText="Role">
         <items>
@@ -38,7 +38,7 @@
             </FXCollections>
         </items>
     </ComboBox>
-    <Label fx:id="roleErrorLabel" text="" visible="false" styleClass="error-label" />
+    <Label fx:id="roleErrorLabel" visible="false" styleClass="error-label" />
 
     <Button text="Register" onAction="#handleRegistration"/>
 </VBox>
