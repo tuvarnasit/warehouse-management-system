@@ -1,64 +1,97 @@
 package bg.tuvarna.sit.wms.controllers;
 
+import bg.tuvarna.sit.wms.entities.User;
+import bg.tuvarna.sit.wms.session.UserSession;
+import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.loadView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.stage.Stage;
-import javafx.fxml.FXMLLoader;
-
-import java.io.IOException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 
 /**
- * Controller class for the home screen of the application.
- * This class handles the user interaction with the home screen UI.
- *
- * @author Yavor Chamov
- * @version 1.0.0
+ * Controller class for the home view in the application.
+ * It manages the interaction and behavior of the UI elements on the home screen.
  */
 public class HomeController {
 
-  private static final Logger LOGGER = LogManager.getLogger(HomeController.class);
+  @FXML
+  Button registerButton;
+  @FXML
+  Button loginButton;
+  @FXML
+  Text welcomeUserText;
+  @FXML
+  StackPane welcomeMessageContainer;
+  UserSession userSession = UserSession.getInstance();
 
   /**
-   * Handles the action of the register button click.
-   * This method attempts to load the registration view and set it to the current stage.
-   *
-   * @param event The action event generated when the register button is clicked.
+   * Initializes the controller. This method is called after the FXML fields are populated.
+   * It sets up the initial state of the UI components based on the user's login status.
    */
   @FXML
-  protected void handleRegisterAction(ActionEvent event) {
-    try {
-      Parent registrationView = FXMLLoader.load(getClass().getResource("/views/registration.fxml"));
-      Scene registrationScene = new Scene(registrationView);
-      Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-      window.setScene(registrationScene);
-      window.show();
-    } catch (IOException e) {
-      LOGGER.error("Failed to load the registration view.", e);
-      showAlert("Error", "Failed to load the registration view.");
-    } catch (Exception e) {
-      LOGGER.error("An unexpected error occurred.", e);
-      showAlert("Error", "An unexpected error occurred.");
-    }
+  protected void initialize() {
+    updateRegisterButtonVisibility();
+    updateLoginButtonVisibility();
+    updateUserWelcomeMessage();
   }
 
   /**
-   * Displays an alert dialog with a specified title and content.
-   * The alert is of the ERROR type and will block application interaction until dismissed.
+   * Handles the action to navigate to the registration view.
    *
-   * @param title   The title of the alert dialog.
-   * @param content The content message to display in the alert dialog.
+   * @param event The event that triggered the action.
    */
-  private void showAlert(String title, String content) {
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(content);
-    alert.showAndWait();
+  @FXML
+  protected void handleRegisterAction(ActionEvent event) {
+
+    loadView("/views/registration.fxml", event);
+  }
+
+  /**
+   * Handles the action to navigate to the login view.
+   *
+   * @param event The event that triggered the action.
+   */
+  @FXML
+  protected void handleLoginAction(ActionEvent event) {
+
+    loadView("/views/login.fxml", event);
+  }
+
+  /**
+   * Updates the visibility of the registration button based on the user's login status.
+   * The button is visible and managed if a user is currently logged in.
+   */
+  private void updateRegisterButtonVisibility() {
+
+    User currentUser = userSession.getCurrentUser();
+    registerButton.setVisible(currentUser != null);
+    registerButton.setManaged(currentUser != null);
+  }
+
+  /**
+   * Updates the visibility of the login button based on the user's login status.
+   * The button is visible and managed if no user is currently logged in.
+   */
+  private void updateLoginButtonVisibility() {
+
+    User currentUser = userSession.getCurrentUser();
+    loginButton.setVisible(currentUser == null);
+    loginButton.setManaged(currentUser == null);
+  }
+
+  /**
+   * Updates the welcome message based on the user's login status.
+   * Displays a personalized welcome message if a user is logged in; hides the message otherwise.
+   */
+  private void updateUserWelcomeMessage() {
+
+    User currentUser = userSession.getCurrentUser();
+    if (currentUser != null) {
+      welcomeUserText.setText("Hello, " + currentUser.getFirstName());
+      welcomeMessageContainer.setVisible(true);
+    } else {
+      welcomeMessageContainer.setVisible(false);
+    }
   }
 }
