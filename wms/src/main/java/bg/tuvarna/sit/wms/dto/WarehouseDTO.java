@@ -7,6 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Represents a Data Transfer Object (DTO) for the Warehouse entity.
+ * It is used to transfer all the necessary data of a warehouse from the presentation to the service layer.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

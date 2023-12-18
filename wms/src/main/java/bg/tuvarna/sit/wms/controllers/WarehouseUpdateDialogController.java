@@ -11,6 +11,10 @@ import bg.tuvarna.sit.wms.service.CountryService;
 import bg.tuvarna.sit.wms.service.WarehouseService;
 import bg.tuvarna.sit.wms.util.DialogUtil;
 
+/**
+ * This controller class handles the updating process of an existing warehouse. Inherits methods from the
+ * {@link BaseWarehouseDialogController} base class.
+ */
 public class WarehouseUpdateDialogController extends BaseWarehouseDialogController {
 
   private final WarehouseDAO warehouseDAO = new WarehouseDAO();
@@ -24,12 +28,21 @@ public class WarehouseUpdateDialogController extends BaseWarehouseDialogControll
     this.warehouseDTO = warehouseDTO;
   }
 
+  /**
+   * Initializes the text fields by setting the text properties to the values of the warehouseDTO, which is
+   * passed to the class.
+   */
   @Override
   public void initialize() {
     super.initialize();
     initializeFields(warehouseDTO);
   }
 
+  /**
+   * Triggered when the save button is clicked.
+   * This method creates a new dto of an existing warehouse, from the text in the fields.
+   * It then validates the dto and updates the exising warehouse with the new data.
+   */
   @Override
   public void onSave() {
 

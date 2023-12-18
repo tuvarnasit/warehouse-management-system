@@ -12,6 +12,11 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * An abstract controller class, which contains all of the common methods of {@link WarehouseCreationDialogController}
+ * and {@link WarehouseUpdateDialogController} classes such as: initialization for all of the fields and setting a
+ * validation function for each field, conversion from DTO to entity, and validation.
+ */
 public abstract class BaseWarehouseDialogController implements DialogController {
 
   @FXML
@@ -42,6 +47,10 @@ public abstract class BaseWarehouseDialogController implements DialogController 
     this.owner = owner;
   }
 
+  /**
+   * This method initializes the the controller and sets up the validation function and tooltip message
+   * for every field. Also sets the values in the climate condition combo box.
+   */
   @FXML
   public void initialize() {
 
@@ -58,14 +67,27 @@ public abstract class BaseWarehouseDialogController implements DialogController 
     climateConditionComboBox.getItems().setAll(ClimateCondition.values());
   }
 
+  /**
+   * An abstract method which is triggered when the save button is clicked. It is implemented by
+   * {@link WarehouseCreationDialogController#onSave()} and {@link WarehouseCreationDialogController#onSave()}
+   */
   @FXML
   public abstract void onSave();
 
+  /**
+   * This method is triggered when the cancel button is clicked. It closes the dialog.
+   */
   @FXML
   public void onCancel() {
     dialogStage.close();
   }
 
+  /**
+   * Validates the field in the dialog by getting the value of the isValid property of the fields,
+   * which is set by the validation function on every change of the text.
+   *
+   * @return true if all of the fields are valid, false if they aren't
+   */
   protected boolean validate() {
 
     return nameField.getIsValid().get() && streetField.getIsValid().get()
@@ -74,6 +96,11 @@ public abstract class BaseWarehouseDialogController implements DialogController 
         && climateConditionComboBox.getIsValid().get() && storageTypeField.getIsValid().get();
   }
 
+  /**
+   * Creates a WarehouseDTO object from all of the field values in the dialog.
+   *
+   * @return the warehouseDTO with the data the user has entered
+   */
   protected WarehouseDTO createWarehouseDTO() {
 
     WarehouseDTO warehouseDTO = new WarehouseDTO();
@@ -92,6 +119,11 @@ public abstract class BaseWarehouseDialogController implements DialogController 
     return warehouseDTO;
   }
 
+  /**
+   * Initializes the fields in the dialog with the values from a WarehouseDTO object.
+   *
+   * @param warehouseDTO the WarehouseDTO object
+   */
   protected void initializeFields(WarehouseDTO warehouseDTO) {
     nameField.setText(warehouseDTO.getName());
     streetField.setText(warehouseDTO.getStreet());

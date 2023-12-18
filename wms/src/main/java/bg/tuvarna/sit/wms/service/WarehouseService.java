@@ -19,6 +19,11 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This class provides services related to warehouse operations.
+ * It includes methods for saving, updating, retrieving, and deleting warehouses.
+ * It also includes methods for checking the uniqueness of a warehouse name and mapping between DTO and entity objects.
+ */
 public class WarehouseService {
 
   private final WarehouseDAO warehouseDAO ;
@@ -32,6 +37,13 @@ public class WarehouseService {
     this.cityService = cityService;
   }
 
+  /**
+   * Saves a warehouse to the database.
+   *
+   * @param warehouseDTO the DTO containing the warehouse data
+   * @throws WarehouseServiceException if an error occurs during the the persistence process
+   * or if the warehouse name isn't unique for an owner
+   */
   public void saveWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
     if(!checkWarehouseUniqueName(warehouseDTO)) {
@@ -65,6 +77,13 @@ public class WarehouseService {
     }
   }
 
+  /**
+   * Updates the details of an existing warehouse.
+   *
+   * @param warehouseDTO the DTO containing the updated details of a warehouse
+   * @throws WarehouseServiceException if an error occurs during the the updating process
+   * or if the warehouse name matches that of an existing warehouse for an owner
+   */
   public void updateWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
       if(!checkWarehouseUniqueName(warehouseDTO)) {
@@ -97,6 +116,13 @@ public class WarehouseService {
     }
   }
 
+  /**
+   * Retrieves all of the warehouses owned by a given owner.
+   *
+   * @param owner the owner of the warehouses to be retrieved
+   * @return a list of DTOs containing information about all of the warehouses owned by the owner
+   * @throws WarehouseServiceException if there is an error during the retrieval process
+   */
   public List<WarehouseDTO> getWarehouseDTOsByOwner(Owner owner) throws WarehouseServiceException {
 
     List<Warehouse> ownerWarehouses;
@@ -110,6 +136,13 @@ public class WarehouseService {
     return ownerWarehouses.stream().map(this::mapEntityToDTO).toList();
   }
 
+  /**
+   * Deletes a warehouse from the database.
+   *
+   * @param warehouseDTO a DTO containing warehouse information to be deleted
+   * @throws WarehouseServiceException if there is an error during the deletion process
+   * or if the warehouse isn't found in the database
+   */
   public void deleteWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
     Optional<Warehouse> warehouseOptional;
@@ -136,6 +169,13 @@ public class WarehouseService {
     }
   }
 
+  /**
+   * Checks if the name of a warehouse is unique for its owner.
+   *
+   * @param warehouseDTO the DTO containing the name of a warehouse to be checked for uniqueness
+   * @return true if the warehouse name is unique, false if it's not
+   * @throws WarehouseServiceException if there is an error during the check
+   */
   private boolean checkWarehouseUniqueName(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
     if(warehouseDTO.getId() != null) {
@@ -155,6 +195,12 @@ public class WarehouseService {
     return warehouseDAO.getWarehouseByNameAndOwner(warehouseDTO.getName(), warehouseDTO.getOwner()).isEmpty();
   }
 
+  /**
+   * Creates a new Warehouse entity from the warehouse details provided by a given WarehouseDTO object.
+   *
+   * @param warehouseDTO the DAO containing the warehouse details
+   * @return a new warehouse entity
+   */
   private Warehouse mapDTOToEntity(WarehouseDTO warehouseDTO) {
 
     Warehouse warehouse = new Warehouse();
@@ -186,6 +232,12 @@ public class WarehouseService {
     return warehouse;
   }
 
+  /**
+   * Creates a new WarehouseDTO, containing information about a warehouse, from a Warehouse entity.
+   *
+   * @param warehouse the warehouse entity to be converted to a DTO
+   * @return a new WarehouseDTO object
+   */
   private WarehouseDTO mapEntityToDTO(Warehouse warehouse) {
 
     WarehouseDTO warehouseDTO = new WarehouseDTO();

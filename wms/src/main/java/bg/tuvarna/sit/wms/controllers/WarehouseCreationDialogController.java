@@ -12,6 +12,10 @@ import bg.tuvarna.sit.wms.service.WarehouseService;
 import bg.tuvarna.sit.wms.util.DialogUtil;
 import javafx.fxml.FXML;
 
+/**
+ * This controller class handles the creation of a new warehouse. Inherits methods from the
+ * {@link BaseWarehouseDialogController} base class.
+ */
 public class WarehouseCreationDialogController extends BaseWarehouseDialogController {
 
   private final WarehouseDAO warehouseDAO = new WarehouseDAO();
@@ -23,6 +27,10 @@ public class WarehouseCreationDialogController extends BaseWarehouseDialogContro
     super(owner);
   }
 
+  /**
+   * This method is triggered when the save button is clicked.
+   * Creates a new warehouseDTO and validates it before saving it to the database.
+   */
   @FXML
   public void onSave() {
 

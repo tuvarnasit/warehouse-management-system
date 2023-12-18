@@ -31,6 +31,10 @@ import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * A controller class, which allows an owner to interact with the data of every warehouse he owns in a table.
+ * This class also manages the creation, editing and deletion of warehouses.
+ */
 public class WarehouseControlPanelController {
 
   @FXML
@@ -65,6 +69,9 @@ public class WarehouseControlPanelController {
     em.close();
   }
 
+  /**
+   * This method retrieves the warehouse data from the database, sets up the tableView and displays the retrieved warehouses.
+   */
   @FXML
   public void initialize() {
 
@@ -87,6 +94,12 @@ public class WarehouseControlPanelController {
     warehousesTable.setItems(observableData);
   }
 
+  /**
+   * Creates the cell factory for the actions column consisting of buttons for editing and deleting a warehouse.
+   * Attaches an event handler to the buttons to handle the button click.
+   *
+   * @return a callback function returning the cell factory
+   */
   private Callback<TableColumn<WarehouseDTO, String>, TableCell<WarehouseDTO, String>> createActionsCellFactory() {
 
     return param -> new TableCell<>() {
@@ -143,6 +156,10 @@ public class WarehouseControlPanelController {
     };
   }
 
+  /**
+   * Handles the add button click event.
+   * Opens a form for creating a new warehouse as a dialog window.
+   */
   @FXML
   public void handleAdd() {
 
@@ -155,6 +172,10 @@ public class WarehouseControlPanelController {
     refreshTable();
   }
 
+  /**
+   * Refreshes the data in the table view.
+   * This method retrieves the owner's warehouses and refreshes the table.
+   */
   public void refreshTable() {
 
     try {

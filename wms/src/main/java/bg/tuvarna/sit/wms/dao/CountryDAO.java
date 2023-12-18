@@ -9,8 +9,19 @@ import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This class is the Data Access Object (DAO) for the Country entity.
+ * Provides methods for preforming CRUD operations to the database on the Country entity.
+ */
 public class CountryDAO {
 
+  /**
+   * Persists a new country entity to the database within a transaction.
+   * If an error occurs during the transaction it is rolled back.
+   *
+   * @param country the country entity to persist
+   * @throws CountryDAOException if an error occurs during the persistence of the entity
+   */
   public void save(Country country) throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
@@ -25,6 +36,13 @@ public class CountryDAO {
     }
   }
 
+  /**
+   * Updates a country entity in the database within a transaction.
+   * If an error occurs during the transaction it is rolled back.
+   *
+   * @param country the country entity to update
+   * @throws CountryDAOException if an error occurs during the updating process of the entity
+   */
   public void update(Country country) throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
@@ -39,6 +57,13 @@ public class CountryDAO {
     }
   }
 
+  /**
+   * Deletes a country entity from the database within a transaction.
+   * If an error occurs during the transaction it is rolled back.
+   *
+   * @param country the country entity to delete
+   * @throws CountryDAOException if an error occurs during the deletion process of the entity
+   */
   public void delete(Country country) throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
@@ -57,6 +82,14 @@ public class CountryDAO {
     }
   }
 
+  /**
+   * Retrieves a country entity by id from the database within a transaction.
+   * If an error occurs during the transaction it is rolled back.
+   *
+   * @param id the id of the country entity
+   * @return an Optional of the retrieved country, or an empty Optional if the country doesn't exist
+   * @throws CountryDAOException if an error occurs during the retrieving process of the entity
+   */
   public Optional<Country> getById(Long id) throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
@@ -73,6 +106,14 @@ public class CountryDAO {
     }
   }
 
+  /**
+   * Retrieves a country entity by its name from the database within a transaction.
+   * If an error occurs during the transaction it is rolled back.
+   *
+   * @param name the name of the country entity
+   * @return an Optional of the retrieved country, or an empty Optional if the country doesn't exist
+   * @throws CountryDAOException if an error occurs during the retrieving process of the entity
+   */
   public Optional<Country> getByName(String name) throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
@@ -92,6 +133,13 @@ public class CountryDAO {
     }
   }
 
+  /**
+   * Retrieves all the country entities within a transaction.
+   * If an error occurs during the transaction it is rolled back.
+   *
+   * @return a list with all the countries
+   * @throws CountryDAOException if an error occurs during the retrieving process of the entities
+   */
   public List<Country> getAll() throws CountryDAOException {
 
     EntityManager em = JpaUtil.getEntityManager();
@@ -108,6 +156,15 @@ public class CountryDAO {
     }
   }
 
+  /**
+   * Handles exceptions and rolls back the transaction.
+   * If an exception occurs during the transaction, the transaction is rolled back.
+   *
+   * @param em the EntityManager
+   * @param message the error message
+   * @param e the exception to propagate
+   * @return a new CountryDAOException with the given message and cause
+   */
   private CountryDAOException handleExceptionAndRollback(EntityManager em, String message, Exception e) {
 
     if (em.getTransaction().isActive()) {
