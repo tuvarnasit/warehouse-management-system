@@ -124,7 +124,7 @@ public class RegistrationController {
     boolean isPasswordValid = validateField(passwordField, "^(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$");
     showErrorLabel(passwordErrorLabel, "Password should contain at least 8 symbols. At least one upper case letter and one special symbol.", !isPasswordValid);
 
-    boolean isPhoneValid = validateField(phoneField, "^(\\+359|0)\\d{8,10}$");
+    boolean isPhoneValid = validateField(phoneField, "^(\\+359|0)\\d{9}$");
     showErrorLabel(phoneErrorLabel, "Enter a valid phone number.", !isPhoneValid);
 
     boolean isRoleValid = validateComboBox(roleBox);
