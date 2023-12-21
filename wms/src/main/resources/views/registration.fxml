@@ -40,5 +40,5 @@
     </ComboBox>
     <Label fx:id="roleErrorLabel" visible="false" styleClass="error-label" />
 
-    <Button text="Register" onAction="#handleRegistration"/>
+    <Button fx:id="registerBtn" text="Register" onAction="#handleRegistration"/>
 </VBox>
