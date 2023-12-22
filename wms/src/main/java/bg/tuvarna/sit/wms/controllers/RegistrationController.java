@@ -10,6 +10,8 @@ import static bg.tuvarna.sit.wms.util.ValidationUtils.bindManagedToVisible;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.showErrorLabel;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.validateComboBox;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.validateField;
+import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.loadView;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
@@ -163,4 +165,9 @@ public class RegistrationController {
     alert.showAndWait();
   }
 
+  @FXML
+  protected void handleBack(ActionEvent event) {
+
+    loadView("/views/home.fxml", event);
+  }
 }
