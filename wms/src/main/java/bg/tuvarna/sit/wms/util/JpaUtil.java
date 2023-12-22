@@ -19,10 +19,6 @@ import lombok.Getter;
  */
 public class JpaUtil {
 
-  /**
-   * -- GETTER --
-   * Provides access to the singleton instance of EntityManagerFactory for the application.
-   */
   @Getter
   private static final EntityManagerFactory entityManagerFactory;
 

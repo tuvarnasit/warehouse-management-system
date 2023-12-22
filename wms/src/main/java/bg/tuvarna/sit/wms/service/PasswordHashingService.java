@@ -54,6 +54,18 @@ public class PasswordHashingService {
     }
   }
 
+  /**
+   * Validates a given password against its stored hash.
+   * <p>
+   * This method uses PBKDF2 with HMAC SHA1 to generate a hash of the provided password
+   * and compares it to the stored password hash to validate if the passwords match.
+   *
+   * @param originalPassword   The plain text password to validate.
+   * @param storedPasswordHash The hashed password stored in the database.
+   * @return true if the provided password matches the stored hash, false otherwise.
+   * @throws NoSuchAlgorithmException if the specified algorithm (PBKDF2WithHmacSHA1) is not available.
+   * @throws InvalidKeySpecException  if the specified key specification is inappropriate for the secret-key factory.
+   */
   boolean validatePassword(String originalPassword, String storedPasswordHash)
           throws NoSuchAlgorithmException, InvalidKeySpecException {
 
