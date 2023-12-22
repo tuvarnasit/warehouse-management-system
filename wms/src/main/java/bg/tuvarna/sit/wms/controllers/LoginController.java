@@ -4,6 +4,7 @@ import bg.tuvarna.sit.wms.dao.UserDao;
 import bg.tuvarna.sit.wms.service.PasswordHashingService;
 import bg.tuvarna.sit.wms.service.UserService;
 import bg.tuvarna.sit.wms.util.JpaUtil;
+import static bg.tuvarna.sit.wms.util.ValidationUtils.bindManagedToVisible;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.showErrorLabel;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.validateField;
 import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.loadView;
@@ -32,6 +33,12 @@ public class LoginController {
   private final UserService userService =
           new UserService(new UserDao(JpaUtil.getEntityManagerFactory()),new PasswordHashingService());
 
+  @FXML
+  protected void initialize() {
+
+    bindManagedToVisible(emailErrorLabel);
+  }
+
   /**
    * Invoked when the user clicks the login button.
    * This method validates the user input and attempts to authenticate the user.
@@ -56,6 +63,12 @@ public class LoginController {
       authenticationErrorLabel.setText("Invalid email or password");
       authenticationErrorLabel.setVisible(true);
     }
+  }
+
+  @FXML
+  protected void handleBack(ActionEvent event) {
+
+    loadView("/views/home.fxml", event);
   }
 
   /**
