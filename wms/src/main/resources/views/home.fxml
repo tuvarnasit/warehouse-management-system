@@ -2,16 +2,19 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.layout.StackPane?>
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bg.tuvarna.sit.wms.controllers.HomeController"
-      spacing="20" alignment="CENTER" prefWidth="800" prefHeight="600" stylesheets="@../styles/home.css">
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="bg.tuvarna.sit.wms.controllers.HomeController"
+      spacing="20" alignment="CENTER" prefWidth="800" prefHeight="600"
+      stylesheets="@../styles/home.css, @../styles/common.css">
+
     <StackPane styleClass="text-background">
         <Text text="Welcome to the WMS application!" styleClass="heading"/>
     </StackPane>
     <StackPane fx:id="welcomeMessageContainer" styleClass="text-background">
         <Text fx:id="welcomeUserText" styleClass="text-node" text="Welcome User"/>
     </StackPane>
-    <Button text="Register" onAction="#handleRegisterAction" fx:id="registerButton" styleClass="button-big"/>
-    <Button text="Login" onAction="#handleLoginAction" fx:id="loginButton" styleClass="button-big"/>
+    <Button text="Register" onAction="#handleRegisterAction" fx:id="registerButton" styleClass="button-common, button-register"/>
+    <Button text="Login" onAction="#handleLoginAction" fx:id="loginButton" styleClass="button-common, button-login"/>
 </VBox>
