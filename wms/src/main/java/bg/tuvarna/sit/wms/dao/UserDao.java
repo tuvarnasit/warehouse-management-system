@@ -56,10 +56,14 @@ public class UserDao {
     }
   }
 
+  /**
+   * Finds a user by their email address.
+   *
+   * @param email The email address of the user to find.
+   * @return An Optional containing the User if found, or an empty Optional if no user is found with the given email.
+   */
   public Optional<User> findByEmail(String email) {
-
     EntityManager entityManager = entityManagerFactory.createEntityManager();
-    Map<String, Object> properties = entityManager.getProperties();
     try {
       String jpql = "SELECT u FROM User u WHERE u.email = :email";
       TypedQuery<User> query = entityManager.createQuery(jpql, User.class)
@@ -74,10 +78,14 @@ public class UserDao {
     }
   }
 
+  /**
+   * Finds a user by their phone number.
+   *
+   * @param phone The phone number of the user to find.
+   * @return An Optional containing the User if found, or an empty Optional if no user is found with the given phone number.
+   */
   public Optional<User> findByPhone(String phone) {
-
     EntityManager entityManager = getEntityManager();
-
     try {
       String jpql = "SELECT u FROM User u WHERE u.phone = :phone";
       TypedQuery<User> query = entityManager.createQuery(jpql, User.class)
@@ -132,6 +140,14 @@ public class UserDao {
     }
   }
 
+  /**
+   * Creates and returns a new instance of EntityManager.
+   * <p>
+   * This method is a factory method for creating new EntityManager instances,
+   * which are used to interact with the persistence context.
+   *
+   * @return A new instance of EntityManager.
+   */
   private EntityManager getEntityManager() {
 
     return entityManagerFactory.createEntityManager();

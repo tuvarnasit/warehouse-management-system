@@ -13,6 +13,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+/**
+ * Controller class for the login screen.
+ * This class handles user interactions within the login view,
+ * such as input validation and user authentication.
+ */
 public class LoginController {
 
   @FXML
@@ -27,6 +32,12 @@ public class LoginController {
   private final UserService userService =
           new UserService(new UserDao(JpaUtil.getEntityManagerFactory()),new PasswordHashingService());
 
+  /**
+   * Invoked when the user clicks the login button.
+   * This method validates the user input and attempts to authenticate the user.
+   *
+   * @param event The event that triggered this action.
+   */
   @FXML
   protected void handleLogin(ActionEvent event) {
 
@@ -47,6 +58,12 @@ public class LoginController {
     }
   }
 
+  /**
+   * Validates the user input for email and password.
+   * Shows error labels if validation fails.
+   *
+   * @return true if the input is valid, false otherwise.
+   */
   private boolean validateInput() {
 
     boolean isEmailValid = validateField(emailField, "\\S+@\\S+\\.\\S+");
