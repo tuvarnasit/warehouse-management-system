@@ -5,6 +5,8 @@ import bg.tuvarna.sit.wms.entities.City;
 import bg.tuvarna.sit.wms.entities.Country;
 import bg.tuvarna.sit.wms.exceptions.CityCreationException;
 import bg.tuvarna.sit.wms.exceptions.CityDAOException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class CityService {
 
   private final CityDAO cityDAO;
+  private static final Logger LOGGER = LogManager.getLogger(CityService.class);
 
   public CityService(CityDAO cityDAO) {
     this.cityDAO = cityDAO;
@@ -35,7 +38,9 @@ public class CityService {
     try {
       cityOptional = cityDAO.getByNameAndCountry(cityName, country);
     } catch (CityDAOException e) {
-      throw new CityCreationException("Error retrieving city during get or create process", e);
+      String errorMessage = "Error retrieving city during get or create process";
+      LOGGER.error(errorMessage, e);
+      throw new CityCreationException(errorMessage, e);
     }
 
     if(cityOptional.isEmpty()) {
@@ -46,7 +51,9 @@ public class CityService {
       try {
         cityDAO.save(newCity);
       } catch (CityDAOException e) {
-        throw new CityCreationException("Error saving city during get or create process", e);
+        String errorMessage = "Error saving city during get or create process";
+        LOGGER.error(errorMessage, e);
+        throw new CityCreationException(errorMessage, e);
       }
       return newCity;
     }

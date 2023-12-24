@@ -46,7 +46,7 @@ public class WarehouseService {
    */
   public void saveWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
-    if(!checkWarehouseUniqueName(warehouseDTO)) {
+    if(!isWarehouseNameUnique(warehouseDTO)) {
       throw new WarehouseServiceException("Warehouse with the same name already exists");
     }
 
@@ -60,11 +60,11 @@ public class WarehouseService {
       warehouse.getAddress().setCity(city);
     } catch (CountryCreationException e) {
       String errorMessage = "Error creating country during warehouse persistence";
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage, e);
       throw new WarehouseServiceException(errorMessage, e);
     } catch (CityCreationException e) {
       String errorMessage = "Error creating city during warehouse persistence";
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage, e);
       throw new WarehouseServiceException(errorMessage, e);
     }
 
@@ -72,7 +72,7 @@ public class WarehouseService {
       warehouseDAO.save(warehouse);
     } catch (WarehouseDAOException e) {
       String errorMessage = "Unexpected error during warehouse persistence";
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage, e);
       throw new WarehouseServiceException(errorMessage, e);
     }
   }
@@ -86,7 +86,7 @@ public class WarehouseService {
    */
   public void updateWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
-      if(!checkWarehouseUniqueName(warehouseDTO)) {
+      if(!isWarehouseNameUnique(warehouseDTO)) {
         throw new WarehouseServiceException("Warehouse with the same name already exists");
       }
 
@@ -99,11 +99,11 @@ public class WarehouseService {
       warehouse.getAddress().setCity(city);
     } catch (CountryCreationException e) {
       String errorMessage = "Error creating country during warehouse update";
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage, e);
       throw new WarehouseServiceException(errorMessage, e);
     } catch (CityCreationException e) {
       String errorMessage = "Error creating city during warehouse update";
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage, e);
       throw new WarehouseServiceException(errorMessage, e);
     }
 
@@ -111,7 +111,7 @@ public class WarehouseService {
       warehouseDAO.update(warehouse);
     } catch (WarehouseDAOException e) {
       String errorMessage = "Error during the warehouse updating process";
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage, e);
       throw new WarehouseServiceException(errorMessage, e);
     }
   }
@@ -150,7 +150,7 @@ public class WarehouseService {
       warehouseOptional = warehouseDAO.getById(warehouseDTO.getId());
     } catch (WarehouseDAOException e) {
       String errorMessage = "Unexpected error retrieving warehouse during deletion process";
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage, e);
       throw new WarehouseServiceException(errorMessage, e);
     }
 
@@ -164,7 +164,7 @@ public class WarehouseService {
       warehouseDAO.delete(warehouseOptional.get());
     } catch (WarehouseDAOException e) {
       String errorMessage = "Unexpected error during warehouse deletion";
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage, e);
       throw new WarehouseServiceException(errorMessage, e);
     }
   }
@@ -176,7 +176,7 @@ public class WarehouseService {
    * @return true if the warehouse name is unique, false if it's not
    * @throws WarehouseServiceException if there is an error during the check
    */
-  private boolean checkWarehouseUniqueName(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
+  private boolean isWarehouseNameUnique(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
     if(warehouseDTO.getId() != null) {
       Optional<Warehouse> oldWarehouse;
@@ -184,7 +184,7 @@ public class WarehouseService {
         oldWarehouse = warehouseDAO.getById(warehouseDTO.getId());
       } catch (WarehouseDAOException e) {
         String errorMessage = "Error during warehouse name uniqueness check";
-        LOGGER.error(errorMessage);
+        LOGGER.error(errorMessage, e);
         throw new WarehouseServiceException(errorMessage, e);
       }
 

@@ -4,6 +4,8 @@ import bg.tuvarna.sit.wms.dao.CountryDAO;
 import bg.tuvarna.sit.wms.entities.Country;
 import bg.tuvarna.sit.wms.exceptions.CountryCreationException;
 import bg.tuvarna.sit.wms.exceptions.CountryDAOException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
@@ -14,6 +16,7 @@ import java.util.Optional;
 public class CountryService {
 
   private final CountryDAO countryDAO;
+  private static final Logger LOGGER = LogManager.getLogger(CountryService.class);
 
   public CountryService(CountryDAO countryDAO) {
     this.countryDAO = countryDAO;
@@ -33,7 +36,9 @@ public class CountryService {
     try {
       countryOptional = countryDAO.getByName(countryName);
     } catch (CountryDAOException e) {
-      throw new CountryCreationException("Error retrieving country during get or create process", e);
+      String errorMessage = "Error retrieving country during get or create process";
+      LOGGER.error(errorMessage, e);
+      throw new CountryCreationException(errorMessage, e);
     }
 
     if(countryOptional.isEmpty()) {
@@ -43,7 +48,9 @@ public class CountryService {
       try {
         countryDAO.save(newCountry);
       } catch (CountryDAOException e) {
-        throw new CountryCreationException("Error saving country during get or create process", e);
+        String errorMessage = "Error saving country during get or create process";
+        LOGGER.error(errorMessage, e);
+        throw new CountryCreationException(errorMessage, e);
       }
       return newCountry;
     }
