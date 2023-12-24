@@ -25,11 +25,11 @@ Button {
 }
 
 #save {
-    -fx-background-color: #329232;
+    -fx-background-color: #49a3e0;
 }
 
 #save:hover {
-    -fx-background-color: #328032;
+    -fx-background-color: #248CD2;
 }
 
 #cancel {

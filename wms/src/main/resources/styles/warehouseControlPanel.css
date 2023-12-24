@@ -1,5 +1,8 @@
 .addButton {
-    -fx-font-size: 16;
+    -fx-background-color: #49a3e0;
+    -fx-min-width: 64;
+    -fx-text-fill: #f0f0f0;
+    -fx-font-size: 14;
 }
 
 .heading {

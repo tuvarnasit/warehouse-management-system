@@ -24,6 +24,6 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
         </columnResizePolicy>
     </TableView>
-    <Button layoutX="693.0" layoutY="416.0" mnemonicParsing="false" onAction="#handleAdd" styleClass="addButton"
+    <Button layoutX="684.0" layoutY="416.0" mnemonicParsing="false" onAction="#handleAdd" styleClass="addButton"
             text="Add"/>
 </AnchorPane>
