@@ -27,6 +27,9 @@
     <PasswordField fx:id="passwordField" promptText="Password" styleClass="input-field"/>
     <Label fx:id="passwordErrorLabel" visible="false" styleClass="error-label"/>
 
+    <PasswordField fx:id="confirmPasswordField" promptText="Confirm password" styleClass="input-field"/>
+    <Label fx:id="confirmPasswordErrorLabel" visible="false" styleClass="error-label"/>
+
     <TextField fx:id="phoneField" promptText="Phone" styleClass="input-field"/>
     <Label fx:id="phoneErrorLabel" visible="false" styleClass="error-label"/>
 
