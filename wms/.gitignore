@@ -42,3 +42,8 @@ bin/
 ### Mac OS ###
 .DS_Store
 .run
+env
+env-test
+credentials.txt
+credentials-test.txt
+encryption.key
