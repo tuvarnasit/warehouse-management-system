@@ -46,7 +46,8 @@ public class UserService {
       throw new RegistrationException("A user with this email already exists.");
     }
 
-    if (userDao.findByPhone(registrationDto.getPhone()).isPresent()) {
+    String normalizedPhone = normalizePhoneNumber(registrationDto.getPhone());
+    if (userDao.findByPhone(normalizedPhone).isPresent()) {
       throw new RegistrationException("A user with this phone number already exists.");
     }
 
@@ -192,6 +193,15 @@ public class UserService {
     admin.setRole(Role.ADMIN);
 
     return admin;
+  }
+
+  private String normalizePhoneNumber(String phone) {
+
+    if (phone.startsWith("+359")) {
+      return "0" + phone.substring(4);
+    }
+
+    return phone;
   }
 
 }
