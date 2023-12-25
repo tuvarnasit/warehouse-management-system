@@ -31,29 +31,13 @@ class RegistrationControllerTest {
   }
 
   @Test
-  void handleRegister_ShouldShowErrorLabelsWhenFieldsAreEmpty(FxRobot robot) {
+  void handleRegister_ShouldShowOnlyFirstNameErrorLabelWhenFieldsAreEmpty(FxRobot robot) {
 
     robot.clickOn("#registerBtn");
 
     assertThat(robot.lookup("#firstNameErrorLabel").queryAs(Label.class))
             .hasText("First name can contain only letters and spaces.");
-    assertThat(robot.lookup("#lastNameErrorLabel").queryAs(Label.class))
-            .hasText("Last name can contain only letters and spaces.");
-    assertThat(robot.lookup("#emailErrorLabel").queryAs(Label.class))
-            .hasText("The provided email is invalid.");
-    assertThat(robot.lookup("#passwordErrorLabel").queryAs(Label.class))
-            .hasText("Password should contain at least 8 symbols. At least one upper case letter and one special symbol.");
-    assertThat(robot.lookup("#phoneErrorLabel").queryAs(Label.class))
-            .hasText("Enter a valid phone number.");
-    assertThat(robot.lookup("#roleErrorLabel").queryAs(Label.class))
-            .hasText("Choosing a role is mandatory.");
-
     assertTrue(robot.lookup("#firstNameErrorLabel").queryAs(Label.class).isVisible());
-    assertTrue(robot.lookup("#lastNameErrorLabel").queryAs(Label.class).isVisible());
-    assertTrue(robot.lookup("#emailErrorLabel").queryAs(Label.class).isVisible());
-    assertTrue(robot.lookup("#passwordErrorLabel").queryAs(Label.class).isVisible());
-    assertTrue(robot.lookup("#phoneErrorLabel").queryAs(Label.class).isVisible());
-    assertTrue(robot.lookup("#roleErrorLabel").queryAs(Label.class).isVisible());
   }
 
   @Test
@@ -122,6 +106,30 @@ class RegistrationControllerTest {
   }
 
   @Test
+  void handleRegister_ShouldShowConfirmPasswordErrorLabelWhenPasswordsAreNotEqual(FxRobot robot) {
+
+    robot.clickOn("#firstNameField");
+    robot.write("Peter");
+    robot.clickOn("#lastNameField");
+    robot.write("Parker");
+    robot.clickOn("#emailField");
+    robot.write("valid@email.com");
+    robot.clickOn("#passwordField");
+    robot.write("12345678*A");
+    robot.clickOn("#confirmPasswordField");
+    robot.write("12345678");
+    robot.clickOn("#registerBtn");
+
+    assertFalse(robot.lookup("#firstNameErrorLabel").queryAs(Label.class).isVisible());
+    assertFalse(robot.lookup("#lastNameErrorLabel").queryAs(Label.class).isVisible());
+    assertFalse(robot.lookup("#emailErrorLabel").queryAs(Label.class).isVisible());
+    assertFalse(robot.lookup("#passwordErrorLabel").queryAs(Label.class).isVisible());
+    assertTrue(robot.lookup("#confirmPasswordErrorLabel").queryAs(Label.class).isVisible());
+    assertThat(robot.lookup("#confirmPasswordErrorLabel").queryAs(Label.class))
+            .hasText("Passwords must match.");
+  }
+
+  @Test
   void handleRegister_ShouldShowPhoneErrorLabelWhenPhoneStartsWithPrefixAndHasInvalidNumberOfDigits(FxRobot robot) {
 
     robot.clickOn("#firstNameField");
@@ -132,6 +140,8 @@ class RegistrationControllerTest {
     robot.write("valid@email.com");
     robot.clickOn("#passwordField");
     robot.write("123456*A");
+    robot.clickOn("#confirmPasswordField");
+    robot.write("123456*A");
     robot.clickOn("#phoneField");
     robot.write("+3590878888888");
     robot.clickOn("#registerBtn");
@@ -140,6 +150,7 @@ class RegistrationControllerTest {
     assertFalse(robot.lookup("#lastNameErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#emailErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#passwordErrorLabel").queryAs(Label.class).isVisible());
+    assertFalse(robot.lookup("#confirmPasswordErrorLabel").queryAs(Label.class).isVisible());
     assertTrue(robot.lookup("#phoneErrorLabel").queryAs(Label.class).isVisible());
     assertThat(robot.lookup("#phoneErrorLabel").queryAs(Label.class)).hasText("Enter a valid phone number.");
   }
@@ -155,6 +166,8 @@ class RegistrationControllerTest {
     robot.write("valid@email.com");
     robot.clickOn("#passwordField");
     robot.write("123456*A");
+    robot.clickOn("#confirmPasswordField");
+    robot.write("123456*A");
     robot.clickOn("#phoneField");
     robot.write("+040878888888");
     robot.clickOn("#registerBtn");
@@ -163,6 +176,7 @@ class RegistrationControllerTest {
     assertFalse(robot.lookup("#lastNameErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#emailErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#passwordErrorLabel").queryAs(Label.class).isVisible());
+    assertFalse(robot.lookup("#confirmPasswordErrorLabel").queryAs(Label.class).isVisible());
     assertTrue(robot.lookup("#phoneErrorLabel").queryAs(Label.class).isVisible());
     assertThat(robot.lookup("#phoneErrorLabel").queryAs(Label.class)).hasText("Enter a valid phone number.");
   }
@@ -178,6 +192,8 @@ class RegistrationControllerTest {
     robot.write("valid@email.com");
     robot.clickOn("#passwordField");
     robot.write("123456*A");
+    robot.clickOn("#confirmPasswordField");
+    robot.write("123456*A");
     robot.clickOn("#phoneField");
     robot.write("08788888881");
     robot.clickOn("#registerBtn");
@@ -186,6 +202,7 @@ class RegistrationControllerTest {
     assertFalse(robot.lookup("#lastNameErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#emailErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#passwordErrorLabel").queryAs(Label.class).isVisible());
+    assertFalse(robot.lookup("#confirmPasswordErrorLabel").queryAs(Label.class).isVisible());
     assertTrue(robot.lookup("#phoneErrorLabel").queryAs(Label.class).isVisible());
     assertThat(robot.lookup("#phoneErrorLabel").queryAs(Label.class)).hasText("Enter a valid phone number.");
   }
@@ -201,6 +218,8 @@ class RegistrationControllerTest {
     robot.write("valid@email.com");
     robot.clickOn("#passwordField");
     robot.write("123456*A");
+    robot.clickOn("#confirmPasswordField");
+    robot.write("123456*A");
     robot.clickOn("#phoneField");
     robot.write("+359878888888");
     robot.clickOn("#registerBtn");
@@ -209,6 +228,7 @@ class RegistrationControllerTest {
     assertFalse(robot.lookup("#lastNameErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#emailErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#passwordErrorLabel").queryAs(Label.class).isVisible());
+    assertFalse(robot.lookup("#confirmPasswordErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#phoneErrorLabel").queryAs(Label.class).isVisible());
   }
 
@@ -223,6 +243,8 @@ class RegistrationControllerTest {
     robot.write("valid@email.com");
     robot.clickOn("#passwordField");
     robot.write("123456*A");
+    robot.clickOn("#confirmPasswordField");
+    robot.write("123456*A");
     robot.clickOn("#phoneField");
     robot.write("0878888888");
     robot.clickOn("#registerBtn");
@@ -231,6 +253,7 @@ class RegistrationControllerTest {
     assertFalse(robot.lookup("#lastNameErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#emailErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#passwordErrorLabel").queryAs(Label.class).isVisible());
+    assertFalse(robot.lookup("#confirmPasswordErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#phoneErrorLabel").queryAs(Label.class).isVisible());
   }
 
@@ -245,6 +268,8 @@ class RegistrationControllerTest {
     robot.write("valid@email.com");
     robot.clickOn("#passwordField");
     robot.write("123456*A");
+    robot.clickOn("#confirmPasswordField");
+    robot.write("123456*A");
     robot.clickOn("#phoneField");
     robot.write("0878888888");
     robot.clickOn("#registerBtn");
@@ -253,6 +278,7 @@ class RegistrationControllerTest {
     assertFalse(robot.lookup("#lastNameErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#emailErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#passwordErrorLabel").queryAs(Label.class).isVisible());
+    assertFalse(robot.lookup("#confirmPasswordErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#phoneErrorLabel").queryAs(Label.class).isVisible());
     assertTrue(robot.lookup("#roleErrorLabel").queryAs(Label.class).isVisible());
     assertThat(robot.lookup("#roleErrorLabel").queryAs(Label.class)).hasText("Choosing a role is mandatory.");
@@ -269,6 +295,8 @@ class RegistrationControllerTest {
     robot.write("valid@email.com");
     robot.clickOn("#passwordField");
     robot.write("123456*A");
+    robot.clickOn("#confirmPasswordField");
+    robot.write("123456*A");
     robot.clickOn("#phoneField");
     robot.write("0878888888");
     robot.clickOn("#roleBox");
@@ -279,6 +307,7 @@ class RegistrationControllerTest {
     assertFalse(robot.lookup("#lastNameErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#emailErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#passwordErrorLabel").queryAs(Label.class).isVisible());
+    assertFalse(robot.lookup("#confirmPasswordErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#phoneErrorLabel").queryAs(Label.class).isVisible());
     assertFalse(robot.lookup("#roleErrorLabel").queryAs(Label.class).isVisible());
 

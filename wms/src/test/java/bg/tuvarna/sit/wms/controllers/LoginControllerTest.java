@@ -53,6 +53,16 @@ class LoginControllerTest {
     assertThat(robot.lookup("#authenticationErrorLabel").queryAs(Label.class)).hasText("Invalid email or password");
   }
 
+  @Test
+  void handleSso_ShouldLoginUserCorrectlyIfPresentInTheDatabase(FxRobot robot) {
+
+    setupTestData();
+    performLogin(robot, "test@wms.com", "securepassword1");
+    assertThat(robot.lookup("#welcomeUserText").queryAs(Text.class)).hasText("Hello, First");
+    performLogout(robot);
+    performSsoLogin(robot);
+    assertThat(robot.lookup("#welcomeUserText").queryAs(Text.class)).hasText("Hello, First");
+  }
 
   private void setupTestData() {
 
@@ -89,4 +99,14 @@ class LoginControllerTest {
     robot.write(password);
     robot.clickOn("#loginButton");
   }
+
+  private void performLogout(FxRobot robot) {
+
+    robot.clickOn("#logoutButton");
+  }
+  private void performSsoLogin(FxRobot robot) {
+
+    robot.clickOn("#ssoButton");
+  }
+
 }
