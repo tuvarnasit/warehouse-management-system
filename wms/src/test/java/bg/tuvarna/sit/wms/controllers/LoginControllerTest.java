@@ -3,6 +3,7 @@ package bg.tuvarna.sit.wms.controllers;
 import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.enums.Role;
 import bg.tuvarna.sit.wms.util.JpaUtil;
+import bg.tuvarna.sit.wms.util.ViewLoaderUtil;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,6 +12,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
@@ -21,13 +23,15 @@ import org.testfx.framework.junit5.Start;
 @ExtendWith(ApplicationExtension.class)
 class LoginControllerTest {
 
-  @Start
-  public void start(Stage stage) throws Exception {
+  @AfterEach
+  void tearDown() {
+    clearDatabase();
+  }
 
-    Parent root = FXMLLoader.load(getClass().getResource("/views/login.fxml"));
-    stage.setTitle("Login");
-    stage.setScene(new Scene(root));
-    stage.show();
+  @Start
+  public void start(Stage stage) {
+
+    ViewLoaderUtil.loadView("/views/login.fxml", stage);
   }
 
   @Test
@@ -108,5 +112,27 @@ class LoginControllerTest {
 
     robot.clickOn("#ssoButton");
   }
+
+  private void clearDatabase() {
+    EntityManager entityManager = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityTransaction transaction = entityManager.getTransaction();
+
+    try {
+      transaction.begin();
+
+      // Assuming 'User' is your entity. Adapt the query to your needs.
+      entityManager.createQuery("DELETE FROM User").executeUpdate();
+
+      transaction.commit();
+    } catch (Exception e) {
+      if (transaction.isActive()) {
+        transaction.rollback();
+      }
+      throw new RuntimeException("Failed to clear database", e);
+    } finally {
+      entityManager.close();
+    }
+  }
+
 
 }
