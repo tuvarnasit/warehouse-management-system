@@ -1,16 +1,14 @@
 package bg.tuvarna.sit.wms.controllers;
 
-import bg.tuvarna.sit.wms.dao.UserDao;
 import bg.tuvarna.sit.wms.dto.UserRegistrationDto;
 import bg.tuvarna.sit.wms.exceptions.RegistrationException;
-import bg.tuvarna.sit.wms.service.PasswordHashingService;
 import bg.tuvarna.sit.wms.service.UserService;
-import bg.tuvarna.sit.wms.util.JpaUtil;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.bindManagedToVisible;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.showErrorLabel;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.validateComboBox;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.validateField;
 import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.loadView;
+import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.showAlert;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -28,10 +26,6 @@ import javafx.scene.control.TextField;
  */
 public class RegistrationController {
 
-  private final UserService userService = new UserService(
-          new UserDao(JpaUtil.getEntityManagerFactory()),
-          new PasswordHashingService());
-
   @FXML
   private TextField firstNameField;
   @FXML
@@ -40,6 +34,8 @@ public class RegistrationController {
   private TextField emailField;
   @FXML
   private PasswordField passwordField;
+  @FXML
+  private PasswordField confirmPasswordField;
   @FXML
   private TextField phoneField;
   @FXML
@@ -53,9 +49,17 @@ public class RegistrationController {
   @FXML
   private Label passwordErrorLabel;
   @FXML
+  private Label confirmPasswordErrorLabel;
+  @FXML
   private Label phoneErrorLabel;
   @FXML
   private Label roleErrorLabel;
+
+  private final UserService userService;
+
+  public RegistrationController(UserService userService) {
+    this.userService = userService;
+  }
 
   /**
    * Initializes the controller. This method is called after the FXML fields are populated.
@@ -63,12 +67,13 @@ public class RegistrationController {
    * reserved in the layout when they are invisible.
    */
   @FXML
-  protected void initialize() {
+  void initialize() {
 
     bindManagedToVisible(firstNameErrorLabel);
     bindManagedToVisible(lastNameErrorLabel);
     bindManagedToVisible(emailErrorLabel);
     bindManagedToVisible(passwordErrorLabel);
+    bindManagedToVisible(confirmPasswordErrorLabel);
     bindManagedToVisible(phoneErrorLabel);
     bindManagedToVisible(roleErrorLabel);
   }
@@ -79,7 +84,7 @@ public class RegistrationController {
    * using the user service.
    */
   @FXML
-  protected void handleRegistration() {
+  void handleRegistration(ActionEvent event) {
 
     if (!validateInput()) {
       return;
@@ -88,10 +93,21 @@ public class RegistrationController {
     UserRegistrationDto registrationDto = getUserRegistrationDto();
     try {
       userService.registerUser(registrationDto);
-      showConfirmationDialog("Registration Successful", "User has been registered successfully!");
+      showAlert(Alert.AlertType.INFORMATION,"Registration Successful", "User has been registered successfully!");
+      loadView("/views/home.fxml", event);
     } catch (RegistrationException e) {
-      showErrorDialog("Registration Failed", e.getMessage());
+      showAlert(Alert.AlertType.ERROR,"Registration Failed", e.getMessage());
     }
+  }
+
+  /**
+   * Handles back functionality to the Home page.
+   *
+   * @param event The event that triggered this action.
+   */
+  @FXML
+  void handleBack(ActionEvent event) {
+    loadView("/views/home.fxml", event);
   }
 
   /**
@@ -114,60 +130,35 @@ public class RegistrationController {
 
   private boolean validateInput() {
 
-    boolean isFirstNameValid = validateField(firstNameField, "^[A-Za-z\\s]+$");
-    showErrorLabel(firstNameErrorLabel, "First name can contain only letters and spaces.", !isFirstNameValid);
-
-    boolean isLastNameValid = validateField(lastNameField, "^[A-Za-z\\s]+$");
-    showErrorLabel(lastNameErrorLabel, "Last name can contain only letters and spaces.", !isLastNameValid);
-
-    boolean isEmailValid = validateField(emailField, "\\S+@\\S+\\.\\S+");
-    showErrorLabel(emailErrorLabel, "The provided email is invalid.", !isEmailValid);
-
-    boolean isPasswordValid = validateField(passwordField, "^(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$");
-    showErrorLabel(passwordErrorLabel, "Password should contain at least 8 symbols. At least one upper case letter and one special symbol.", !isPasswordValid);
-
-    boolean isPhoneValid = validateField(phoneField, "^(\\+359|0)\\d{9}$");
-    showErrorLabel(phoneErrorLabel, "Enter a valid phone number.", !isPhoneValid);
-
-    boolean isRoleValid = validateComboBox(roleBox);
-    showErrorLabel(roleErrorLabel, "Choosing a role is mandatory.", !isRoleValid);
-
-    return isFirstNameValid && isLastNameValid && isEmailValid && isPasswordValid && isPhoneValid && isRoleValid;
+    return isFieldValid(firstNameField, "^[A-Za-z\\s]+$", firstNameErrorLabel, "First name can contain only letters and spaces.") &&
+            isFieldValid(lastNameField, "^[A-Za-z\\s]+$", lastNameErrorLabel, "Last name can contain only letters and spaces.") &&
+            isFieldValid(emailField, "\\S+@\\S+\\.\\S+", emailErrorLabel, "The provided email is invalid.") &&
+            isFieldValid(passwordField, "^(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$", passwordErrorLabel, "Password should contain at least 8 symbols. At least one upper case letter and one special symbol.") &&
+            arePasswordsEqual(passwordField, confirmPasswordField, confirmPasswordErrorLabel, "Passwords must match.") &&
+            isFieldValid(phoneField, "^(\\+359|0)\\d{9}$", phoneErrorLabel, "Enter a valid phone number.") &&
+            isComboBoxValid(roleBox, roleErrorLabel, "Choosing a role is mandatory.");
   }
 
-  /**
-   * Shows a confirmation dialog with the specified title and content.
-   *
-   * @param title   The title of the dialog.
-   * @param content The content message to be displayed in the dialog.
-   */
-  private void showConfirmationDialog(String title, String content) {
+  private boolean isFieldValid(TextField field, String regex, Label errorLabel, String errorMessage) {
 
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(content);
-    alert.showAndWait();
+    boolean isValid = validateField(field, regex);
+    showErrorLabel(errorLabel, errorMessage, !isValid);
+    return isValid;
   }
 
-  /**
-   * Shows an error dialog with the specified title and content.
-   *
-   * @param title   The title of the dialog.
-   * @param content The content message to be displayed in the dialog.
-   */
-  private void showErrorDialog(String title, String content) {
+  private boolean arePasswordsEqual(PasswordField passwordField, PasswordField confirmPasswordField, Label errorLabel, String errorMessage) {
 
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(content);
-    alert.showAndWait();
+    boolean areEqual = passwordField.getText().trim().equals(confirmPasswordField.getText().trim());
+    showErrorLabel(errorLabel, errorMessage, !areEqual);
+    confirmPasswordField.setStyle(areEqual ? "" : "-fx-border-color: red;");
+    return areEqual;
   }
 
-  @FXML
-  protected void handleBack(ActionEvent event) {
+  private boolean isComboBoxValid(ComboBox<?> comboBox, Label errorLabel, String errorMessage) {
 
-    loadView("/views/home.fxml", event);
+    boolean isValid = validateComboBox(comboBox);
+    showErrorLabel(errorLabel, errorMessage, !isValid);
+    return isValid;
   }
+
 }

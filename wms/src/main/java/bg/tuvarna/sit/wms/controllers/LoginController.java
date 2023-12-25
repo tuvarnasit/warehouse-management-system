@@ -1,18 +1,21 @@
 package bg.tuvarna.sit.wms.controllers;
 
-import bg.tuvarna.sit.wms.dao.UserDao;
-import bg.tuvarna.sit.wms.service.PasswordHashingService;
+import bg.tuvarna.sit.wms.exceptions.CredentialSavingException;
 import bg.tuvarna.sit.wms.service.UserService;
-import bg.tuvarna.sit.wms.util.JpaUtil;
+import bg.tuvarna.sit.wms.service.CredentialManagerService;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.bindManagedToVisible;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.showErrorLabel;
 import static bg.tuvarna.sit.wms.util.ValidationUtils.validateField;
 import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.loadView;
+import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.showAlert;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Controller class for the login screen.
@@ -30,11 +33,19 @@ public class LoginController {
   @FXML
   private Label authenticationErrorLabel;
 
-  private final UserService userService =
-          new UserService(new UserDao(JpaUtil.getEntityManagerFactory()),new PasswordHashingService());
+  private static final Logger LOGGER = LogManager.getLogger(LoginController.class);
+
+  private final UserService userService;
+
+  private final CredentialManagerService credentialManagerService;
+
+  public LoginController(UserService userService, CredentialManagerService credentialManagerService) {
+    this.userService = userService;
+    this.credentialManagerService = credentialManagerService;
+  }
 
   @FXML
-  protected void initialize() {
+  void initialize() {
 
     bindManagedToVisible(emailErrorLabel);
   }
@@ -46,7 +57,7 @@ public class LoginController {
    * @param event The event that triggered this action.
    */
   @FXML
-  protected void handleLogin(ActionEvent event) {
+  void handleLogin(ActionEvent event) {
 
     String email = emailField.getText();
     String password = passwordField.getText();
@@ -58,15 +69,27 @@ public class LoginController {
     boolean loginSuccessful = userService.login(email, password);
 
     if (loginSuccessful) {
-      loadView("/views/home.fxml", event);
+      try {
+        credentialManagerService.saveCredentials(email, password);
+        loadView("/views/home.fxml", event);
+      } catch (CredentialSavingException e) {
+        LOGGER.error("Error saving credentials for auto-login.", e);
+        showAlert(Alert.AlertType.WARNING, "Warning",
+                "Could not save credentials for auto-login. You may need to login manually next time.");
+      }
     } else {
       authenticationErrorLabel.setText("Invalid email or password");
       authenticationErrorLabel.setVisible(true);
     }
   }
 
+  /**
+   * Handles back functionality to the Home page.
+   *
+   * @param event The event that triggered this action.
+   */
   @FXML
-  protected void handleBack(ActionEvent event) {
+  void handleBack(ActionEvent event) {
 
     loadView("/views/home.fxml", event);
   }
