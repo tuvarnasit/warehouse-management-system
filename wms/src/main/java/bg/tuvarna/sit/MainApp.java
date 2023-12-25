@@ -33,8 +33,8 @@ public class MainApp extends Application {
   @Override
   public void start(Stage stage) throws IOException {
 
-    ViewLoaderUtil.loadView("/views/home.fxml", stage);
     stage.setTitle("Home");
+    ViewLoaderUtil.loadView("/views/home.fxml", stage);
   }
 
   /**
