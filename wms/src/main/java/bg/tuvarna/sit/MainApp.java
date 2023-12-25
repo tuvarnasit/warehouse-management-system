@@ -1,18 +1,18 @@
 package bg.tuvarna.sit;
 
-import bg.tuvarna.sit.wms.dao.UserDao;
+import bg.tuvarna.sit.wms.context.ApplicationContext;
 import bg.tuvarna.sit.wms.exceptions.RegistrationException;
-import bg.tuvarna.sit.wms.service.PasswordHashingService;
-import bg.tuvarna.sit.wms.service.UserService;
-import bg.tuvarna.sit.wms.util.JpaUtil;
+import bg.tuvarna.sit.wms.session.KeyUtil;
+import bg.tuvarna.sit.wms.util.ViewLoaderUtil;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javax.crypto.SecretKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,10 +32,9 @@ public class MainApp extends Application {
    */
   @Override
   public void start(Stage stage) throws IOException {
-    Parent root = FXMLLoader.load(getClass().getResource("/views/home.fxml"));
+
+    ViewLoaderUtil.loadView("/views/home.fxml", stage);
     stage.setTitle("Home");
-    stage.setScene(new Scene(root));
-    stage.show();
   }
 
   /**
@@ -66,10 +65,16 @@ public class MainApp extends Application {
    * Specifically, it initializes administrators in the system.
    */
   private void initializeApplication() {
+
     try {
-      new UserService(new UserDao(JpaUtil.getEntityManagerFactory()), new PasswordHashingService())
-              .initializeAdministrators();
-    } catch (RegistrationException | InvalidKeySpecException | NoSuchAlgorithmException e) {
+      ApplicationContext.getUSER_SERVICE().initializeAdministrators();
+      String keyFilename = "encryption.key";
+      Path keyPath = Paths.get(keyFilename);
+      if (!Files.exists(keyPath)) {
+        SecretKey key = ApplicationContext.getENCRYPTION_SERVICE().generateKey();
+        KeyUtil.saveSecretKey(key, keyFilename);
+      }
+    } catch (RegistrationException | InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
       LOGGER.error("Error during application initialization: ", e);
     }
   }
