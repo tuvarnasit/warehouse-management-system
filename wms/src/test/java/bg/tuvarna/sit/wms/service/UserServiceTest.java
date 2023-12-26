@@ -90,6 +90,7 @@ class UserServiceTest {
 
     UserRegistrationDto registrationDto = new UserRegistrationDto();
     registrationDto.setRole("INVALID_ROLE");
+    registrationDto.setPhone("0878888888");
 
     assertThrows(RegistrationException.class, () -> userService.registerUser(registrationDto));
   }
