@@ -17,6 +17,7 @@
 
 .table-cell {
     -fx-alignment: center;
+    -fx-pref-height: 32;
  }
 
 .action-button {

@@ -6,6 +6,7 @@ import bg.tuvarna.sit.wms.dao.CountryDAO;
 import bg.tuvarna.sit.wms.dao.WarehouseDAO;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.entities.Owner;
+import bg.tuvarna.sit.wms.enums.WarehouseStatus;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
 import bg.tuvarna.sit.wms.service.CityService;
 import bg.tuvarna.sit.wms.service.CountryService;
@@ -18,6 +19,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
@@ -52,7 +54,7 @@ public class WarehouseControlPanelController {
   @FXML
   private TableColumn<WarehouseDTO, String> statusColumn;
   @FXML
-  public TableColumn<WarehouseDTO,String> actionColumn;
+  public TableColumn<WarehouseDTO, String> actionColumn;
 
   private final WarehouseDAO warehouseDAO = new WarehouseDAO();
   private final CountryService countryService = new CountryService(new CountryDAO());
@@ -112,7 +114,7 @@ public class WarehouseControlPanelController {
         deleteButton.getStyleClass().addAll("action-button", "delete-button");
         editButton.setOnMouseClicked(event -> {
 
-          WarehouseDTO warehouseDTO = getTableView().getItems().get(getIndex());
+          WarehouseDTO warehouseDTO = getTableRow().getItem();
           DialogController controller = new WarehouseUpdateDialogController(owner, warehouseDTO);
           try {
             DialogUtil.showDialog("/views/warehouseCreation.fxml", "Update warehouse", controller);
@@ -124,7 +126,7 @@ public class WarehouseControlPanelController {
 
         deleteButton.setOnMouseClicked(event -> {
 
-          WarehouseDTO warehouseDTO = getTableView().getItems().get(getIndex());
+          WarehouseDTO warehouseDTO = getTableRow().getItem();
 
           Alert confirmDelete = new Alert(Alert.AlertType.NONE, "", ButtonType.YES, ButtonType.NO);
           confirmDelete.setTitle("Confirm warehouse deletion?");
@@ -143,14 +145,17 @@ public class WarehouseControlPanelController {
       }
 
       @Override
-      protected void updateItem(String item, boolean empty) {
+      protected void updateItem(String item, boolean isEmpty) {
 
-        super.updateItem(item, empty);
+        super.updateItem(item, isEmpty);
+        HBox hBox = new HBox(8);
 
-        if (empty) {
+        if (isEmpty || getTableRow().getItem().getStatus() != WarehouseStatus.AVAILABLE) {
           setGraphic(null);
         } else {
-          setGraphic(new HBox(8, editButton, deleteButton));
+          hBox.getChildren().setAll(editButton, deleteButton);
+          hBox.setAlignment(Pos.CENTER);
+          setGraphic(hBox);
         }
       }
     };

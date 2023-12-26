@@ -66,6 +66,18 @@ public class WarehouseServiceTest {
   }
 
   @Test
+  void saveWarehouse_duplicateWarehouseName_shouldThrowWarehouseServiceException() {
+
+    WarehouseDTO warehouseDTO = createWarehouseDTO();
+    warehouseDTO.setName("duplicate name");
+    when(warehouseDAO.getWarehouseByNameAndOwner(anyString(), any(Owner.class))).thenReturn(Optional.of(createWarehouse()));
+
+    assertThrows(WarehouseServiceException.class, () -> warehouseService.saveWarehouse(warehouseDTO));
+
+    verify(warehouseDAO, times(1)).getWarehouseByNameAndOwner(anyString(), any(Owner.class));
+  }
+
+  @Test
   void saveWarehouse_countryServiceThrowsException_shouldThrowWarehouseServiceException() throws CountryCreationException {
 
     WarehouseDTO warehouseDTO = createWarehouseDTO();
@@ -96,6 +108,36 @@ public class WarehouseServiceTest {
     verify(countryService, times(1)).getOrCreateCountry(anyString());
     verify(cityService, times(1)).getOrCreateCity(anyString(), any(Country.class));
     verify(warehouseDAO, times(1)).update(any(Warehouse.class));
+  }
+
+  @Test
+  void updateWarehouse_duplicateWarehouseName_shouldThrowWarehouseServiceException() {
+
+    WarehouseDTO warehouseDTO = createWarehouseDTO();
+    warehouseDTO.setName("duplicate name");
+    when(warehouseDAO.getWarehouseByNameAndOwner(anyString(), any(Owner.class))).thenReturn(Optional.of(createWarehouse()));
+
+    assertThrows(WarehouseServiceException.class, () -> warehouseService.updateWarehouse(warehouseDTO));
+
+    verify(warehouseDAO, times(1)).getWarehouseByNameAndOwner(anyString(), any(Owner.class));
+  }
+
+  @Test
+  void updateWarehouse_rentedStatusWarehouseDTO_shouldThrowWarehouseServiceException() {
+
+    WarehouseDTO warehouseDTO = createWarehouseDTO();
+    warehouseDTO.setStatus(WarehouseStatus.RENTED);
+
+    assertThrows(WarehouseServiceException.class, () -> warehouseService.updateWarehouse(warehouseDTO));
+  }
+
+  @Test
+  void updateWarehouse_pendingStatusWarehouseDTO_shouldThrowWarehouseServiceException() {
+
+    WarehouseDTO warehouseDTO = createWarehouseDTO();
+    warehouseDTO.setStatus(WarehouseStatus.PENDING_RENTAL);
+
+    assertThrows(WarehouseServiceException.class, () -> warehouseService.updateWarehouse(warehouseDTO));
   }
 
   @Test
@@ -160,6 +202,26 @@ public class WarehouseServiceTest {
   }
 
   @Test
+  void deleteWarehouse_rentedStatusWarehouseDTO_shouldThrowWarehouseServiceException() throws WarehouseDAOException {
+
+    WarehouseDTO warehouseDTO = createWarehouseDTO();
+    warehouseDTO.setStatus(WarehouseStatus.RENTED);
+    when(warehouseDAO.getById(warehouseDTO.getId())).thenReturn(Optional.of(createWarehouseWithRentedStatus()));
+
+    assertThrows(WarehouseServiceException.class, () -> warehouseService.deleteWarehouse(warehouseDTO));
+  }
+
+  @Test
+  void deleteWarehouse_pendingRentalStatusWarehouseDTO_shouldThrowWarehouseServiceException() throws WarehouseDAOException {
+
+    WarehouseDTO warehouseDTO = createWarehouseDTO();
+    warehouseDTO.setStatus(WarehouseStatus.PENDING_RENTAL);
+    when(warehouseDAO.getById(warehouseDTO.getId())).thenReturn(Optional.of(createWarehouseWithPendingStatus()));
+
+    assertThrows(WarehouseServiceException.class, () -> warehouseService.deleteWarehouse(warehouseDTO));
+  }
+
+  @Test
   void deleteWarehouse_nullWarehouseDTOId_shouldThrowWarehouseServiceException() throws WarehouseDAOException {
 
     WarehouseDTO warehouseDTO = createWarehouseDTO();
@@ -205,6 +267,7 @@ public class WarehouseServiceTest {
     warehouse.setName("Test warehouse");
     warehouse.setClimateCondition(ClimateCondition.AMBIENT);
     warehouse.setSize(123.0);
+    warehouse.setStatus(WarehouseStatus.AVAILABLE);
     warehouse.setStorageType(new StorageType() {
       {
         setTypeName("Pallet Racking");
@@ -227,6 +290,18 @@ public class WarehouseServiceTest {
       }
     });
 
+    return warehouse;
+  }
+
+  private Warehouse createWarehouseWithRentedStatus() {
+    Warehouse warehouse = createWarehouse();
+    warehouse.setStatus(WarehouseStatus.RENTED);
+    return warehouse;
+  }
+
+  private Warehouse createWarehouseWithPendingStatus() {
+    Warehouse warehouse = createWarehouse();
+    warehouse.setStatus(WarehouseStatus.PENDING_RENTAL);
     return warehouse;
   }
 }

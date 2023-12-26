@@ -26,7 +26,7 @@ import java.util.Optional;
  */
 public class WarehouseService {
 
-  private final WarehouseDAO warehouseDAO ;
+  private final WarehouseDAO warehouseDAO;
   private final CountryService countryService;
   private final CityService cityService;
   private static final Logger LOGGER = LogManager.getLogger(WarehouseService.class);
@@ -46,8 +46,10 @@ public class WarehouseService {
    */
   public void saveWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
-    if(!isWarehouseNameUnique(warehouseDTO)) {
-      throw new WarehouseServiceException("Warehouse with the same name already exists");
+    if (!isWarehouseNameUnique(warehouseDTO)) {
+      String errorMessage = "Warehouse with the same name already exists";
+      LOGGER.error(errorMessage);
+      throw new WarehouseServiceException(errorMessage);
     }
 
     Warehouse warehouse = mapDTOToEntity(warehouseDTO);
@@ -86,9 +88,17 @@ public class WarehouseService {
    */
   public void updateWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
-      if(!isWarehouseNameUnique(warehouseDTO)) {
-        throw new WarehouseServiceException("Warehouse with the same name already exists");
-      }
+    if (!isWarehouseNameUnique(warehouseDTO)) {
+      String errorMessage = "Warehouse with the same name already exists";
+      LOGGER.error(errorMessage);
+      throw new WarehouseServiceException(errorMessage);
+    }
+
+    if (!warehouseDTO.getStatus().equals(WarehouseStatus.AVAILABLE)) {
+      String errorMessage = "Cannot update warehouse. Only warehouses with 'available' status can be updated";
+      LOGGER.error(errorMessage);
+      throw new WarehouseServiceException(errorMessage);
+    }
 
     Warehouse warehouse = mapDTOToEntity(warehouseDTO);
 
@@ -154,14 +164,21 @@ public class WarehouseService {
       throw new WarehouseServiceException(errorMessage, e);
     }
 
-    if(warehouseOptional.isEmpty()) {
+    if (warehouseOptional.isEmpty()) {
       String errorMessage = "Error: warehouse scheduled for deletion not found";
       LOGGER.error(errorMessage);
       throw new WarehouseServiceException(errorMessage);
     }
 
+    Warehouse warehouse = warehouseOptional.get();
+    if (!warehouse.getStatus().equals(WarehouseStatus.AVAILABLE)) {
+      String errorMessage = "Cannot delete warehouse. Only warehouses with 'available' status can be deleted";
+      LOGGER.error(errorMessage);
+      throw new WarehouseServiceException(errorMessage);
+    }
+
     try {
-      warehouseDAO.delete(warehouseOptional.get());
+      warehouseDAO.delete(warehouse);
     } catch (WarehouseDAOException e) {
       String errorMessage = "Unexpected error during warehouse deletion";
       LOGGER.error(errorMessage, e);
@@ -178,7 +195,7 @@ public class WarehouseService {
    */
   private boolean isWarehouseNameUnique(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
-    if(warehouseDTO.getId() != null) {
+    if (warehouseDTO.getId() != null) {
       Optional<Warehouse> oldWarehouse;
       try {
         oldWarehouse = warehouseDAO.getById(warehouseDTO.getId());
@@ -188,7 +205,7 @@ public class WarehouseService {
         throw new WarehouseServiceException(errorMessage, e);
       }
 
-      if(oldWarehouse.isPresent() && warehouseDTO.getName().equals(oldWarehouse.get().getName())) {
+      if (oldWarehouse.isPresent() && warehouseDTO.getName().equals(oldWarehouse.get().getName())) {
         return true;
       }
     }
