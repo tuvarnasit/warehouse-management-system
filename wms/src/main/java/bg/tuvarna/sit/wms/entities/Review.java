@@ -1,7 +1,11 @@
-package bg.tuvarna.sit.wms.entities.base;
+package bg.tuvarna.sit.wms.entities;
 
+import bg.tuvarna.sit.wms.entities.base.BaseEntity;
 import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,10 +21,11 @@ import lombok.Setter;
  * @author Yavor Chamov
  * @since 1.0.0
  */
-@MappedSuperclass
+@Entity
+@Table(name = "reviews")
 @Getter
 @Setter
-public abstract class BaseReview extends BaseEntity {
+public class Review extends BaseEntity {
 
   @Column(name = "assessment", nullable = false)
   private Integer assessment;
@@ -28,6 +33,15 @@ public abstract class BaseReview extends BaseEntity {
   @Column(name = "description", length = 500)
   private String description;
 
+  @ManyToOne
+  @JoinColumn(name = "sender_id", nullable = false, referencedColumnName = "id")
+  private User sender;
+
+  @ManyToOne
+  @JoinColumn(name = "receiver_id", nullable = false, referencedColumnName = "id")
+  private User receiver;
+
+  // TODO: Extract validation logic to validator layer
   public void setAssessment(Integer assessment) {
     if (assessment < 1 || assessment > 5) {
       throw new IllegalArgumentException("Assessment must be between 1 and 5.");
