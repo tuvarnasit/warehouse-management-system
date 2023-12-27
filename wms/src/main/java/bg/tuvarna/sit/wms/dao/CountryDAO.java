@@ -2,9 +2,10 @@ package bg.tuvarna.sit.wms.dao;
 
 import bg.tuvarna.sit.wms.entities.Country;
 import bg.tuvarna.sit.wms.exceptions.CountryDAOException;
-import bg.tuvarna.sit.wms.util.JpaUtil;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,12 @@ import java.util.Optional;
  */
 public class CountryDAO {
 
+  private final EntityManagerFactory entityManagerFactory;
+
+  public CountryDAO(EntityManagerFactory entityManagerFactory) {
+    this.entityManagerFactory = entityManagerFactory;
+  }
+
   /**
    * Persists a new country entity to the database within a transaction.
    * If an error occurs during the transaction it is rolled back.
@@ -24,13 +31,15 @@ public class CountryDAO {
    */
   public void save(Country country) throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       em.persist(country);
-      em.getTransaction().commit();
+      transaction.commit();
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em,"Error saving country entity", e);
+      throw handleExceptionAndRollback(transaction,"Error saving country entity", e);
     } finally {
       em.close();
     }
@@ -45,13 +54,15 @@ public class CountryDAO {
    */
   public void update(Country country) throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       em.merge(country);
-      em.getTransaction().commit();
+      transaction.commit();
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em,"Error updating country entity", e);
+      throw handleExceptionAndRollback(transaction,"Error updating country entity", e);
     } finally {
       em.close();
     }
@@ -66,17 +77,19 @@ public class CountryDAO {
    */
   public void delete(Country country) throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       if (em.contains(country)) {
         em.remove(country);
       } else {
         em.remove(em.merge(country));
       }
-      em.getTransaction().commit();
+      transaction.commit();
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em,"Error deleting country entity", e);
+      throw handleExceptionAndRollback(transaction,"Error deleting country entity", e);
     } finally {
       em.close();
     }
@@ -92,15 +105,17 @@ public class CountryDAO {
    */
   public Optional<Country> getById(Long id) throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       Country country = em.find(Country.class, id);
-      em.getTransaction().commit();
+      transaction.commit();
 
       return Optional.ofNullable(country);
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em,"Error retrieving country entity", e);
+      throw handleExceptionAndRollback(transaction,"Error retrieving country entity", e);
     } finally {
       em.close();
     }
@@ -116,18 +131,20 @@ public class CountryDAO {
    */
   public Optional<Country> getByName(String name) throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       Country country = em.createQuery("SELECT c FROM Country c WHERE c.name = :name", Country.class)
           .setParameter("name", name).getSingleResult();
-      em.getTransaction().commit();
+      transaction.commit();
 
       return Optional.ofNullable(country);
     } catch (NoResultException e) {
       return Optional.empty();
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error retrieving country entity by name", e);
+      throw handleExceptionAndRollback(transaction, "Error retrieving country entity by name", e);
     } finally {
       em.close();
     }
@@ -142,15 +159,17 @@ public class CountryDAO {
    */
   public List<Country> getAll() throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       List<Country> countries = em.createQuery("SELECT c FROM Country c", Country.class).getResultList();
-      em.getTransaction().commit();
+      transaction.commit();
 
       return countries;
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error retrieving country entities", e);
+      throw handleExceptionAndRollback(transaction, "Error retrieving country entities", e);
     } finally {
       em.close();
     }
@@ -160,15 +179,15 @@ public class CountryDAO {
    * Handles exceptions and rolls back the transaction.
    * If an exception occurs during the transaction, the transaction is rolled back.
    *
-   * @param em the EntityManager
+   * @param transaction the EntityTransaction instance
    * @param message the error message
    * @param e the exception to propagate
    * @return a new CountryDAOException with the given message and cause
    */
-  private CountryDAOException handleExceptionAndRollback(EntityManager em, String message, Exception e) {
+  private CountryDAOException handleExceptionAndRollback(EntityTransaction transaction, String message, Exception e) {
 
-    if (em.getTransaction().isActive()) {
-      em.getTransaction().rollback();
+    if (transaction.isActive()) {
+      transaction.rollback();
     }
     return new CountryDAOException(message, e);
   }

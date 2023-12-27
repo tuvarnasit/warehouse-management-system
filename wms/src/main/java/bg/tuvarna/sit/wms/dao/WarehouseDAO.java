@@ -3,9 +3,10 @@ package bg.tuvarna.sit.wms.dao;
 import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.Warehouse;
 import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
-import bg.tuvarna.sit.wms.util.JpaUtil;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,12 @@ import java.util.Optional;
  */
 public class WarehouseDAO {
 
+  private final EntityManagerFactory entityManagerFactory;
+
+  public WarehouseDAO(EntityManagerFactory entityManagerFactory) {
+    this.entityManagerFactory = entityManagerFactory;
+  }
+
   /**
    * Persists a new warehouse entity to the database within a transaction.
    * If an error occurs during the transaction it is rolled back.
@@ -25,13 +32,15 @@ public class WarehouseDAO {
    */
   public void save(Warehouse warehouse) throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       em.persist(warehouse);
-      em.getTransaction().commit();
+      transaction.commit();
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error saving warehouse entity", e);
+      throw handleExceptionAndRollback(transaction, "Error saving warehouse entity", e);
     } finally {
       em.close();
     }
@@ -46,13 +55,15 @@ public class WarehouseDAO {
    */
   public void update(Warehouse warehouse) throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
       em.getTransaction().begin();
       em.merge(warehouse);
       em.getTransaction().commit();
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error updating warehouse entity", e);
+      throw handleExceptionAndRollback(transaction, "Error updating warehouse entity", e);
     } finally {
       em.close();
     }
@@ -67,17 +78,19 @@ public class WarehouseDAO {
    */
   public void delete(Warehouse warehouse) throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       if (em.contains(warehouse)) {
         em.remove(warehouse);
       } else {
         em.remove(em.merge(warehouse));
       }
-      em.getTransaction().commit();
+      transaction.commit();
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error deleting warehouse entity", e);
+      throw handleExceptionAndRollback(transaction, "Error deleting warehouse entity", e);
     } finally {
       em.close();
     }
@@ -93,15 +106,17 @@ public class WarehouseDAO {
    */
   public Optional<Warehouse> getById(Long id) throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       Warehouse warehouse = em.find(Warehouse.class, id);
-      em.getTransaction().commit();
+      transaction.commit();
 
       return Optional.ofNullable(warehouse);
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error retrieving warehouse", e);
+      throw handleExceptionAndRollback(transaction, "Error retrieving warehouse", e);
     } finally {
       em.close();
     }
@@ -117,15 +132,17 @@ public class WarehouseDAO {
    */
   public List<Warehouse> getAll() throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       List<Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w ", Warehouse.class).getResultList();
-      em.getTransaction().commit();
+      transaction.commit();
 
       return warehouses;
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error retrieving warehouse entities", e);
+      throw handleExceptionAndRollback(transaction, "Error retrieving warehouse entities", e);
     } finally {
       em.close();
     }
@@ -141,17 +158,19 @@ public class WarehouseDAO {
    */
   public List<Warehouse> getWarehousesByOwner(Owner owner) throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       List<Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w WHERE w.owner = :owner", Warehouse.class)
           .setParameter("owner", owner)
           .getResultList();
-      em.getTransaction().commit();
+      transaction.commit();
 
       return warehouses;
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em,"Error retrieving warehouse entities", e);
+      throw handleExceptionAndRollback(transaction,"Error retrieving warehouse entities", e);
     } finally {
       em.close();
     }
@@ -167,15 +186,16 @@ public class WarehouseDAO {
    */
   public Optional<Warehouse> getWarehouseByNameAndOwner(String name, Owner owner) {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
 
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       Warehouse warehouse = em.createQuery("SELECT w FROM Warehouse w WHERE w.owner = :owner AND w.name = :name", Warehouse.class)
           .setParameter("name", name)
           .setParameter("owner", owner)
           .getSingleResult();
-      em.getTransaction().commit();
+      transaction.commit();
 
       return Optional.ofNullable(warehouse);
     } catch (NoResultException e) {
@@ -189,15 +209,15 @@ public class WarehouseDAO {
    * Handles exceptions and rolls back the transaction.
    * If an exception occurs during the transaction, the transaction is rolled back.
    *
-   * @param em the EntityManager
+   * @param transaction the EntityTransaction instance
    * @param message the error message
    * @param e the exception to propagate
    * @return a new WarehouseDAOException with the given message and cause
    */
-  private WarehouseDAOException handleExceptionAndRollback(EntityManager em, String message, Exception e) {
+  private WarehouseDAOException handleExceptionAndRollback(EntityTransaction transaction, String message, Exception e) {
 
-    if (em.getTransaction().isActive()) {
-      em.getTransaction().rollback();
+    if (transaction.isActive()) {
+      transaction.rollback();
     }
     return new WarehouseDAOException(message, e);
   }

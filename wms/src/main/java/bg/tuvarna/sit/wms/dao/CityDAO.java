@@ -3,9 +3,10 @@ package bg.tuvarna.sit.wms.dao;
 import bg.tuvarna.sit.wms.entities.City;
 import bg.tuvarna.sit.wms.entities.Country;
 import bg.tuvarna.sit.wms.exceptions.CityDAOException;
-import bg.tuvarna.sit.wms.util.JpaUtil;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,12 @@ import java.util.Optional;
  */
 public class CityDAO {
 
+  private final EntityManagerFactory entityManagerFactory;
+
+  public CityDAO(EntityManagerFactory entityManagerFactory) {
+    this.entityManagerFactory = entityManagerFactory;
+  }
+
   /**
    * Persists a new city entity to the database within a transaction.
    * If an error occurs during the transaction it is rolled back.
@@ -25,13 +32,15 @@ public class CityDAO {
    */
   public void save(City city) throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       em.persist(city);
-      em.getTransaction().commit();
+      transaction.commit();
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error saving city entity", e);
+      throw handleExceptionAndRollback(transaction, "Error saving city entity", e);
     } finally {
       em.close();
     }
@@ -46,13 +55,15 @@ public class CityDAO {
    */
   public void update(City city) throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       em.merge(city);
-      em.getTransaction().commit();
+      transaction.commit();
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error updating city entity", e);
+      throw handleExceptionAndRollback(transaction, "Error updating city entity", e);
     } finally {
       em.close();
     }
@@ -67,17 +78,19 @@ public class CityDAO {
    */
   public void delete(City city) throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       if (em.contains(city)) {
         em.remove(city);
       } else {
         em.remove(em.merge(city));
       }
-      em.getTransaction().commit();
+      transaction.commit();
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error deleting city entity", e);
+      throw handleExceptionAndRollback(transaction, "Error deleting city entity", e);
     } finally {
       em.close();
     }
@@ -93,15 +106,17 @@ public class CityDAO {
    */
   public Optional<City> getById(Long id) throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       City city = em.find(City.class, id);
-      em.getTransaction().commit();
+      transaction.commit();
 
       return Optional.ofNullable(city);
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error retrieving city entity", e);
+      throw handleExceptionAndRollback(transaction, "Error retrieving city entity", e);
     } finally {
       em.close();
     }
@@ -118,19 +133,20 @@ public class CityDAO {
    */
   public Optional<City> getByNameAndCountry(String name, Country country) throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
 
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       City city = em.createQuery("SELECT c FROM City c WHERE c.name = :name AND c.country = :country", City.class)
           .setParameter("name", name).setParameter("country", country).getSingleResult();
-      em.getTransaction().commit();
+      transaction.commit();
 
       return Optional.ofNullable(city);
     } catch (NoResultException e) {
       return Optional.empty();
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error retrieving city entity by name", e);
+      throw handleExceptionAndRollback(transaction, "Error retrieving city entity by name", e);
     } finally {
       em.close();
     }
@@ -145,15 +161,16 @@ public class CityDAO {
    */
   public List<City> getAll() throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
     try {
-      em.getTransaction().begin();
+      transaction.begin();
       List<City> cities = em.createQuery("SELECT c FROM City c", City.class).getResultList();
-      em.getTransaction().commit();
+      transaction.commit();
 
       return cities;
     } catch (Exception e) {
-      throw handleExceptionAndRollback(em, "Error retrieving city entities", e);
+      throw handleExceptionAndRollback(transaction, "Error retrieving city entities", e);
     } finally {
       em.close();
     }
@@ -163,15 +180,15 @@ public class CityDAO {
    * Handles exceptions and rolls back the transaction.
    * If an exception occurs during the transaction, the transaction is rolled back.
    *
-   * @param em the EntityManager
+   * @param transaction the transaction
    * @param message the error message
    * @param e the exception to propagate
    * @return a new CityDAOException with the given message and cause
    */
-  private CityDAOException handleExceptionAndRollback(EntityManager em, String message, Exception e) {
+  private CityDAOException handleExceptionAndRollback(EntityTransaction transaction, String message, Exception e) {
 
-    if (em.getTransaction().isActive()) {
-      em.getTransaction().rollback();
+    if (transaction.isActive()) {
+      transaction.rollback();
     }
     return new CityDAOException(message, e);
   }
