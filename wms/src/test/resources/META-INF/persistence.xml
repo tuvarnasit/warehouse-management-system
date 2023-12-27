@@ -3,7 +3,7 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
-    <persistence-unit name="wms">
+    <persistence-unit name="wms-test">
         <class>bg.tuvarna.sit.wms.entities.Address</class>
         <class>bg.tuvarna.sit.wms.entities.Agent</class>
         <class>bg.tuvarna.sit.wms.entities.City</class>
@@ -18,11 +18,11 @@
         <class>bg.tuvarna.sit.wms.entities.Review</class>
         <class>bg.tuvarna.sit.wms.entities.Notification</class>
         <properties>
-            <property name="hibernate.connection.url" value="${DB_CONNECTION_URL}"/>
-            <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="hibernate.connection.username" value="${DB_USERNAME}"/>
-            <property name="hibernate.connection.password" value="${DB_PASSWORD}"/>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:wmstest;DB_CLOSE_DELAY=-1"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
             <property name="hibernate.show_sql" value="true"/>
         </properties>

@@ -24,7 +24,7 @@ public class CountryDAO {
    */
   public void save(Country country) throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       em.persist(country);
@@ -45,7 +45,7 @@ public class CountryDAO {
    */
   public void update(Country country) throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       em.merge(country);
@@ -66,7 +66,7 @@ public class CountryDAO {
    */
   public void delete(Country country) throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       if (em.contains(country)) {
@@ -92,7 +92,7 @@ public class CountryDAO {
    */
   public Optional<Country> getById(Long id) throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       Country country = em.find(Country.class, id);
@@ -116,7 +116,7 @@ public class CountryDAO {
    */
   public Optional<Country> getByName(String name) throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       Country country = em.createQuery("SELECT c FROM Country c WHERE c.name = :name", Country.class)
@@ -142,7 +142,7 @@ public class CountryDAO {
    */
   public List<Country> getAll() throws CountryDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       List<Country> countries = em.createQuery("SELECT c FROM Country c", Country.class).getResultList();

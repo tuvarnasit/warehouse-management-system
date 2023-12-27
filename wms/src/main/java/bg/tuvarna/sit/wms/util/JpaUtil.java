@@ -1,10 +1,10 @@
 package bg.tuvarna.sit.wms.util;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Utility class for managing JPA EntityManagerFactory and providing EntityManager instances.
@@ -19,28 +19,18 @@ import java.util.Map;
  */
 public class JpaUtil {
 
-  /**
-   * The singleton instance of EntityManagerFactory for the application.
-   */
+  @Getter
   private static final EntityManagerFactory entityManagerFactory;
 
   static {
+
     Map<String, String> env = System.getenv();
     Map<String, Object> configOverrides = new HashMap<>();
     configOverrides.put("hibernate.connection.url", env.get("DB_CONNECTION_URL"));
     configOverrides.put("hibernate.connection.username", env.get("DB_USERNAME"));
     configOverrides.put("hibernate.connection.password", env.get("DB_PASSWORD"));
 
-    entityManagerFactory = Persistence.createEntityManagerFactory("wms", configOverrides);
-  }
-
-  /**
-   * Provides an EntityManager from the factory to interact with the persistence context.
-   *
-   * @return A new instance of EntityManager.
-   */
-  public static EntityManager getEntityManager() {
-    return entityManagerFactory.createEntityManager();
+    entityManagerFactory = Persistence.createEntityManagerFactory(env.get("PERSISTENCE_NAME"), configOverrides);
   }
 
   /**
@@ -53,4 +43,3 @@ public class JpaUtil {
     }
   }
 }
-

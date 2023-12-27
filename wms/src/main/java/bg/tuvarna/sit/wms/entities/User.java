@@ -1,30 +1,26 @@
-package bg.tuvarna.sit.wms.entities.base;
+package bg.tuvarna.sit.wms.entities;
 
+import bg.tuvarna.sit.wms.entities.base.BaseEntity;
 import bg.tuvarna.sit.wms.enums.Role;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Column;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Represents the foundational attributes of a user within the system.
- * Serves as a base class for specific user entities to inherit common
- * user attributes.
- * <p>
- * This class is marked as a mapped superclass, meaning it won't be persisted
- * as an entity by itself. However, its attributes will be inherited by its
- * subclasses which represent concrete user entities.
- * </p>
- *
- * @author Yavor Chamov
- * @since 1.0.0
- */
-@MappedSuperclass
+@Entity
+@Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
-public abstract class BaseUser extends BaseEntity {
+public class User extends BaseEntity {
 
   @Column(name = "first_name", nullable = false)
   private String firstName;
@@ -43,4 +39,7 @@ public abstract class BaseUser extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private Role role;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<Notification> notifications;
 }

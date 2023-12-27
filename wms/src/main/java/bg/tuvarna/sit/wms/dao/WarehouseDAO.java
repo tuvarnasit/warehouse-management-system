@@ -25,7 +25,7 @@ public class WarehouseDAO {
    */
   public void save(Warehouse warehouse) throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       em.persist(warehouse);
@@ -46,7 +46,7 @@ public class WarehouseDAO {
    */
   public void update(Warehouse warehouse) throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       em.merge(warehouse);
@@ -67,7 +67,7 @@ public class WarehouseDAO {
    */
   public void delete(Warehouse warehouse) throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       if (em.contains(warehouse)) {
@@ -93,7 +93,7 @@ public class WarehouseDAO {
    */
   public Optional<Warehouse> getById(Long id) throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       Warehouse warehouse = em.find(Warehouse.class, id);
@@ -117,7 +117,7 @@ public class WarehouseDAO {
    */
   public List<Warehouse> getAll() throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       List<Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w ", Warehouse.class).getResultList();
@@ -141,7 +141,7 @@ public class WarehouseDAO {
    */
   public List<Warehouse> getWarehousesByOwner(Owner owner) throws WarehouseDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       List<Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w WHERE w.owner = :owner", Warehouse.class)
@@ -167,7 +167,7 @@ public class WarehouseDAO {
    */
   public Optional<Warehouse> getWarehouseByNameAndOwner(String name, Owner owner) {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
 
     try {
       em.getTransaction().begin();

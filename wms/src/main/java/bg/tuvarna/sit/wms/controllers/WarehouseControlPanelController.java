@@ -64,7 +64,7 @@ public class WarehouseControlPanelController {
   private ObservableList<WarehouseDTO> observableData = FXCollections.observableArrayList();
 
   {
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     em.getTransaction().begin();
 
     owner = em.find(Owner.class, 1L);

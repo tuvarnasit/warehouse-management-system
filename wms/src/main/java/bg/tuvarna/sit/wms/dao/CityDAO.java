@@ -25,7 +25,7 @@ public class CityDAO {
    */
   public void save(City city) throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       em.persist(city);
@@ -46,7 +46,7 @@ public class CityDAO {
    */
   public void update(City city) throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       em.merge(city);
@@ -67,7 +67,7 @@ public class CityDAO {
    */
   public void delete(City city) throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       if (em.contains(city)) {
@@ -93,7 +93,7 @@ public class CityDAO {
    */
   public Optional<City> getById(Long id) throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       City city = em.find(City.class, id);
@@ -118,7 +118,7 @@ public class CityDAO {
    */
   public Optional<City> getByNameAndCountry(String name, Country country) throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
 
     try {
       em.getTransaction().begin();
@@ -145,7 +145,7 @@ public class CityDAO {
    */
   public List<City> getAll() throws CityDAOException {
 
-    EntityManager em = JpaUtil.getEntityManager();
+    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
     try {
       em.getTransaction().begin();
       List<City> cities = em.createQuery("SELECT c FROM City c", City.class).getResultList();

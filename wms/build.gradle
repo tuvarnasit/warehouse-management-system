@@ -32,6 +32,11 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
     testImplementation 'org.mockito:mockito-core:3.12.4'
+    testImplementation 'org.testfx:testfx-core:4.0.17'
+    testImplementation 'org.testfx:testfx-junit5:4.0.17'
+    testImplementation 'com.h2database:h2:2.2.224'
+    testImplementation 'org.loadui:testFx:3.1.2'
+    testImplementation 'org.assertj:assertj-core:3.24.2'
 }
 
 test {

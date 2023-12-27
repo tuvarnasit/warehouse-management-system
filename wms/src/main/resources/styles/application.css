@@ -1,0 +1,19 @@
+.side-menu {
+    -fx-background-color: #49a3e0;
+    -fx-pref-width: 128;
+}
+
+.menu-button {
+    -fx-padding: 12 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+    -fx-pref-width: infinity;
+}
+
+.menu-button:hover {
+    -fx-background-color: rgba(192, 192, 192, 0.2);
+}
+
+.menu-button:selected {
+    -fx-background-color: #E08649;
+}
