@@ -1,15 +1,11 @@
 package bg.tuvarna.sit.wms.controllers;
 
-import bg.tuvarna.sit.wms.dao.CityDAO;
-import bg.tuvarna.sit.wms.dao.CountryDAO;
-import bg.tuvarna.sit.wms.dao.WarehouseDAO;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
-import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
-import bg.tuvarna.sit.wms.service.CityService;
-import bg.tuvarna.sit.wms.service.CountryService;
 import bg.tuvarna.sit.wms.service.WarehouseService;
-import bg.tuvarna.sit.wms.util.DialogUtil;
+import javafx.scene.control.Alert;
+
+import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.showAlert;
 
 /**
  * This controller class handles the updating process of an existing warehouse. Inherits methods from the
@@ -17,15 +13,12 @@ import bg.tuvarna.sit.wms.util.DialogUtil;
  */
 public class WarehouseUpdateDialogController extends BaseWarehouseDialogController {
 
-  private final WarehouseDAO warehouseDAO = new WarehouseDAO();
-  private final CountryService countryService = new CountryService(new CountryDAO());
-  private final CityService cityService = new CityService(new CityDAO());
-  private final WarehouseService warehouseService = new WarehouseService(warehouseDAO, countryService, cityService);
+  private final WarehouseService warehouseService;
   private WarehouseDTO warehouseDTO;
 
-  public WarehouseUpdateDialogController(Owner owner, WarehouseDTO warehouseDTO) {
-    super(owner);
+  public WarehouseUpdateDialogController(WarehouseDTO warehouseDTO, WarehouseService warehouseService) {
     this.warehouseDTO = warehouseDTO;
+    this.warehouseService = warehouseService;
   }
 
   /**
@@ -49,7 +42,6 @@ public class WarehouseUpdateDialogController extends BaseWarehouseDialogControll
     WarehouseDTO updatedWarehouseDTO = createWarehouseDTO();
     updatedWarehouseDTO.setId(warehouseDTO.getId());
     updatedWarehouseDTO.setStatus(warehouseDTO.getStatus());
-    updatedWarehouseDTO.setOwner(warehouseDTO.getOwner());
 
     if(!validate()){
       return;
@@ -58,7 +50,7 @@ public class WarehouseUpdateDialogController extends BaseWarehouseDialogControll
     try {
       warehouseService.updateWarehouse(updatedWarehouseDTO);
     } catch (WarehouseServiceException e) {
-      DialogUtil.showErrorAlert("Unable to update warehouse data", e.getMessage());
+      showAlert(Alert.AlertType.ERROR, "Unable to update warehouse data", e.getMessage());
       return;
     }
     getDialogStage().close();

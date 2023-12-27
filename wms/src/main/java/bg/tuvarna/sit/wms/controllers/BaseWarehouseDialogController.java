@@ -3,7 +3,10 @@ package bg.tuvarna.sit.wms.controllers;
 import bg.tuvarna.sit.wms.contracts.DialogController;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.entities.Owner;
+import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.enums.ClimateCondition;
+import bg.tuvarna.sit.wms.enums.Role;
+import bg.tuvarna.sit.wms.session.UserSession;
 import bg.tuvarna.sit.wms.validation.ValidatingComboBox;
 import bg.tuvarna.sit.wms.validation.ValidatingTextField;
 import javafx.fxml.FXML;
@@ -41,11 +44,7 @@ public abstract class BaseWarehouseDialogController implements DialogController 
   @Setter
   @Getter
   private Stage dialogStage;
-  private final Owner owner;
-
-  public BaseWarehouseDialogController(Owner owner) {
-    this.owner = owner;
-  }
+  private final Owner owner = getOwnerFromUserSession();
 
   /**
    * This method initializes the the controller and sets up the validation function and tooltip message
@@ -143,5 +142,13 @@ public abstract class BaseWarehouseDialogController implements DialogController 
     } catch (NumberFormatException e) {
       return null;
     }
+  }
+
+  private Owner getOwnerFromUserSession() {
+    User currentUser = UserSession.getInstance().getCurrentUser();
+    if(currentUser.getRole().equals(Role.OWNER)) {
+      return (Owner) currentUser;
+    }
+    throw new IllegalStateException("Only owners are allowed to access this operation");
   }
 }

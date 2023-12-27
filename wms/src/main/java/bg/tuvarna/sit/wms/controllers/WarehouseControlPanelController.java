@@ -1,18 +1,15 @@
 package bg.tuvarna.sit.wms.controllers;
 
 import bg.tuvarna.sit.wms.contracts.DialogController;
-import bg.tuvarna.sit.wms.dao.CityDAO;
-import bg.tuvarna.sit.wms.dao.CountryDAO;
-import bg.tuvarna.sit.wms.dao.WarehouseDAO;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.entities.Owner;
+import bg.tuvarna.sit.wms.entities.User;
+import bg.tuvarna.sit.wms.enums.Role;
 import bg.tuvarna.sit.wms.enums.WarehouseStatus;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
-import bg.tuvarna.sit.wms.service.CityService;
-import bg.tuvarna.sit.wms.service.CountryService;
 import bg.tuvarna.sit.wms.service.WarehouseService;
+import bg.tuvarna.sit.wms.session.UserSession;
 import bg.tuvarna.sit.wms.util.DialogUtil;
-import bg.tuvarna.sit.wms.util.JpaUtil;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.beans.property.SimpleStringProperty;
@@ -29,9 +26,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
-import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.util.List;
+
+import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.showAlert;
 
 /**
  * A controller class, which allows an owner to interact with the data of every warehouse he owns in a table.
@@ -40,7 +38,7 @@ import java.util.List;
 public class WarehouseControlPanelController {
 
   @FXML
-  public TableColumn<WarehouseDTO, String> nameColumn;
+  private TableColumn<WarehouseDTO, String> nameColumn;
   @FXML
   private TableView<WarehouseDTO> warehousesTable;
   @FXML
@@ -54,21 +52,14 @@ public class WarehouseControlPanelController {
   @FXML
   private TableColumn<WarehouseDTO, String> statusColumn;
   @FXML
-  public TableColumn<WarehouseDTO, String> actionColumn;
+  private TableColumn<WarehouseDTO, String> actionColumn;
 
-  private final WarehouseDAO warehouseDAO = new WarehouseDAO();
-  private final CountryService countryService = new CountryService(new CountryDAO());
-  private final CityService cityService = new CityService(new CityDAO());
-  private final WarehouseService warehouseService = new WarehouseService(warehouseDAO, countryService, cityService);
-  private Owner owner;
+  private final WarehouseService warehouseService;
+  private Owner owner = getOwnerFromUserSession();
   private ObservableList<WarehouseDTO> observableData = FXCollections.observableArrayList();
 
-  {
-    EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
-    em.getTransaction().begin();
-
-    owner = em.find(Owner.class, 1L);
-    em.close();
+  public WarehouseControlPanelController(WarehouseService warehouseService) {
+    this.warehouseService = warehouseService;
   }
 
   /**
@@ -81,7 +72,7 @@ public class WarehouseControlPanelController {
       List<WarehouseDTO> warehouseDTOs = warehouseService.getWarehouseDTOsByOwner(owner);
       observableData.addAll(warehouseDTOs);
     } catch (WarehouseServiceException e) {
-      DialogUtil.showErrorAlert("Unable to retrieve warehouse data", e.getMessage());
+      showAlert(Alert.AlertType.ERROR, "Unable to retrieve warehouse data", e.getMessage());
     }
 
     nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -115,11 +106,11 @@ public class WarehouseControlPanelController {
         editButton.setOnMouseClicked(event -> {
 
           WarehouseDTO warehouseDTO = getTableRow().getItem();
-          DialogController controller = new WarehouseUpdateDialogController(owner, warehouseDTO);
+          DialogController controller = new WarehouseUpdateDialogController(warehouseDTO, warehouseService);
           try {
             DialogUtil.showDialog("/views/warehouseCreation.fxml", "Update warehouse", controller);
           } catch (IOException e) {
-            DialogUtil.showErrorAlert("Unable to open update dialog", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Unable to open update dialog", e.getMessage());
           }
           refreshTable();
         });
@@ -137,7 +128,7 @@ public class WarehouseControlPanelController {
             try {
               warehouseService.deleteWarehouse(warehouseDTO);
             } catch (WarehouseServiceException e) {
-              DialogUtil.showErrorAlert("Unable to delete warehouse", e.getMessage());
+              showAlert(Alert.AlertType.ERROR, "Unable to delete warehouse", e.getMessage());
             }
             refreshTable();
           }
@@ -168,11 +159,11 @@ public class WarehouseControlPanelController {
   @FXML
   public void handleAdd() {
 
-    DialogController controller = new WarehouseCreationDialogController(owner);
+    DialogController controller = new WarehouseCreationDialogController(warehouseService);
     try {
       DialogUtil.showDialog("/views/warehouseCreation.fxml", "Add a warehouse", controller);
     } catch (IOException e) {
-      DialogUtil.showErrorAlert("Unable to open creation dialog", e.getMessage());
+      showAlert(Alert.AlertType.ERROR, "Unable to open creation dialog", e.getMessage());
     }
     refreshTable();
   }
@@ -186,9 +177,17 @@ public class WarehouseControlPanelController {
     try {
       observableData.setAll(warehouseService.getWarehouseDTOsByOwner(owner));
     } catch (WarehouseServiceException e) {
-      DialogUtil.showErrorAlert("Unable to refresh warehouse data", e.getMessage());
+      showAlert(Alert.AlertType.ERROR, "Unable to refresh warehouse data", e.getMessage());
     }
     warehousesTable.refresh();
+  }
+
+  private Owner getOwnerFromUserSession() {
+    User currentUser = UserSession.getInstance().getCurrentUser();
+    if(currentUser.getRole().equals(Role.OWNER)) {
+      return (Owner) currentUser;
+    }
+    throw new IllegalStateException("Only owners are allowed to access this operation");
   }
 
 }
