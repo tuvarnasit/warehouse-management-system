@@ -4,11 +4,7 @@ import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.enums.Role;
 import bg.tuvarna.sit.wms.util.JpaUtil;
 import bg.tuvarna.sit.wms.util.ViewLoaderUtil;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -39,8 +35,7 @@ class LoginControllerTest {
 
     setupTestData();
     performLogin(robot, "test@wms.com", "securepassword1");
-    assertThat(robot.lookup("#welcomeUserText").queryAs(Text.class)).hasText("Hello, First");
-
+    assertThat(robot.lookup("#loggedInUser").queryAs(Label.class)).hasText("You are logged in as: First");
   }
 
   @Test
@@ -62,10 +57,10 @@ class LoginControllerTest {
 
     setupTestData();
     performLogin(robot, "test@wms.com", "securepassword1");
-    assertThat(robot.lookup("#welcomeUserText").queryAs(Text.class)).hasText("Hello, First");
+    assertThat(robot.lookup("#loggedInUser").queryAs(Label.class)).hasText("You are logged in as: First");
     performLogout(robot);
     performSsoLogin(robot);
-    assertThat(robot.lookup("#welcomeUserText").queryAs(Text.class)).hasText("Hello, First");
+    assertThat(robot.lookup("#loggedInUser").queryAs(Label.class)).hasText("You are logged in as: First");
   }
 
   private void setupTestData() {
@@ -120,7 +115,6 @@ class LoginControllerTest {
     try {
       transaction.begin();
 
-      // Assuming 'User' is your entity. Adapt the query to your needs.
       entityManager.createQuery("DELETE FROM User").executeUpdate();
 
       transaction.commit();

@@ -22,15 +22,11 @@ import javafx.scene.text.Text;
 public class HomeController {
 
   @FXML
-  Button registerButton;
-  @FXML
   Button loginButton;
   @FXML
   Button ssoButton;
   @FXML
   Text welcomeUserText;
-  @FXML
-  StackPane welcomeMessageContainer;
   UserSession userSession = UserSession.getInstance();
   private final UserService userService;
   private final CredentialManagerService credentialManagerService;
@@ -47,21 +43,8 @@ public class HomeController {
   @FXML
   void initialize() {
 
-    updateRegisterButtonVisibility();
     updateLoginButtonVisibility();
     updateSsoButtonVisibility();
-    updateUserWelcomeMessage();
-  }
-
-  /**
-   * Handles the action to navigate to the registration view.
-   *
-   * @param event The event that triggered the action.
-   */
-  @FXML
-  void handleRegisterAction(ActionEvent event) {
-
-    loadView("/views/registration.fxml", event);
   }
 
   /**
@@ -107,17 +90,6 @@ public class HomeController {
   }
 
   /**
-   * Updates the visibility of the registration button based on the user's login status.
-   * The button is visible and managed if a user is currently logged in.
-   */
-  private void updateRegisterButtonVisibility() {
-
-    User currentUser = userSession.getCurrentUser();
-    registerButton.setVisible(currentUser != null);
-    registerButton.setManaged(currentUser != null);
-  }
-
-  /**
    * Updates the visibility of the login button based on the user's login status.
    * The button is visible and managed if no user is currently logged in.
    */
@@ -133,20 +105,5 @@ public class HomeController {
     User currentUser = userSession.getCurrentUser();
     ssoButton.setVisible(currentUser == null);
     ssoButton.setManaged(currentUser == null);
-  }
-
-  /**
-   * Updates the welcome message based on the user's login status.
-   * Displays a personalized welcome message if a user is logged in; hides the message otherwise.
-   */
-  private void updateUserWelcomeMessage() {
-
-    User currentUser = userSession.getCurrentUser();
-    if (currentUser != null) {
-      welcomeUserText.setText("Hello, " + currentUser.getFirstName());
-      welcomeMessageContainer.setVisible(true);
-    } else {
-      welcomeMessageContainer.setVisible(false);
-    }
   }
 }

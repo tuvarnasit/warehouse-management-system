@@ -17,3 +17,15 @@
 .menu-button:selected {
     -fx-background-color: #E08649;
 }
+
+.section-welcome {
+    -fx-alignment: center;
+}
+
+.button-logout {
+    -fx-background-color: rgb(255, 51, 51);
+}
+
+.button-logout:hover {
+    -fx-background-color: rgb(255, 0, 0);
+}

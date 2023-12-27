@@ -11,6 +11,6 @@
         <VBox fx:id="sideMenu" styleClass="side-menu"/>
     </left>
     <center>
-        <Label fx:id="welcomeLabel" text="Welcome to the Dashboard"/>
+        <VBox fx:id="welcomeSection" styleClass="section-welcome"/>
     </center>
 </BorderPane>
