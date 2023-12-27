@@ -69,13 +69,7 @@ public class MainApp extends Application {
 
     try {
       ApplicationContext.getUSER_SERVICE().initializeAdministrators();
-      String keyFilename = "encryption.key";
-      Path keyPath = Paths.get(keyFilename);
-      if (!Files.exists(keyPath)) {
-        SecretKey key = ApplicationContext.getENCRYPTION_SERVICE().generateKey();
-        KeyUtil.saveSecretKey(key, keyFilename);
-      }
-    } catch (RegistrationException | InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
+    } catch (RegistrationException | InvalidKeySpecException | NoSuchAlgorithmException e) {
       LOGGER.error("Error during application initialization: ", e);
     }
   }
