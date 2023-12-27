@@ -25,6 +25,7 @@ public class DialogUtil {
    * @throws IOException if an error occurs while loading the FXML file
    */
   public static void showDialog(String fxmlPath, String title, DialogController controller) throws IOException {
+
       FXMLLoader loader = new FXMLLoader(DialogUtil.class.getResource(fxmlPath));
 
       loader.setController(controller);
@@ -40,17 +41,4 @@ public class DialogUtil {
       dialogStage.showAndWait();
   }
 
-  /**
-   * Displays an error alert with specified title and error message.
-   *
-   * @param title the title of the alert
-   * @param message the error message of the alert
-   */
-    public static void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 }
