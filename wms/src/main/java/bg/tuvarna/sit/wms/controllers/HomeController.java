@@ -28,8 +28,6 @@ public class HomeController {
   @FXML
   Button ssoButton;
   @FXML
-  Button logoutButton;
-  @FXML
   Text welcomeUserText;
   @FXML
   StackPane welcomeMessageContainer;
@@ -52,7 +50,6 @@ public class HomeController {
     updateRegisterButtonVisibility();
     updateLoginButtonVisibility();
     updateSsoButtonVisibility();
-    updateLogoutButtonVisibility();
     updateUserWelcomeMessage();
   }
 
@@ -98,7 +95,7 @@ public class HomeController {
               credentials.get().getPassword());
 
       if (loginSuccessful) {
-        loadView("/views/home.fxml", event);
+        loadView("/views/application.fxml", event);
       } else {
         showAlert(Alert.AlertType.ERROR, "SSO Login Failed", "Login was unsuccessful.\n" +
                 "Please try again.");
@@ -107,21 +104,6 @@ public class HomeController {
       showAlert(Alert.AlertType.INFORMATION, "SSO", "SSO credentials are missing or have expired.\n" +
               "Login manually to activate new SSO session.");
     }
-  }
-
-  /**
-   * Handles the logout action.
-   * <p>
-   * This method is triggered when the user clicks the logout button. It performs the logout
-   * operation by clearing the current user session and then redirects the user to the home view.
-   *
-   * @param event The event that triggered this action, typically the logout button click.
-   */
-  @FXML
-  void handleLogoutAction(ActionEvent event) {
-
-    userSession.logout();
-    loadView("/views/home.fxml", event);
   }
 
   /**
@@ -151,13 +133,6 @@ public class HomeController {
     User currentUser = userSession.getCurrentUser();
     ssoButton.setVisible(currentUser == null);
     ssoButton.setManaged(currentUser == null);
-  }
-
-  private void updateLogoutButtonVisibility() {
-
-    User currentUser = userSession.getCurrentUser();
-    logoutButton.setVisible(currentUser != null);
-    logoutButton.setManaged(currentUser != null);
   }
 
   /**

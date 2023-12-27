@@ -18,5 +18,4 @@
     <Button text="Register" onAction="#handleRegisterAction" fx:id="registerButton" styleClass="button-common, button-register"/>
     <Button text="Login" onAction="#handleLoginAction" fx:id="loginButton" styleClass="button-common, button-login"/>
     <Button text="SSO" onAction="#handleSsoAction" fx:id="ssoButton" styleClass="button-common, button-login"/>
-    <Button text="Logout" onAction="#handleLogoutAction" fx:id="logoutButton" styleClass="button-common, button-logout"/>
 </VBox>

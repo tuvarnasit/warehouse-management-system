@@ -71,7 +71,7 @@ public class LoginController {
     if (loginSuccessful) {
       try {
         credentialManagerService.saveCredentials(email, password);
-        loadView("/views/home.fxml", event);
+        loadView("/views/application.fxml", event);
       } catch (CredentialSavingException e) {
         LOGGER.error("Error saving credentials for auto-login.", e);
         showAlert(Alert.AlertType.WARNING, "Warning",
