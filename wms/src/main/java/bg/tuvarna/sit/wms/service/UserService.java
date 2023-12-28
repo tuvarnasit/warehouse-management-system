@@ -57,7 +57,7 @@ public class UserService {
   }
 
   /**
-   * Initializes default administrator accounts in the system.
+   * Initializes default user accounts in the system.
    * <p>
    * This method checks for the existence of specific administrator accounts and creates them if they do not exist.
    * This ensures that there are always default administrator accounts available in the system.
@@ -66,7 +66,7 @@ public class UserService {
    * @throws InvalidKeySpecException  If there is an issue with the specification of the key used in password hashing.
    * @throws NoSuchAlgorithmException If the algorithm specified for password hashing does not exist.
    */
-  public void initializeAdministrators() throws RegistrationException, InvalidKeySpecException, NoSuchAlgorithmException {
+  public void initializeUsers() throws RegistrationException, InvalidKeySpecException, NoSuchAlgorithmException {
 
     // TODO: Remove the magic values by setting up an external configuration properties
     if (userDao.findByEmail("admin1@example.com").isEmpty()) {

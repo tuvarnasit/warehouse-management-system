@@ -68,7 +68,7 @@ public class MainApp extends Application {
   private void initializeApplication() {
 
     try {
-      ApplicationContext.getUSER_SERVICE().initializeAdministrators();
+      ApplicationContext.getUSER_SERVICE().initializeUsers();
       String keyFilename = "encryption.key";
       Path keyPath = Paths.get(keyFilename);
       if (!Files.exists(keyPath)) {
