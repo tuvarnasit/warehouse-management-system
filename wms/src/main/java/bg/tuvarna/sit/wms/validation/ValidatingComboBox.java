@@ -15,20 +15,36 @@ public class ValidatingComboBox<T> extends ComboBox<T> {
 
   @Getter
   private BooleanProperty isValid = new SimpleBooleanProperty();
+  private Tooltip tooltip;
 
   /**
-   * This method adds an handler function which is triggered everytime the value of the combo box changes.
-   * It sets the isValid field to false, changes the style of the combobox and the tooltip message when the value is invalid.
-   * Otherwise the isValid field is set to true and the style is set to default
+   * Adds a listener which validates the combobox, when the value of it changes
+   */
+  public ValidatingComboBox() {
+
+    valueProperty().addListener((o, oldValue, newValue) -> validate(newValue));
+  }
+
+  /**
+   * Sets up the tooltip with a tooltip message
    *
    * @param tooltipMessage the tooltip message to display when the value is invalid
    */
   public void setUp(String tooltipMessage) {
+    tooltip = new Tooltip(tooltipMessage);
+  }
 
-      valueProperty().addListener((o, oldValue, newValue) -> {
-        isValid.set(newValue != null);
-        setStyle((isValid.get()) ? "" : "-fx-border-color: red;-fx-focus-color:red;-fx-faint-focus-color: transparent;");
-        tooltipProperty().set((isValid.get()) ? null : new Tooltip(tooltipMessage));
-      });
+  /**
+   * This method validates the current combobox value. If there is no selected item
+   * the isValid field is set to false, the style of the combobox is changed and a tooltip is shown on hover.
+   * Otherwise the isValid field is set to true, the style is set to default and the tooltip is removed.
+   *
+   * @param value the current value of the combobox
+   */
+  private void validate(T value) {
+
+    isValid.set(value != null);
+    setStyle((isValid.get()) ? "" : "-fx-border-color: red;-fx-focus-color:red;-fx-faint-focus-color: transparent;");
+    tooltipProperty().set((isValid.get()) ? null : tooltip);
   }
 }

@@ -61,6 +61,9 @@ public class Warehouse extends BaseEntity {
   @Column(name = "climate_condition", nullable = false)
   private ClimateCondition climateCondition;
 
+  @Column(name="is_deleted", nullable = false)
+  private boolean isDeleted = false;
+
   @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
   private Set<WarehouseRentalRequest> warehouseRentalRequests;
 

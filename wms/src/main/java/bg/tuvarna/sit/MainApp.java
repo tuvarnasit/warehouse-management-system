@@ -68,7 +68,7 @@ public class MainApp extends Application {
   private void initializeApplication() {
 
     try {
-      ApplicationContext.getUSER_SERVICE().initializeAdministrators();
+      ApplicationContext.getUSER_SERVICE().initializeUsers();
     } catch (RegistrationException | InvalidKeySpecException | NoSuchAlgorithmException e) {
       LOGGER.error("Error during application initialization: ", e);
     }

@@ -70,24 +70,21 @@ public class WarehouseDAO {
   }
 
   /**
-   * Deletes a warehouse entity from the database within a transaction.
+   * Softly deletes a warehouse entity by setting the isDeleted flag of the warehouse to true
    * If an error occurs during the transaction it is rolled back.
    *
    * @param warehouse the warehouse entity to delete
    * @throws WarehouseDAOException if an error occurs during the deletion process of the entity
    */
-  public void delete(Warehouse warehouse) throws WarehouseDAOException {
+  public void softDelete(Warehouse warehouse) throws WarehouseDAOException {
 
     EntityManager em = entityManagerFactory.createEntityManager();
     EntityTransaction transaction = em.getTransaction();
 
     try {
       transaction.begin();
-      if (em.contains(warehouse)) {
-        em.remove(warehouse);
-      } else {
-        em.remove(em.merge(warehouse));
-      }
+      warehouse.setDeleted(true);
+      em.merge(warehouse);
       transaction.commit();
     } catch (Exception e) {
       throw handleExceptionAndRollback(transaction, "Error deleting warehouse entity", e);
@@ -114,6 +111,9 @@ public class WarehouseDAO {
       Warehouse warehouse = em.find(Warehouse.class, id);
       transaction.commit();
 
+      if(warehouse != null && warehouse.isDeleted()) {
+        return Optional.empty();
+      }
       return Optional.ofNullable(warehouse);
     } catch (Exception e) {
       throw handleExceptionAndRollback(transaction, "Error retrieving warehouse", e);
@@ -137,7 +137,9 @@ public class WarehouseDAO {
 
     try {
       transaction.begin();
-      List<Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w ", Warehouse.class).getResultList();
+      List<Warehouse> warehouses = em
+          .createQuery("SELECT w FROM Warehouse w WHERE w.isDeleted = false", Warehouse.class)
+          .getResultList();
       transaction.commit();
 
       return warehouses;
@@ -163,7 +165,8 @@ public class WarehouseDAO {
 
     try {
       transaction.begin();
-      List<Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w WHERE w.owner = :owner", Warehouse.class)
+      String jpql = "SELECT w FROM Warehouse w WHERE w.owner = :owner AND w.isDeleted = false";
+      List<Warehouse> warehouses = em.createQuery(jpql, Warehouse.class)
           .setParameter("owner", owner)
           .getResultList();
       transaction.commit();
@@ -191,7 +194,8 @@ public class WarehouseDAO {
 
     try {
       transaction.begin();
-      Warehouse warehouse = em.createQuery("SELECT w FROM Warehouse w WHERE w.owner = :owner AND w.name = :name", Warehouse.class)
+      String jpql = "SELECT w FROM Warehouse w WHERE w.owner = :owner AND w.name = :name AND w.isDeleted = false";
+      Warehouse warehouse = em.createQuery(jpql, Warehouse.class)
           .setParameter("name", name)
           .setParameter("owner", owner)
           .getSingleResult();

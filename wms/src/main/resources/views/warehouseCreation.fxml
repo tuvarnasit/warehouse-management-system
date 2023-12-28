@@ -3,12 +3,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.Button?>
 
 <?import bg.tuvarna.sit.wms.validation.ValidatingTextField?>
 <?import bg.tuvarna.sit.wms.validation.ValidatingComboBox?>
 <?import javafx.scene.layout.Region?>
+<?import bg.tuvarna.sit.wms.validation.ValidatingTextArea?>
 <VBox prefHeight="542.0" prefWidth="331.0" stylesheets="@../styles/warehouseCreation.css"
       xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
     <VBox>
@@ -47,7 +47,7 @@
     </VBox>
     <VBox>
         <Text text="Storage Type Description"/>
-        <TextArea fx:id="storageTypeDescArea" prefHeight="140.0" wrapText="true"/>
+        <ValidatingTextArea fx:id="storageTypeDescArea" prefHeight="140.0" wrapText="true"/>
     </VBox>
     <HBox id="buttons-wrapper">
         <Button id="save" onAction="#onSave" text="Save"/>
