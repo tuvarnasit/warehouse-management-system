@@ -178,7 +178,7 @@ public class WarehouseService {
     }
 
     try {
-      warehouseDAO.delete(warehouse);
+      warehouseDAO.softDelete(warehouse);
     } catch (WarehouseDAOException e) {
       String errorMessage = "Unexpected error during warehouse deletion";
       LOGGER.error(errorMessage, e);

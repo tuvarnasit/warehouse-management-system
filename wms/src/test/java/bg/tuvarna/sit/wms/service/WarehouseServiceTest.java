@@ -188,7 +188,7 @@ public class WarehouseServiceTest {
 
     warehouseService.deleteWarehouse(warehouseDTO);
 
-    verify(warehouseDAO, times(1)).delete(any(Warehouse.class));
+    verify(warehouseDAO, times(1)).softDelete(any(Warehouse.class));
   }
 
   @Test
@@ -236,7 +236,7 @@ public class WarehouseServiceTest {
 
     WarehouseDTO warehouseDTO = createWarehouseDTO();
     when(warehouseDAO.getById(warehouseDTO.getId())).thenReturn(Optional.of(createWarehouse()));
-    doThrow(new WarehouseDAOException("Deleting warehouse failed")).when(warehouseDAO).delete(any(Warehouse.class));
+    doThrow(new WarehouseDAOException("Deleting warehouse failed")).when(warehouseDAO).softDelete(any(Warehouse.class));
 
     assertThrows(WarehouseServiceException.class, () -> warehouseService.deleteWarehouse(warehouseDTO));
   }
