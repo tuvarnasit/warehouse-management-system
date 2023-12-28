@@ -198,9 +198,18 @@ public class UserService {
 
   private User createUser(String firstName, String lastName, String phone, String email,
                            String rawPassword, Role role)
-          throws InvalidKeySpecException, NoSuchAlgorithmException {
+      throws InvalidKeySpecException, NoSuchAlgorithmException, RegistrationException {
 
-    User user = new User();
+    if(role == null) {
+      throw new RegistrationException("Role must not be null");
+    }
+
+    User user = switch (role) {
+      case ADMIN -> new User();
+      case OWNER -> new Owner();
+      case AGENT -> new Agent();
+      case TENANT -> new Tenant();
+    };
 
     user.setFirstName(firstName);
     user.setLastName(lastName);
