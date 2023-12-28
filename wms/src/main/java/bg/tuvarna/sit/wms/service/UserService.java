@@ -70,10 +70,13 @@ public class UserService {
 
     // TODO: Remove the magic values by setting up an external configuration properties
     if (userDao.findByEmail("admin1@example.com").isEmpty()) {
-      saveUser(createAdmin("Admin1", "One", "1234567890", "admin1@example.com", "securepassword1"));
+      saveUser(createUser("Admin1", "One", "1234567890", "admin1@example.com", "securepassword1", Role.ADMIN));
     }
     if (userDao.findByEmail("admin2@example.com").isEmpty()) {
-      saveUser(createAdmin("Admin2", "Two", "0987654321", "admin2@example.com", "securepassword2"));
+      saveUser(createUser("Admin2", "Two", "0987654321", "admin2@example.com", "securepassword2", Role.ADMIN));
+    }
+    if (userDao.findByEmail("owner1@example.com").isEmpty()) {
+      saveUser(createUser("Owner1", "One", "0987654311", "owner1@example.com", "securepassword1", Role.OWNER));
     }
   }
 
@@ -193,17 +196,20 @@ public class UserService {
     };
   }
 
-  private User createAdmin(String firstName, String lastName, String phone, String email, String rawPassword) throws InvalidKeySpecException, NoSuchAlgorithmException {
-    User admin = new User();
+  private User createUser(String firstName, String lastName, String phone, String email,
+                           String rawPassword, Role role)
+          throws InvalidKeySpecException, NoSuchAlgorithmException {
 
-    admin.setFirstName(firstName);
-    admin.setLastName(lastName);
-    admin.setPhone(phone);
-    admin.setEmail(email);
-    admin.setPassword(passwordHashingService.generateStrongPasswordHash(rawPassword));
-    admin.setRole(Role.ADMIN);
+    User user = new User();
 
-    return admin;
+    user.setFirstName(firstName);
+    user.setLastName(lastName);
+    user.setPhone(phone);
+    user.setEmail(email);
+    user.setPassword(passwordHashingService.generateStrongPasswordHash(rawPassword));
+    user.setRole(role);
+
+    return user;
   }
 
   private String normalizePhoneNumber(String phone) {
