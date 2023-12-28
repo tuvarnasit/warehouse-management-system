@@ -8,9 +8,9 @@ import bg.tuvarna.sit.wms.enums.ClimateCondition;
 import bg.tuvarna.sit.wms.enums.Role;
 import bg.tuvarna.sit.wms.session.UserSession;
 import bg.tuvarna.sit.wms.validation.ValidatingComboBox;
+import bg.tuvarna.sit.wms.validation.ValidatingTextArea;
 import bg.tuvarna.sit.wms.validation.ValidatingTextField;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +39,7 @@ public abstract class BaseWarehouseDialogController implements DialogController 
   @FXML
   private ValidatingTextField storageTypeField;
   @FXML
-  private TextArea storageTypeDescArea;
+  private ValidatingTextArea storageTypeDescArea;
 
   @Setter
   @Getter
@@ -61,6 +61,7 @@ public abstract class BaseWarehouseDialogController implements DialogController 
     sizeField.setUp(value -> value.matches("^[1-9]\\d*(\\.\\d+)?$"), "Size must be a valid number");
     climateConditionComboBox.setUp("Climate condition cannot be empty");
     storageTypeField.setUp(value -> value.matches("^[a-zA-Z0-9\\s.,#()-]+$"), "Invalid storage type format");
+    storageTypeDescArea.setUp(value -> value.length() <= 400, "Description must be 400 characters maximum");
 
 
     climateConditionComboBox.getItems().setAll(ClimateCondition.values());

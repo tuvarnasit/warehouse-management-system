@@ -2,17 +2,17 @@ package bg.tuvarna.sit.wms.validation;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import lombok.Getter;
 
 import java.util.function.Predicate;
 
 /**
- * This class extends the TextField class in JavaFX and adds validation functionality.
+ * This class extends the TextArea class in JavaFX and adds validation functionality.
  * It uses a Predicate function to validate the text entered by the user.
  */
-public class ValidatingTextField extends TextField {
+public class ValidatingTextArea extends TextArea {
 
   @Getter
   private Predicate<String> validator;
@@ -23,21 +23,21 @@ public class ValidatingTextField extends TextField {
   /**
    * Adds a listener which validates the text field, when the text changes
    */
-  public ValidatingTextField() {
+  public ValidatingTextArea() {
 
     textProperty().addListener((o, oldValue, newValue) -> validate(newValue));
   }
 
   /**
-   * This method validates the current text of the text field. If the validator finds the text to be invalid
-   * the isValid field is set to false, the style of the text field is changed and a tooltip is shown on hover.
+   * This method validates the current text of the textarea. If the validator finds the text to be invalid
+   * the isValid field is set to false, the style of the textarea is changed and a tooltip is shown on hover.
    * Otherwise the isValid field is set to true, the style is set to default and the tooltip is removed.
    *
    * @param textValue the current text value
    */
   private void validate(String textValue) {
 
-    if (textValue.trim().isEmpty() || validator.test(textValue.trim())) {
+    if (validator.test(textValue.trim())) {
       isValid.set(true);
       setStyle("");
       tooltipProperty().set(null);
