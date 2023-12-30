@@ -1,6 +1,8 @@
-package bg.tuvarna.sit.wms.controllers;
+package bg.tuvarna.sit.wms.controllers.base;
 
 import bg.tuvarna.sit.wms.contracts.DialogController;
+import bg.tuvarna.sit.wms.controllers.WarehouseCreationDialogController;
+import bg.tuvarna.sit.wms.controllers.WarehouseUpdateDialogController;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.User;

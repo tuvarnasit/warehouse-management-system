@@ -1,5 +1,6 @@
 package bg.tuvarna.sit.wms.controllers;
 
+import bg.tuvarna.sit.wms.controllers.base.BaseWarehouseDialogController;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
 import bg.tuvarna.sit.wms.service.WarehouseService;
