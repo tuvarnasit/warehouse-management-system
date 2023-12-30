@@ -69,9 +69,9 @@ public class MainApp extends Application {
 
     try {
       ApplicationContext.getUSER_SERVICE().initializeUsers();
+      ApplicationContext.getREVIEW_SERVICE().initializeReviews();
     } catch (RegistrationException | InvalidKeySpecException | NoSuchAlgorithmException e) {
       LOGGER.error("Error during application initialization: ", e);
     }
   }
 }
-
