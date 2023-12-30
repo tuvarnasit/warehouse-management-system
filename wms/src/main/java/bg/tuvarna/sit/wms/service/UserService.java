@@ -23,10 +23,10 @@ import org.apache.logging.log4j.Logger;
  */
 public class UserService {
 
+  private static final Logger LOGGER = LogManager.getLogger(UserService.class);
+
   private final UserDao userDao;
   private final PasswordHashingService passwordHashingService;
-
-  private static final Logger LOGGER = LogManager.getLogger(UserService.class);
 
   public UserService(UserDao userDao, PasswordHashingService passwordHashingService) {
 
@@ -38,7 +38,8 @@ public class UserService {
    * Registers a new user based on the provided registration data.
    *
    * @param registrationDto Data Transfer Object containing user registration details.
-   * @throws RegistrationException if there is a problem with user registration, such as invalid input or persistence errors.
+   * @throws RegistrationException if there is a problem with user registration,
+   *                               such as invalid input or persistence errors.
    */
   public void registerUser(UserRegistrationDto registrationDto) throws RegistrationException {
 
@@ -70,13 +71,26 @@ public class UserService {
 
     // TODO: Remove the magic values by setting up an external configuration properties
     if (userDao.findByEmail("admin1@example.com").isEmpty()) {
-      saveUser(createUser("Admin1", "One", "1234567890", "admin1@example.com", "securepassword1", Role.ADMIN));
+      saveUser(
+              createUser("Admin1", "One", "1234567890", "admin1@example.com",
+                      "securepassword1", Role.ADMIN));
     }
     if (userDao.findByEmail("admin2@example.com").isEmpty()) {
-      saveUser(createUser("Admin2", "Two", "0987654321", "admin2@example.com", "securepassword2", Role.ADMIN));
+      saveUser(
+              createUser("Admin2", "Two", "0987654321", "admin2@example.com",
+                      "securepassword2", Role.ADMIN));
     }
+
     if (userDao.findByEmail("owner1@example.com").isEmpty()) {
-      saveUser(createUser("Owner1", "One", "0987654311", "owner1@example.com", "securepassword1", Role.OWNER));
+      saveUser(
+              createUser("Owner1", "One", "0987654311", "owner1@example.com",
+                      "securepassword1", Role.OWNER));
+    }
+
+    if (userDao.findByEmail("agent1@example.com").isEmpty()) {
+      saveUser(
+              createUser("Agent1", "One", "0987654312", "agent1@example.com",
+                      "securepassword1", Role.AGENT));
     }
   }
 
@@ -92,7 +106,9 @@ public class UserService {
     try {
       Optional<User> userOptional = userDao.findByEmail(email);
 
-      if (userOptional.isPresent() && passwordHashingService.validatePassword(password, userDao.getUserPasswordById(userOptional.get().getId()).get())) {
+      if (userOptional.isPresent() &&
+              passwordHashingService.validatePassword(password,
+                      userDao.getUserPasswordById(userOptional.get().getId()).get())) {
         UserSession.getInstance().setCurrentUser(userOptional.get());
         return true;
       }
@@ -197,10 +213,10 @@ public class UserService {
   }
 
   private User createUser(String firstName, String lastName, String phone, String email,
-                           String rawPassword, Role role)
-      throws InvalidKeySpecException, NoSuchAlgorithmException, RegistrationException {
+                          String rawPassword, Role role)
+          throws InvalidKeySpecException, NoSuchAlgorithmException, RegistrationException {
 
-    if(role == null) {
+    if (role == null) {
       throw new RegistrationException("Role must not be null");
     }
 
