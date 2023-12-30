@@ -1,0 +1,58 @@
+.table-view {
+    -fx-table-cell-border-color: transparent;
+    -fx-background-color: white;
+    -fx-selection-bar: #e1e1e1;
+    -fx-selection-bar-non-focused: #e1e1e1;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #f4f4f4;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+}
+
+.table-view .table-cell {
+    -fx-padding: 5px;
+    -fx-border-color: #d3d3d3;
+}
+
+.table-view .table-column {
+    -fx-alignment: center-left;
+}
+
+.table-view .table-row-cell:filled:selected {
+    -fx-background-color: #b0c4de;
+    -fx-table-cell-border-color: #b0c4de;
+}
+
+.table-view .table-row-cell {
+    -fx-border-width: 0px;
+    -fx-background-color: white;
+}
+
+.heading {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-background-color: #f4f4f4;
+    -fx-padding: 10px;
+}
+
+.button {
+    -fx-background-color: #5cb85c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 10px 20px;
+}
+
+.section-my-reviews {
+    -fx-alignment: center;
+}
+
+.table-row-cell:empty {
+    -fx-pref-height: 1px; /* Make empty rows very short */
+    -fx-opacity: 0; /* Make empty rows transparent */
+}
