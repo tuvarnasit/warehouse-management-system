@@ -4,6 +4,7 @@ import bg.tuvarna.sit.wms.controllers.MyReviewsController;
 import bg.tuvarna.sit.wms.controllers.WarehouseControlPanelController;
 import bg.tuvarna.sit.wms.dao.CityDAO;
 import bg.tuvarna.sit.wms.dao.CountryDAO;
+import bg.tuvarna.sit.wms.dao.ReviewDao;
 import bg.tuvarna.sit.wms.dao.WarehouseDAO;
 import bg.tuvarna.sit.wms.factory.ControllerFactory;
 import bg.tuvarna.sit.wms.controllers.HomeController;
@@ -25,6 +26,9 @@ public class ApplicationContext {
 
   private static final UserDao USER_DAO =
           new UserDao(JpaUtil.getEntityManagerFactory());
+
+  private static final ReviewDao REVIEW_DAO =
+          new ReviewDao(JpaUtil.getEntityManagerFactory());
 
   @Getter
   private static final UserService USER_SERVICE =
@@ -51,7 +55,7 @@ public class ApplicationContext {
 
   @Getter
   private static final ReviewService REVIEW_SERVICE =
-          new ReviewService(USER_DAO);
+          new ReviewService(USER_DAO, REVIEW_DAO);
 
   @Getter
   private static final ControllerFactory CONTROLLER_FACTORY = createControllerFactory();
