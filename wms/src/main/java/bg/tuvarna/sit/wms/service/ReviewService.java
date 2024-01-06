@@ -2,6 +2,7 @@ package bg.tuvarna.sit.wms.service;
 
 import bg.tuvarna.sit.wms.dao.ReviewDao;
 import bg.tuvarna.sit.wms.dao.UserDao;
+import bg.tuvarna.sit.wms.dto.AddReviewDto;
 import bg.tuvarna.sit.wms.dto.ViewReviewDto;
 import bg.tuvarna.sit.wms.entities.Agent;
 import bg.tuvarna.sit.wms.entities.Review;
@@ -9,6 +10,8 @@ import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.exceptions.ReviewPersistenceException;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,6 +23,10 @@ public class ReviewService {
   private final UserDao userDao;
   private final ReviewDao reviewDao;
 
+  @Setter
+  @Getter
+  private Long agentId;
+
   public ReviewService(UserDao userDao, ReviewDao reviewDao) {
     this.userDao = userDao;
     this.reviewDao = reviewDao;
@@ -28,16 +35,16 @@ public class ReviewService {
   /**
    * Creates a new review and persists it to the database along with updating the associated agent.
    *
-   * @param agentId     The ID of the agent who will receive the review.
-   * @param sender      The user who sends the review.
-   * @param assessment  The assessment score of the review.
-   * @param description The descriptive text of the review.
+   * @param agentId      The ID of the agent who will receive the review.
+   * @param sender       The user who sends the review.
+   * @param addReviewDto The DTO used to create new review.
    */
-  public void createAndPersistReview(Long agentId, User sender, Integer assessment, String description) {
+  public void createAndPersistReview(Long agentId, User sender, AddReviewDto addReviewDto) {
 
     try {
       Agent agent = userDao.findAgentById(agentId);
-      Review review = createReview(agent, sender, assessment, description);
+      Review review = createReview(agent, sender, addReviewDto.getAssessment(),
+              addReviewDto.getDescription());
       reviewDao.persistReview(review, agentId);
     } catch (EntityNotFoundException e) {
       LOGGER.error("Agent not found with ID: {}", agentId, e);
@@ -60,7 +67,7 @@ public class ReviewService {
             () -> new IllegalStateException("Owner not found"));
 
     deleteAllReviewsForAgent(agent);
-    createAndPersistReview(agent.getId(), owner, 5, "Excellent service.");
+    createAndPersistReview(agent.getId(), owner, new AddReviewDto(5, "Excellent service."));
     LOGGER.info("Successfully initialized reviews for agent {}", agent.getEmail());
   }
 
