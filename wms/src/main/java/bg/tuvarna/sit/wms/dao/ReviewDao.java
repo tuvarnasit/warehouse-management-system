@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 
 /**
  * Data Access Object (DAO) for review operations.
@@ -91,15 +92,17 @@ public class ReviewDao {
     EntityManager entityManager = entityManagerFactory.createEntityManager();
 
     try {
-      Agent agent = entityManager.find(Agent.class, currentUserId);
-      if (agent != null) {
-        agent.getReceivedReviews()
-                .forEach(review -> reviewDtos.add(new ViewReviewDto(review)));
-      }
+      String jpql = "SELECT r FROM Review r JOIN r.receiver agent WHERE agent.id = :currentUserId ORDER BY r.id ASC";
+      TypedQuery<Review> query = entityManager.createQuery(jpql, Review.class);
+      query.setParameter("currentUserId", currentUserId);
+
+      List<Review> reviews = query.getResultList();
+      reviews.forEach(review -> reviewDtos.add(new ViewReviewDto(review)));
     } finally {
       entityManager.close();
     }
 
     return reviewDtos;
   }
+
 }
