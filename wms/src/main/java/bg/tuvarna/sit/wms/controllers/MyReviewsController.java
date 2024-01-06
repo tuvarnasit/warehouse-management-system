@@ -5,6 +5,9 @@ import bg.tuvarna.sit.wms.dto.ViewReviewDto;
 import bg.tuvarna.sit.wms.service.ReviewService;
 import bg.tuvarna.sit.wms.session.UserSession;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -31,10 +34,14 @@ public class MyReviewsController extends BaseMenuController {
   private TableColumn<ViewReviewDto, String> senderColumn;
   private final ObservableList<ViewReviewDto> reviewList = FXCollections.observableArrayList();
 
-  private final ReviewService reviewService;
 
-  public MyReviewsController(ReviewService reviewService) {
+  private final ReviewService reviewService;
+  private final ScheduledExecutorService scheduledExecutorService;
+
+
+  public MyReviewsController(ReviewService reviewService, ScheduledExecutorService scheduledExecutorService) {
     this.reviewService = reviewService;
+    this.scheduledExecutorService = scheduledExecutorService;
   }
 
   @Override
@@ -47,10 +54,9 @@ public class MyReviewsController extends BaseMenuController {
     assessmentColumn.setCellValueFactory(new PropertyValueFactory<>("assessment"));
     descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
     senderColumn.setCellValueFactory(new PropertyValueFactory<>("senderName"));
-
-    loadReviews();
-
     reviewsTable.setItems(reviewList);
+
+    startPeriodicRefresh();
   }
 
   private void loadReviews() {
@@ -72,5 +78,12 @@ public class MyReviewsController extends BaseMenuController {
     double minHeight = 56;
     double height = Math.max(minHeight, numberOfReviews * rowHeight);
     reviewsTable.setStyle("-fx-pref-height: " + height + "px;");
+  }
+
+
+  private void startPeriodicRefresh() {
+
+    scheduledExecutorService.scheduleAtFixedRate(() ->
+            Platform.runLater(this::loadReviews), 0, 10, TimeUnit.SECONDS);
   }
 }
