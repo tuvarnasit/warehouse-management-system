@@ -1,6 +1,7 @@
 package bg.tuvarna.sit.wms.context;
 
 import bg.tuvarna.sit.wms.controllers.MyReviewsController;
+import bg.tuvarna.sit.wms.controllers.RentalAgreementController;
 import bg.tuvarna.sit.wms.controllers.WarehouseControlPanelController;
 import bg.tuvarna.sit.wms.dao.CityDAO;
 import bg.tuvarna.sit.wms.dao.CountryDAO;
@@ -20,6 +21,8 @@ import bg.tuvarna.sit.wms.service.ReviewService;
 import bg.tuvarna.sit.wms.service.UserService;
 import bg.tuvarna.sit.wms.service.WarehouseService;
 import bg.tuvarna.sit.wms.util.JpaUtil;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import lombok.Getter;
 
 public class ApplicationContext {
@@ -60,6 +63,8 @@ public class ApplicationContext {
   @Getter
   private static final ControllerFactory CONTROLLER_FACTORY = createControllerFactory();
 
+  private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+
   private static ControllerFactory createControllerFactory() {
 
     ControllerFactory factory = new ControllerFactory();
@@ -67,7 +72,8 @@ public class ApplicationContext {
     factory.addController(HomeController.class, () -> new HomeController(USER_SERVICE, CREDENTIAL_MANAGER_SERVICE));
     factory.addController(RegistrationController.class, () -> new RegistrationController(USER_SERVICE));
     factory.addController(WarehouseControlPanelController.class, () -> new WarehouseControlPanelController(WAREHOUSE_SERVICE));
-    factory.addController(MyReviewsController.class, () -> new MyReviewsController(REVIEW_SERVICE));
+    factory.addController(MyReviewsController.class, () -> new MyReviewsController(REVIEW_SERVICE, SCHEDULED_EXECUTOR_SERVICE));
+    factory.addController(RentalAgreementController.class, () -> new RentalAgreementController(WAREHOUSE_SERVICE, REVIEW_SERVICE));
 
     return factory;
   }
