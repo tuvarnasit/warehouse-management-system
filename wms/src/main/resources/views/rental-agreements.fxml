@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="bg.tuvarna.sit.wms.controllers.RentalAgreementController"
+      stylesheets="@../styles/application.css, @../styles/reviews.css" prefHeight="576.0" prefWidth="1024.0">
+
+    <left>
+        <VBox fx:id="sideMenu" styleClass="side-menu"/>
+    </left>
+
+    <center>
+        <VBox styleClass="section-my-reviews" spacing="10">
+            <Label text="My Rental Agreements" styleClass="heading"/>
+            <TableView fx:id="rentalAgreementTable" prefHeight="400" prefWidth="600">
+                <columns>
+                    <TableColumn fx:id="nameColumn" text="Name"/>
+                    <TableColumn fx:id="addressColumn" text="Address"/>
+                    <TableColumn fx:id="sizeColumn" text="Size"/>
+                    <TableColumn fx:id="statusColumn" text="Status"/>
+                    <TableColumn fx:id="storageTypeColumn" text="Storage"/>
+                    <TableColumn fx:id="climateConditionColumn" text="Climate"/>
+                    <TableColumn fx:id="startDateConditionColumn" text="Start Date"/>
+                    <TableColumn fx:id="endDateConditionColumn" text="End Date"/>
+                    <TableColumn fx:id="pricePerMonthColumn" text="PPM"/>
+                    <TableColumn fx:id="agentFirstNameColumn" text="Agent Name"/>
+                    <TableColumn fx:id="agentEmailColumn" text="Agent Email"/>
+                    <TableColumn fx:id="reviewAgentColumn" text="Action"/>
+
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>
