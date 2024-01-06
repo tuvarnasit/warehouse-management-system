@@ -4,10 +4,9 @@ import bg.tuvarna.sit.wms.controllers.base.BaseWarehouseDialogController;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
 import bg.tuvarna.sit.wms.service.WarehouseService;
+import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.showAlert;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-
-import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.showAlert;
 
 /**
  * This controller class handles the creation of a new warehouse. Inherits methods from the
