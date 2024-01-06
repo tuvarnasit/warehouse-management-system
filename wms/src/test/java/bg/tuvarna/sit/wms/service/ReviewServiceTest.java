@@ -2,6 +2,7 @@ package bg.tuvarna.sit.wms.service;
 
 import bg.tuvarna.sit.wms.dao.ReviewDao;
 import bg.tuvarna.sit.wms.dao.UserDao;
+import bg.tuvarna.sit.wms.dto.AddReviewDto;
 import bg.tuvarna.sit.wms.dto.ViewReviewDto;
 import bg.tuvarna.sit.wms.entities.Agent;
 import bg.tuvarna.sit.wms.entities.Review;
@@ -57,7 +58,7 @@ public class ReviewServiceTest {
     when(userDao.findAgentById(agentId)).thenReturn(agent);
 
     // When
-    reviewService.createAndPersistReview(agentId, sender, assessment, description);
+    reviewService.createAndPersistReview(agentId, sender, new AddReviewDto(assessment, description));
 
     // Then
     verify(userDao).findAgentById(agentId);
@@ -75,7 +76,7 @@ public class ReviewServiceTest {
     when(userDao.findAgentById(agentId)).thenThrow(new EntityNotFoundException());
 
     // When
-    reviewService.createAndPersistReview(agentId, sender, assessment, description);
+    reviewService.createAndPersistReview(agentId, sender, new AddReviewDto(assessment, description));
 
     // Then
     verify(userDao).findAgentById(agentId);
@@ -96,7 +97,7 @@ public class ReviewServiceTest {
             .when(reviewDao).persistReview(any(Review.class), eq(agentId));
 
     // When
-    reviewService.createAndPersistReview(agentId, sender, assessment, description);
+    reviewService.createAndPersistReview(agentId, sender, new AddReviewDto(assessment, description));
 
     // Then
     verify(userDao).findAgentById(agentId);

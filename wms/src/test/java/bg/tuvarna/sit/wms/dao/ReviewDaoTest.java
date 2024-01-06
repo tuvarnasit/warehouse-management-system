@@ -7,6 +7,8 @@ import bg.tuvarna.sit.wms.entities.Agent;
 import bg.tuvarna.sit.wms.entities.Review;
 import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.exceptions.ReviewPersistenceException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,10 +17,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.any;
@@ -40,6 +44,9 @@ public class ReviewDaoTest {
   @Mock
   private EntityTransaction transaction;
 
+  @Mock
+  private TypedQuery<Review> typedQuery;
+
   @InjectMocks
   private ReviewDao reviewDao;
 
@@ -48,6 +55,7 @@ public class ReviewDaoTest {
     MockitoAnnotations.openMocks(this);
     when(entityManagerFactory.createEntityManager()).thenReturn(entityManager);
     when(entityManager.getTransaction()).thenReturn(transaction);
+    when(entityManager.createQuery(anyString(), eq(Review.class))).thenReturn(typedQuery);
   }
 
   @Test
@@ -138,17 +146,16 @@ public class ReviewDaoTest {
     // Given
     Long currentUserId = 1L;
     Agent agent = mock(Agent.class);
-    Set<Review> reviews = Set.of(
+    List<Review> reviews = Arrays.asList(
             createReview(agent, new User(), 5, "test"),
             createReview(agent, new User(), 1, "test"));
-    when(entityManager.find(Agent.class, currentUserId)).thenReturn(agent);
-    when(agent.getReceivedReviews()).thenReturn(reviews);
+    when(entityManager.createQuery(anyString(), eq(Review.class))).thenReturn(typedQuery);
+    when(typedQuery.getResultList()).thenReturn(reviews);
 
     // When
     List<ViewReviewDto> result = reviewDao.getReviewsForCurrentUser(currentUserId);
 
     // Then
-    verify(entityManager).find(Agent.class, currentUserId);
     verify(entityManager).close();
     Assertions.assertEquals(reviews.size(), result.size());
   }
@@ -157,13 +164,13 @@ public class ReviewDaoTest {
   public void getReviewsForCurrentUser_ShouldReturnEmptyListWhenAgentNotFound() {
     // Given
     Long currentUserId = 1L;
-    when(entityManager.find(Agent.class, currentUserId)).thenReturn(null);
+    when(entityManager.createQuery(anyString(), eq(Review.class))).thenReturn(typedQuery);
+    when(typedQuery.getResultList()).thenReturn(new ArrayList<>());
 
     // When
     List<ViewReviewDto> result = reviewDao.getReviewsForCurrentUser(currentUserId);
 
     // Then
-    verify(entityManager).find(Agent.class, currentUserId);
     verify(entityManager).close();
     Assertions.assertTrue(result.isEmpty());
   }
