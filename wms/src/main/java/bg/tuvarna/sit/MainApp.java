@@ -2,18 +2,12 @@ package bg.tuvarna.sit;
 
 import bg.tuvarna.sit.wms.context.ApplicationContext;
 import bg.tuvarna.sit.wms.exceptions.RegistrationException;
-import bg.tuvarna.sit.wms.session.KeyUtil;
 import bg.tuvarna.sit.wms.util.ViewLoaderUtil;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-
 import javafx.application.Application;
 import javafx.stage.Stage;
-import javax.crypto.SecretKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
