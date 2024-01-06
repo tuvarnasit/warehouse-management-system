@@ -2,17 +2,24 @@ package bg.tuvarna.sit.wms.service;
 
 import bg.tuvarna.sit.wms.dao.WarehouseDAO;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
+import bg.tuvarna.sit.wms.dto.WarehouseRentalAgreementDto;
 import bg.tuvarna.sit.wms.entities.Address;
 import bg.tuvarna.sit.wms.entities.City;
 import bg.tuvarna.sit.wms.entities.Country;
 import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.StorageType;
 import bg.tuvarna.sit.wms.entities.Warehouse;
+import bg.tuvarna.sit.wms.enums.ClimateCondition;
 import bg.tuvarna.sit.wms.enums.WarehouseStatus;
 import bg.tuvarna.sit.wms.exceptions.CityCreationException;
 import bg.tuvarna.sit.wms.exceptions.CountryCreationException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
+import bg.tuvarna.sit.wms.exceptions.WarehousePersistenceException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
+import bg.tuvarna.sit.wms.util.JpaUtil;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -183,6 +190,57 @@ public class WarehouseService {
       String errorMessage = "Unexpected error during warehouse deletion";
       LOGGER.error(errorMessage, e);
       throw new WarehouseServiceException(errorMessage, e);
+    }
+  }
+
+  /**
+   * Retrieves a list of WarehouseRentalAgreementDto for the warehouses owned by the owner with the given ID.
+   *
+   * @param ownerId The ID of the owner whose warehouses with rental agreements are to be retrieved.
+   * @return A list of WarehouseRentalAgreementDto objects.
+   * @throws WarehouseServiceException If there is an error during the data fetch process.
+   */
+  public List<WarehouseRentalAgreementDto> getWarehousesWithRentalAgreementsForOwner(Long ownerId)
+          throws WarehouseServiceException {
+    try {
+      return warehouseDAO.getWarehousesWithRentalAgreementsForOwner(ownerId);
+    } catch (Exception e) {
+      LOGGER.error("Error retrieving warehouses with rental agreements for owner with ID {}: {}", ownerId, e.getMessage(), e);
+      throw new WarehouseServiceException("Error retrieving warehouses with rental agreements for owner.", e);
+    }
+  }
+
+  // TODO: Might be used for demo data initialization
+  public void createAndPersistWarehouse(String name, Owner owner, Double size, Address address,
+                                        WarehouseStatus status, StorageType storageType,
+                                        ClimateCondition climateCondition, boolean isDeleted)
+          throws WarehousePersistenceException {
+
+    EntityManager entityManager = JpaUtil.getEntityManagerFactory().createEntityManager();
+    EntityTransaction transaction = entityManager.getTransaction();
+
+    try {
+      transaction.begin();
+
+      Warehouse warehouse = new Warehouse();
+      warehouse.setName(name);
+      warehouse.setOwner(owner);
+      warehouse.setSize(size);
+      warehouse.setAddress(address);
+      warehouse.setStatus(status);
+      warehouse.setStorageType(storageType);
+      warehouse.setClimateCondition(climateCondition);
+      warehouse.setDeleted(isDeleted);
+
+      entityManager.persist(warehouse);
+      transaction.commit();
+    } catch (PersistenceException e) {
+      if (transaction.isActive()) {
+        transaction.rollback();
+      }
+      throw new WarehousePersistenceException("Could not persist warehouse.", e);
+    } finally {
+      entityManager.close();
     }
   }
 
