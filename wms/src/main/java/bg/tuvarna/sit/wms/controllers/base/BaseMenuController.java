@@ -34,9 +34,9 @@ public class BaseMenuController {
 
   protected void buildMenu() {
 
-    addToggleButtonToPane(
-            createToggleButton("Warehouses", e -> loadView("/views/warehouseControlPanel.fxml", e)),
-            sideMenu);
+    Predicate<User> isOwnerPredicate = user -> Role.OWNER.equals(user.getRole());    addToggleButtonToPane(
+            createToggleButton("My Warehouses", e -> loadView("/views/warehouseControlPanel.fxml", e)),
+            sideMenu, isOwnerPredicate);
 
     addToggleButtonToPane(
             createToggleButton("My Profile", e -> loadView("/views/profile.fxml", e)),
@@ -49,6 +49,9 @@ public class BaseMenuController {
     Predicate<User> isAgentPredicate = user -> Role.AGENT.equals(user.getRole());
     addToggleButtonToPane(createToggleButton("My Reviews", e -> loadView("/views/reviews.fxml", e)),
             sideMenu, isAgentPredicate);
+
+    addToggleButtonToPane(createToggleButton("My Rentals", e -> loadView("/views/rental-agreements.fxml", e)),
+            sideMenu, isOwnerPredicate);
 
     addToggleButtonToPane(createToggleButton("Logout", this::handleLogoutAction, Optional.of("logoutButton"),
             Optional.of("button-logout")), sideMenu);
