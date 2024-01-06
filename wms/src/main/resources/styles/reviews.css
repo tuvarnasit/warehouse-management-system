@@ -41,11 +41,11 @@
 }
 
 .button {
-    -fx-background-color: #5cb85c;
+    -fx-background-color: rgb(255, 165, 0);
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-cursor: hand;
-    -fx-padding: 10px 20px;
+    -fx-padding: 5px 5px;
 }
 
 .section-my-reviews {
