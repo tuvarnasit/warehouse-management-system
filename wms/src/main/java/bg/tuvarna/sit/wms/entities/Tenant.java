@@ -2,9 +2,12 @@ package bg.tuvarna.sit.wms.entities;
 
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import bg.tuvarna.sit.wms.entities.base.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,11 +28,21 @@ import lombok.Setter;
 @Table(name = "tenants")
 @Getter
 @Setter
-public class Tenant extends User {
+public class Tenant extends BaseEntity {
+
+
+  @Column(name = "first_name", nullable = false)
+  private String firstName;
+
+  @Column(name = "last_name", nullable = false)
+  private String lastName;
+
+  @Column(name="company_name", nullable = false)
+  private String companyName;
+
+  @Column(name="company_id", nullable = false)
+  private String companyId;
 
   @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL)
   private Set<RentalAgreement> rentalAgreements;
-
-  @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-  private Set<Review> sentReviews;
 }
