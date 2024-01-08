@@ -136,10 +136,10 @@ public class WarehouseService {
   }
 
   /**
-   * Retrieves all of the warehouses owned by a given owner.
+   * Retrieves all the warehouses owned by a given owner.
    *
    * @param owner the owner of the warehouses to be retrieved
-   * @return a list of DTOs containing information about all of the warehouses owned by the owner
+   * @return a list of DTOs containing information about all the warehouses owned by the owner
    * @throws WarehouseServiceException if there is an error during the retrieval process
    */
   public List<WarehouseDTO> getWarehouseDTOsByOwner(Owner owner) throws WarehouseServiceException {
@@ -243,24 +243,31 @@ public class WarehouseService {
     return warehouse;
   }
 
-  public void loadWarehousesFromCSV(String csvFilePath) throws IOException, WarehousePersistenceException, WarehouseDAOException, CityCreationException, CountryCreationException {
-    try (BufferedReader br = new BufferedReader(new FileReader(Paths.get(csvFilePath).toFile()))) {
-      String line;
-      boolean header = true;
-      while ((line = br.readLine()) != null) {
-        if (header) {
-          header = false;
-          continue; // Skip header line
-        }
-        String[] values = line.split(",");
-        Warehouse warehouse = createWarehouseFromCSV(values);
+  public void loadWarehousesFromCSV(BufferedReader reader)
+          throws IOException, WarehousePersistenceException, WarehouseDAOException,
+          CityCreationException, CountryCreationException {
+
+    String line;
+    boolean header = true;
+    while ((line = reader.readLine()) != null) {
+      if (header) {
+        header = false;
+        continue;
+      }
+      String[] values = line.split(",");
+      Warehouse warehouse = createWarehouseFromCSV(values);
+      if (warehouseDAO.findByName(warehouse.getName()).isEmpty()) {
         warehouseDAO.save(warehouse);
+        LOGGER.info("Warehouse with name '{}' is saved in the database.", warehouse.getName());
+      } else {
+        LOGGER.info("Warehouse with name '{}' already exists. Skipping.", warehouse.getName());
       }
     }
+    reader.close();
   }
 
   private Warehouse createWarehouseFromCSV(String[] values) throws CityCreationException, CountryCreationException {
-    // Assumes that values are in the correct order and format as per the CSV
+
     String name = values[0];
     double size = Double.parseDouble(values[1]);
     Long ownerId = Long.parseLong(values[2]);
@@ -275,7 +282,6 @@ public class WarehouseService {
 
     return createWarehouse(name, size, ownerId, street, zipCode, cityName, countryName, status, climate, storageTypeName, storageTypeDescription);
   }
-
 
 
   /**
