@@ -2,6 +2,7 @@ package bg.tuvarna.sit.wms.dao;
 
 import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.Warehouse;
+import bg.tuvarna.sit.wms.enums.WarehouseStatus;
 import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
 
 import javax.persistence.EntityManager;
@@ -158,7 +159,7 @@ public class WarehouseDAO {
    * @return a list of all warehouses owned by the owner
    * @throws WarehouseDAOException if an error occurs during the retrieving process of the entities
    */
-  public List<Warehouse> getWarehousesByOwner(Owner owner) throws WarehouseDAOException {
+  public List<Warehouse> getAllWarehousesByOwner(Owner owner) throws WarehouseDAOException {
 
     EntityManager em = entityManagerFactory.createEntityManager();
     EntityTransaction transaction = em.getTransaction();
@@ -168,6 +169,36 @@ public class WarehouseDAO {
       String jpql = "SELECT w FROM Warehouse w WHERE w.owner = :owner AND w.isDeleted = false";
       List<Warehouse> warehouses = em.createQuery(jpql, Warehouse.class)
           .setParameter("owner", owner)
+          .getResultList();
+      transaction.commit();
+
+      return warehouses;
+    } catch (Exception e) {
+      throw handleExceptionAndRollback(transaction,"Error retrieving warehouse entities", e);
+    } finally {
+      em.close();
+    }
+  }
+
+  /**
+   * Retrieves all available warehouse entities owned by an owner from the database within a transaction.
+   * If an error occurs during the transaction it is rolled back.
+   *
+   * @param owner the owner of the warehouses
+   * @return a list of all available warehouses owned by the owner
+   * @throws WarehouseDAOException if an error occurs during the retrieving process of the entities
+   */
+  public List<Warehouse> getAvailableWarehousesByOwner(Owner owner) throws WarehouseDAOException {
+
+    EntityManager em = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+
+    try {
+      transaction.begin();
+      String jpql = "SELECT w FROM Warehouse w WHERE w.owner = :owner AND w.status = :available AND w.isDeleted = false";
+      List<Warehouse> warehouses = em.createQuery(jpql, Warehouse.class)
+          .setParameter("owner", owner)
+          .setParameter("available", WarehouseStatus.AVAILABLE)
           .getResultList();
       transaction.commit();
 

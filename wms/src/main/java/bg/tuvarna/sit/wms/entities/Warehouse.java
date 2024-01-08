@@ -30,7 +30,7 @@ import java.util.Set;
  * @since 1.0.0
  */
 @Entity
-@Table(name = "warehouses", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "owner_id"})})
+@Table(name = "warehouses")
 @Getter
 @Setter
 public class Warehouse extends BaseEntity {
@@ -63,9 +63,6 @@ public class Warehouse extends BaseEntity {
 
   @Column(name="is_deleted", nullable = false)
   private boolean isDeleted = false;
-
-  @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
-  private Set<WarehouseRentalRequest> warehouseRentalRequests;
 
   @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
   private Set<RentalAgreement> rentalAgreements;
