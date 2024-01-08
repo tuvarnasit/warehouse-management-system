@@ -9,7 +9,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="800" prefHeight="600" spacing="10" xmlns="http://javafx.com/javafx"
+<VBox prefHeight="576.0" prefWidth="1024.0" spacing="10" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="bg.tuvarna.sit.wms.controllers.RegistrationController"
       alignment="CENTER"

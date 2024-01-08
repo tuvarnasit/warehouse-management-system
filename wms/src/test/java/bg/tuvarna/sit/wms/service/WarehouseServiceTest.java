@@ -2,6 +2,7 @@ package bg.tuvarna.sit.wms.service;
 
 import bg.tuvarna.sit.wms.dao.WarehouseDAO;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
+import bg.tuvarna.sit.wms.dto.WarehouseRentalAgreementDto;
 import bg.tuvarna.sit.wms.entities.Address;
 import bg.tuvarna.sit.wms.entities.City;
 import bg.tuvarna.sit.wms.entities.Country;
@@ -14,6 +15,9 @@ import bg.tuvarna.sit.wms.exceptions.CityCreationException;
 import bg.tuvarna.sit.wms.exceptions.CountryCreationException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
+import java.math.BigDecimal;
+import java.util.Date;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -239,6 +243,34 @@ public class WarehouseServiceTest {
     doThrow(new WarehouseDAOException("Deleting warehouse failed")).when(warehouseDAO).softDelete(any(Warehouse.class));
 
     assertThrows(WarehouseServiceException.class, () -> warehouseService.deleteWarehouse(warehouseDTO));
+  }
+
+  @Test
+  public void testGetWarehousesWithRentalAgreementsForOwner_Success() throws WarehouseServiceException {
+    Long ownerId = 1L;
+    WarehouseRentalAgreementDto dto = new WarehouseRentalAgreementDto("Warehouse1", "Street 123", 100.0,
+            WarehouseStatus.AVAILABLE, "Storage Type",
+            ClimateCondition.AMBIENT, new Date(), new Date(),
+            new BigDecimal("1000"), "John", "john@example.com", 2L);
+    List<WarehouseRentalAgreementDto> expectedList = Collections.singletonList(dto);
+
+    when(warehouseDAO.getWarehousesWithRentalAgreementsForOwner(ownerId)).thenReturn(expectedList);
+
+    List<WarehouseRentalAgreementDto> result = warehouseService.getWarehousesWithRentalAgreementsForOwner(ownerId);
+
+    assertNotNull(result);
+    assertFalse(result.isEmpty());
+    assertEquals(expectedList, result);
+  }
+
+  @Test
+  public void testGetWarehousesWithRentalAgreementsForOwner_Exception() {
+
+    Long ownerId = 1L;
+    when(warehouseDAO.getWarehousesWithRentalAgreementsForOwner(ownerId)).thenThrow(new RuntimeException("Database error"));
+
+    assertThrows(WarehouseServiceException.class,
+            () -> warehouseService.getWarehousesWithRentalAgreementsForOwner(ownerId));
   }
 
   private WarehouseDTO createWarehouseDTO() {

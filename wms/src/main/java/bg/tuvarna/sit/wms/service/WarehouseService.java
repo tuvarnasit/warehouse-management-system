@@ -2,17 +2,24 @@ package bg.tuvarna.sit.wms.service;
 
 import bg.tuvarna.sit.wms.dao.WarehouseDAO;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
+import bg.tuvarna.sit.wms.dto.WarehouseRentalAgreementDto;
 import bg.tuvarna.sit.wms.entities.Address;
 import bg.tuvarna.sit.wms.entities.City;
 import bg.tuvarna.sit.wms.entities.Country;
 import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.StorageType;
 import bg.tuvarna.sit.wms.entities.Warehouse;
+import bg.tuvarna.sit.wms.enums.ClimateCondition;
 import bg.tuvarna.sit.wms.enums.WarehouseStatus;
 import bg.tuvarna.sit.wms.exceptions.CityCreationException;
 import bg.tuvarna.sit.wms.exceptions.CountryCreationException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
+import bg.tuvarna.sit.wms.exceptions.WarehousePersistenceException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,12 +36,14 @@ public class WarehouseService {
   private final WarehouseDAO warehouseDAO;
   private final CountryService countryService;
   private final CityService cityService;
+  private final UserService userService;
   private static final Logger LOGGER = LogManager.getLogger(WarehouseService.class);
 
-  public WarehouseService(WarehouseDAO warehouseDAO, CountryService countryService, CityService cityService) {
+  public WarehouseService(WarehouseDAO warehouseDAO, CountryService countryService, CityService cityService, UserService userService) {
     this.warehouseDAO = warehouseDAO;
     this.countryService = countryService;
     this.cityService = cityService;
+    this.userService = userService;
   }
 
   /**
@@ -185,6 +194,89 @@ public class WarehouseService {
       throw new WarehouseServiceException(errorMessage, e);
     }
   }
+
+  /**
+   * Retrieves a list of WarehouseRentalAgreementDto for the warehouses owned by the owner with the given ID.
+   *
+   * @param ownerId The ID of the owner whose warehouses with rental agreements are to be retrieved.
+   * @return A list of WarehouseRentalAgreementDto objects.
+   * @throws WarehouseServiceException If there is an error during the data fetch process.
+   */
+  public List<WarehouseRentalAgreementDto> getWarehousesWithRentalAgreementsForOwner(Long ownerId)
+          throws WarehouseServiceException {
+    try {
+      return warehouseDAO.getWarehousesWithRentalAgreementsForOwner(ownerId);
+    } catch (Exception e) {
+      LOGGER.error("Error retrieving warehouses with rental agreements for owner with ID {}: {}", ownerId, e.getMessage(), e);
+      throw new WarehouseServiceException("Error retrieving warehouses with rental agreements for owner.", e);
+    }
+  }
+  private Warehouse createWarehouse(String name, double size, Long ownerId, String street, String zipCode, String cityName,
+                                    String countryName, WarehouseStatus status, ClimateCondition climate,
+                                    String storageTypeName, String storageTypeDescription)
+          throws CityCreationException, CountryCreationException {
+
+    Country country = countryService.getOrCreateCountry(countryName);
+    City city = cityService.getOrCreateCity(cityName, country);
+
+    Address address = new Address();
+    address.setCity(city);
+    address.setStreet(street);
+    address.setZipCode(zipCode);
+
+    StorageType storageType = new StorageType();
+    storageType.setDescription(storageTypeDescription);
+    storageType.setTypeName(storageTypeName);
+
+    Owner owner = userService.findOwnerById(ownerId);
+
+    Warehouse warehouse = new Warehouse();
+    warehouse.setName(name);
+    warehouse.setSize(size);
+    warehouse.setOwner(owner);
+    warehouse.setAddress(address);
+    warehouse.setStatus(status);
+    warehouse.setClimateCondition(climate);
+    warehouse.setStorageType(storageType);
+    warehouse.setDeleted(false);
+
+    return warehouse;
+  }
+
+  public void loadWarehousesFromCSV(String csvFilePath) throws IOException, WarehousePersistenceException, WarehouseDAOException, CityCreationException, CountryCreationException {
+    try (BufferedReader br = new BufferedReader(new FileReader(Paths.get(csvFilePath).toFile()))) {
+      String line;
+      boolean header = true;
+      while ((line = br.readLine()) != null) {
+        if (header) {
+          header = false;
+          continue; // Skip header line
+        }
+        String[] values = line.split(",");
+        Warehouse warehouse = createWarehouseFromCSV(values);
+        warehouseDAO.save(warehouse);
+      }
+    }
+  }
+
+  private Warehouse createWarehouseFromCSV(String[] values) throws CityCreationException, CountryCreationException {
+    // Assumes that values are in the correct order and format as per the CSV
+    String name = values[0];
+    double size = Double.parseDouble(values[1]);
+    Long ownerId = Long.parseLong(values[2]);
+    String street = values[3];
+    String zipCode = values[4];
+    String cityName = values[5];
+    String countryName = values[6];
+    WarehouseStatus status = WarehouseStatus.valueOf(values[7]);
+    ClimateCondition climate = ClimateCondition.valueOf(values[8]);
+    String storageTypeName = values[9];
+    String storageTypeDescription = values[10];
+
+    return createWarehouse(name, size, ownerId, street, zipCode, cityName, countryName, status, climate, storageTypeName, storageTypeDescription);
+  }
+
+
 
   /**
    * Checks if the name of a warehouse is unique for its owner.

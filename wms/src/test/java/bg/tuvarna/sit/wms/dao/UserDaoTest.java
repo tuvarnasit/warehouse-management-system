@@ -1,8 +1,12 @@
 package bg.tuvarna.sit.wms.dao;
 
+import bg.tuvarna.sit.wms.entities.Agent;
 import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.exceptions.UserPersistenceException;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,4 +86,35 @@ class UserDaoTest {
     verify(entityManager).close();
   }
 
+  @Test
+  public void findAgentById_ShouldReturnAgentWhenFound() {
+    // Given
+    Long agentId = 1L;
+    Agent expectedAgent = new Agent();
+    when(entityManager.find(Agent.class, agentId)).thenReturn(expectedAgent);
+
+    // When
+    Agent actualAgent = userDao.findAgentById(agentId);
+
+    // Then
+    verify(entityManager).find(Agent.class, agentId);
+    Assertions.assertEquals(expectedAgent, actualAgent);
+  }
+
+  @Test
+  public void findAgentById_ShouldThrowEntityNotFoundExceptionWhenNotFound() {
+    // Given
+    Long agentId = 1L;
+    when(entityManager.find(Agent.class, agentId)).thenReturn(null);
+
+    // When / Then
+    Assertions.assertThrows(EntityNotFoundException.class, () -> {
+      userDao.findAgentById(agentId);
+    });
+  }
+
+  @AfterEach
+  public void tearDown() {
+    verify(entityManager).close();
+  }
 }

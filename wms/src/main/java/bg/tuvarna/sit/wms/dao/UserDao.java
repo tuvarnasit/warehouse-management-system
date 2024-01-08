@@ -1,11 +1,13 @@
 package bg.tuvarna.sit.wms.dao;
 
+import bg.tuvarna.sit.wms.entities.Agent;
+import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.exceptions.UserPersistenceException;
-import java.util.Map;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
@@ -118,6 +120,34 @@ public class UserDao {
       return Optional.ofNullable(password);
     } catch (NoResultException e) {
       return Optional.empty();
+    } finally {
+      entityManager.close();
+    }
+  }
+
+  public Owner findOwnerById(Long id) throws EntityNotFoundException {
+
+    EntityManager entityManager = getEntityManager();
+    try {
+      Owner owner = entityManager.find(Owner.class, id);
+      if (owner == null) {
+        throw new EntityNotFoundException("Owner with ID " + id + " not found.");
+      }
+      return owner;
+    } finally {
+      entityManager.close();
+    }
+  }
+
+  public Agent findAgentById(Long agentId) throws EntityNotFoundException {
+
+    EntityManager entityManager = getEntityManager();
+    try {
+      Agent agent = entityManager.find(Agent.class, agentId);
+      if (agent == null) {
+        throw new EntityNotFoundException("Agent with ID " + agentId + " not found.");
+      }
+      return agent;
     } finally {
       entityManager.close();
     }
