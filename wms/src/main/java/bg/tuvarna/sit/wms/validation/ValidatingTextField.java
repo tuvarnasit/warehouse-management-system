@@ -25,6 +25,7 @@ public class ValidatingTextField extends TextField {
    */
   public ValidatingTextField() {
 
+    validator = value -> true;
     textProperty().addListener((o, oldValue, newValue) -> validate(newValue));
   }
 
@@ -37,15 +38,15 @@ public class ValidatingTextField extends TextField {
    */
   private void validate(String textValue) {
 
-    if (textValue.trim().isEmpty() || validator.test(textValue.trim())) {
-      isValid.set(true);
-      setStyle("");
-      tooltipProperty().set(null);
+    if (textValue.trim().isEmpty() || !validator.test(textValue.trim())) {
+      isValid.set(false);
+      setStyle("-fx-text-box-border: red;-fx-focus-color:red;-fx-faint-focus-color: transparent;");
+      tooltipProperty().set(tooltip);
       return;
     }
-    isValid.set(false);
-    setStyle("-fx-text-box-border: red;-fx-focus-color:red;-fx-faint-focus-color: transparent;");
-    tooltipProperty().set(tooltip);
+    isValid.set(true);
+    setStyle("");
+    tooltipProperty().set(null);
   }
 
   /**

@@ -38,7 +38,7 @@ public class WarehouseUpdateDialogController extends BaseWarehouseDialogControll
    * It then validates the dto and updates the exising warehouse with the new data.
    */
   @Override
-  public void onSave() {
+  public void handleSave() {
 
     WarehouseDTO updatedWarehouseDTO = createWarehouseDTO();
     updatedWarehouseDTO.setId(warehouseDTO.getId());

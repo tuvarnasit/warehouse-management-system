@@ -15,6 +15,5 @@ public enum Role {
 
   ADMIN,
   OWNER,
-  AGENT,
-  TENANT
+  AGENT
 }

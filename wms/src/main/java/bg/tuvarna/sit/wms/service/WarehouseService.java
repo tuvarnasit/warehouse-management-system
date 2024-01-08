@@ -51,7 +51,7 @@ public class WarehouseService {
    *
    * @param warehouseDTO the DTO containing the warehouse data
    * @throws WarehouseServiceException if an error occurs during the the persistence process
-   * or if the warehouse name isn't unique for an owner
+   *                                   or if the warehouse name isn't unique for an owner
    */
   public void saveWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
@@ -93,7 +93,7 @@ public class WarehouseService {
    *
    * @param warehouseDTO the DTO containing the updated details of a warehouse
    * @throws WarehouseServiceException if an error occurs during the the updating process
-   * or if the warehouse name matches that of an existing warehouse for an owner
+   *                                   or if the warehouse name matches that of an existing warehouse for an owner
    */
   public void updateWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
@@ -135,6 +135,27 @@ public class WarehouseService {
     }
   }
 
+  public void changeWarehouseStatus(WarehouseDTO warehouseDTO, WarehouseStatus status) throws WarehouseServiceException {
+
+    if (status == null) {
+      throw new WarehouseServiceException("Status cannot be null");
+    }
+
+    try {
+      Optional<Warehouse> warehouseOptional = warehouseDAO.getById(warehouseDTO.getId());
+      if (warehouseOptional.isEmpty()) {
+        throw new WarehouseServiceException("Warehouse not found");
+      }
+      Warehouse warehouse = warehouseOptional.get();
+      warehouse.setStatus(status);
+      warehouseDAO.update(warehouse);
+    } catch (WarehouseDAOException e) {
+      String errorMessage = "Error during the warehouse status changing process";
+      LOGGER.error(errorMessage, e);
+      throw new WarehouseServiceException(errorMessage, e);
+    }
+  }
+
   /**
    * Retrieves all of the warehouses owned by a given owner.
    *
@@ -142,11 +163,11 @@ public class WarehouseService {
    * @return a list of DTOs containing information about all of the warehouses owned by the owner
    * @throws WarehouseServiceException if there is an error during the retrieval process
    */
-  public List<WarehouseDTO> getWarehouseDTOsByOwner(Owner owner) throws WarehouseServiceException {
+  public List<WarehouseDTO> getAllWarehouseDTOsByOwner(Owner owner) throws WarehouseServiceException {
 
     List<Warehouse> ownerWarehouses;
     try {
-      ownerWarehouses = warehouseDAO.getWarehousesByOwner(owner);
+      ownerWarehouses = warehouseDAO.getAllWarehousesByOwner(owner);
     } catch (WarehouseDAOException e) {
       String errorMessage = "Error during retrieval of owner warehouses";
       LOGGER.error(errorMessage);
@@ -156,11 +177,31 @@ public class WarehouseService {
   }
 
   /**
+   * Retrieves all warehouses with an available status owned by a given owner.
+   *
+   * @param owner the owner of the warehouses to be retrieved
+   * @return a list of DTOs containing information about all of the available warehouses owned by the owner
+   * @throws WarehouseServiceException if there is an error during the retrieval process
+   */
+  public List<WarehouseDTO> getAvailableWarehouseDTOsByOwner(Owner owner) throws WarehouseServiceException {
+
+    List<Warehouse> availableWarehouses;
+    try {
+      availableWarehouses = warehouseDAO.getAvailableWarehousesByOwner(owner);
+    } catch (WarehouseDAOException e) {
+      String errorMessage = "Error during retrieval of available warehouses by owner";
+      LOGGER.error(errorMessage);
+      throw new WarehouseServiceException(errorMessage, e);
+    }
+    return availableWarehouses.stream().map(this::mapEntityToDTO).toList();
+  }
+
+  /**
    * Deletes a warehouse from the database.
    *
    * @param warehouseDTO a DTO containing warehouse information to be deleted
    * @throws WarehouseServiceException if there is an error during the deletion process
-   * or if the warehouse isn't found in the database
+   *                                   or if the warehouse isn't found in the database
    */
   public void deleteWarehouse(WarehouseDTO warehouseDTO) throws WarehouseServiceException {
 
@@ -310,7 +351,7 @@ public class WarehouseService {
    * @param warehouseDTO the DAO containing the warehouse details
    * @return a new warehouse entity
    */
-  private Warehouse mapDTOToEntity(WarehouseDTO warehouseDTO) {
+  public Warehouse mapDTOToEntity(WarehouseDTO warehouseDTO) {
 
     Warehouse warehouse = new Warehouse();
     Country country = new Country();
@@ -347,7 +388,7 @@ public class WarehouseService {
    * @param warehouse the warehouse entity to be converted to a DTO
    * @return a new WarehouseDTO object
    */
-  private WarehouseDTO mapEntityToDTO(Warehouse warehouse) {
+  public WarehouseDTO mapEntityToDTO(Warehouse warehouse) {
 
     WarehouseDTO warehouseDTO = new WarehouseDTO();
 

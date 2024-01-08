@@ -5,10 +5,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * This class provides utility methods for displaying JavaFX dialogs and alerts.
@@ -39,6 +41,17 @@ public class DialogUtil {
       controller.setDialogStage(dialogStage);
 
       dialogStage.showAndWait();
+  }
+
+  public static boolean showConfirmationDialog(String title, String description) {
+
+    Alert confirmDelete = new Alert(Alert.AlertType.NONE, "", ButtonType.YES, ButtonType.NO);
+    confirmDelete.setTitle(title);
+    confirmDelete.setHeaderText(description);
+
+    Optional<ButtonType> resultOptional = confirmDelete.showAndWait();
+
+    return resultOptional.isPresent() && resultOptional.get() == ButtonType.YES;
   }
 
 }

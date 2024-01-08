@@ -17,6 +17,7 @@
         <class>bg.tuvarna.sit.wms.entities.User</class>
         <class>bg.tuvarna.sit.wms.entities.Review</class>
         <class>bg.tuvarna.sit.wms.entities.Notification</class>
+        <class>bg.tuvarna.sit.wms.entities.RequestDetails</class>
         <properties>
             <property name="hibernate.connection.url" value="${DB_CONNECTION_URL}"/>
             <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>

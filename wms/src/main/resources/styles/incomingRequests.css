@@ -1,0 +1,29 @@
+.wrapper {
+    -fx-spacing: 32;
+    -fx-alignment: center;
+}
+
+.button:selected {
+    -fx-background-color: #0561b0;
+}
+.accept-button {
+    -fx-fill: #5cb85c;
+}
+
+.decline-button {
+    -fx-fill: #bf2519;
+}
+
+.details-button {
+    -fx-fill: #2b2b2b;
+}
+
+.rent-button {
+    glyph-size: 20;
+    -fx-fill: #e78a02;
+}
+
+.title {
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+}

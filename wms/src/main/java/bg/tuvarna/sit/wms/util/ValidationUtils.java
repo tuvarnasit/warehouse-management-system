@@ -1,8 +1,11 @@
 package bg.tuvarna.sit.wms.util;
 
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
+
+import java.time.LocalDate;
 
 /**
  * Utility class for validating JavaFX UI components.
@@ -36,6 +39,27 @@ public class ValidationUtils {
     boolean isValid = comboBox.getValue() != null;
     comboBox.setStyle(isValid ? "" : "-fx-border-color: red;");
     return isValid;
+  }
+
+  /**
+   * Validates the value of two date pickers.
+   * It checks if the date of the first is before the date of the second date picker,
+   * and if both are after the current date.
+   *
+   * @param startDatePicker the first date picker
+   * @param endDatePicker the second date picker
+   * @return true if the date values of the date pickers are valid; false otherwise
+   */
+  public static boolean validateDatePickers(DatePicker startDatePicker, DatePicker endDatePicker) {
+
+    boolean startDateNotNull = startDatePicker.getValue() != null;
+    boolean endDateNotNull = endDatePicker.getValue() != null;
+    boolean startIsBeforeEnd = startDatePicker.getValue().isBefore(endDatePicker.getValue());
+    boolean startIsAfterNow = startDatePicker.getValue().isAfter(LocalDate.now());
+    boolean endIsAfterNow = endDatePicker.getValue().isAfter(LocalDate.now());
+
+    return startDateNotNull && endDateNotNull && startIsBeforeEnd
+        && startIsAfterNow && endIsAfterNow;
   }
 
   /**
