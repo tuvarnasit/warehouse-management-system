@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="bg.tuvarna.sit.wms.controllers.MyReviewsController"
+            stylesheets="@../styles/application.css, @../styles/reviews.css" prefHeight="576.0" prefWidth="1024.0">
+
+    <left>
+        <VBox fx:id="sideMenu" styleClass="side-menu"/>
+    </left>
+
+    <center>
+        <VBox styleClass="section-my-reviews" spacing="10">
+            <Label text="My Reviews" styleClass="heading"/>
+            <TableView fx:id="reviewsTable" prefHeight="400" prefWidth="600">
+                <columns>
+                    <TableColumn fx:id="assessmentColumn" text="Assessment"/>
+                    <TableColumn fx:id="descriptionColumn" text="Description"/>
+                    <TableColumn fx:id="senderColumn" text="Sender"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>

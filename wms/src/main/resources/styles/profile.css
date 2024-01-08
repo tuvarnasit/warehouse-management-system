@@ -1,0 +1,30 @@
+.section-my-profile {
+    -fx-alignment: center;
+}
+
+.grid-profile {
+    -fx-border-color: rgb(211, 211, 211);
+    -fx-border-radius: 5;
+    -fx-background-color: rgb(249, 249, 249);
+    -fx-padding: 15px;
+    -fx-alignment: center;
+}
+
+.grid-profile Label {
+    -fx-font-size: 17px;
+}
+
+.profile-label {
+    -fx-border-color: rgb(128, 128, 128);
+    -fx-border-width: 1;
+    -fx-padding: 5px;
+    -fx-border-radius: 3;
+    -fx-background-color: rgb(255, 255, 255);
+    -fx-pref-width: 200px;
+}
+
+.heading {
+    -fx-font-size: 22;
+    -fx-font-weight: bold;
+    -fx-padding: 15px;
+}

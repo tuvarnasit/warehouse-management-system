@@ -10,29 +10,38 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import bg.tuvarna.sit.wms.validation.ValidatingTextField?>
-<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      stylesheets="@/styles/warehouseRental.css"
-      fx:controller="bg.tuvarna.sit.wms.controllers.WarehouseRentalController"
-      styleClass="vbox-wrapper"
-      prefHeight="576.0" prefWidth="1024.0">
-    <HBox styleClass="hbox-wrapper">
-        <Label styleClass="heading" text="Create rental request"/>
-    </HBox>
-    <HBox styleClass="hbox-wrapper">
-        <VBox styleClass="vbox-wrapper">
-            <Label text="Select a warehouse"/>
-            <ValidatingComboBox fx:id="warehousesComboBox" styleClass="warehouse-picker"/>
-            <DatePicker fx:id="startDatePicker" promptText="Start date"/>
-            <DatePicker fx:id="endDatePicker" promptText="End date"/>
-            <ValidatingTextField fx:id="rentPriceField" promptText="Monthly rent" styleClass="rent-field"/>
+
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@../styles/warehouseRental.css, @../styles/application.css"
+            fx:controller="bg.tuvarna.sit.wms.controllers.WarehouseRentalController"
+            prefHeight="576.0" prefWidth="1024.0">
+
+    <left>
+        <VBox fx:id="sideMenu" styleClass="side-menu"/>
+    </left>
+    <center>
+        <VBox alignment="CENTER" spacing="10.0" styleClass="vbox-wrapper">
+            <HBox styleClass="hbox-wrapper">
+                <Label styleClass="heading" text="Create rental request"/>
+            </HBox>
+            <HBox styleClass="hbox-wrapper">
+                <VBox styleClass="vbox-wrapper">
+                    <Label text="Select a warehouse"/>
+                    <ValidatingComboBox fx:id="warehousesComboBox" styleClass="warehouse-picker"/>
+                    <DatePicker fx:id="startDatePicker" promptText="Start date"/>
+                    <DatePicker fx:id="endDatePicker" promptText="End date"/>
+                    <ValidatingTextField fx:id="rentPriceField" promptText="Monthly rent" styleClass="rent-field"/>
+                </VBox>
+                <VBox styleClass="vbox-wrapper">
+                    <TextField fx:id="agentFilterField" promptText="Filter agents" styleClass="agent-filter"/>
+                    <VBox>
+                        <Label fx:id="selectedAgentsLabel"/>
+                        <ListView fx:id="agentsListView" styleClass="agents-list-view"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+            <Button onAction="#handleRentRequest" text="Rent"/>
         </VBox>
-        <VBox styleClass="vbox-wrapper">
-            <TextField fx:id="agentFilterField" promptText="Filter items" styleClass="agent-filter"/>
-            <VBox>
-                <Label fx:id="selectedAgentsLabel"/>
-                <ListView fx:id="agentsListView" styleClass="agents-list-view"/>
-            </VBox>
-        </VBox>
-    </HBox>
-    <Button onAction="#handleRentRequest" text="Rent"/>
-</VBox>
+    </center>
+</BorderPane>

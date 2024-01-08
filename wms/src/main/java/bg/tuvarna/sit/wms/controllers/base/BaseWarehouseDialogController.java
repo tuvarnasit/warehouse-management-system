@@ -1,6 +1,8 @@
-package bg.tuvarna.sit.wms.controllers;
+package bg.tuvarna.sit.wms.controllers.base;
 
 import bg.tuvarna.sit.wms.contracts.DialogController;
+import bg.tuvarna.sit.wms.controllers.WarehouseCreationDialogController;
+import bg.tuvarna.sit.wms.controllers.WarehouseUpdateDialogController;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.User;
@@ -20,8 +22,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * An abstract controller class, which contains all of the common methods of {@link WarehouseCreationDialogController}
- * and {@link WarehouseUpdateDialogController} classes such as: initialization for all of the fields and setting a
+ * An abstract controller class, which contains all the common methods of
+ * {@link WarehouseCreationDialogController}
+ * and {@link WarehouseUpdateDialogController}
+ * classes such as: initialization for all the fields and setting a
  * validation function for each field, conversion from DTO to entity, and validation.
  */
 public abstract class BaseWarehouseDialogController implements DialogController {
@@ -107,9 +111,9 @@ public abstract class BaseWarehouseDialogController implements DialogController 
   protected boolean validate() {
 
     return nameField.getIsValid().get() && streetField.getIsValid().get()
-        && cityField.getIsValid().get() && zipCodeField.getIsValid().get()
-        && countryField.getIsValid().get() && sizeField.getIsValid().get()
-        && climateConditionComboBox.getIsValid().get() && storageTypeField.getIsValid().get();
+            && cityField.getIsValid().get() && zipCodeField.getIsValid().get()
+            && countryField.getIsValid().get() && sizeField.getIsValid().get()
+            && climateConditionComboBox.getIsValid().get() && storageTypeField.getIsValid().get();
   }
 
   /**

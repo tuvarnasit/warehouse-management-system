@@ -1,5 +1,6 @@
 package bg.tuvarna.sit.wms.dao;
 
+import bg.tuvarna.sit.wms.dto.WarehouseRentalAgreementDto;
 import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.Warehouse;
 import bg.tuvarna.sit.wms.enums.WarehouseStatus;
@@ -11,6 +12,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.TypedQuery;
 
 /**
  * This class is the Data Access Object (DAO) for the Warehouse entity.
@@ -112,7 +114,7 @@ public class WarehouseDAO {
       Warehouse warehouse = em.find(Warehouse.class, id);
       transaction.commit();
 
-      if(warehouse != null && warehouse.isDeleted()) {
+      if (warehouse != null && warehouse.isDeleted()) {
         return Optional.empty();
       }
       return Optional.ofNullable(warehouse);
@@ -139,8 +141,8 @@ public class WarehouseDAO {
     try {
       transaction.begin();
       List<Warehouse> warehouses = em
-          .createQuery("SELECT w FROM Warehouse w WHERE w.isDeleted = false", Warehouse.class)
-          .getResultList();
+              .createQuery("SELECT w FROM Warehouse w WHERE w.isDeleted = false", Warehouse.class)
+              .getResultList();
       transaction.commit();
 
       return warehouses;
@@ -168,13 +170,13 @@ public class WarehouseDAO {
       transaction.begin();
       String jpql = "SELECT w FROM Warehouse w WHERE w.owner = :owner AND w.isDeleted = false";
       List<Warehouse> warehouses = em.createQuery(jpql, Warehouse.class)
-          .setParameter("owner", owner)
-          .getResultList();
+              .setParameter("owner", owner)
+              .getResultList();
       transaction.commit();
 
       return warehouses;
     } catch (Exception e) {
-      throw handleExceptionAndRollback(transaction,"Error retrieving warehouse entities", e);
+      throw handleExceptionAndRollback(transaction, "Error retrieving warehouse entities", e);
     } finally {
       em.close();
     }
@@ -214,7 +216,7 @@ public class WarehouseDAO {
    * Retrieves a warehouse entity entity by owner and name from the database within a transaction.
    * If an error occurs during the transaction it is rolled back.
    *
-   * @param name the name of the warehouse entity
+   * @param name  the name of the warehouse entity
    * @param owner the owner of the warehouse
    * @return an Optional of the retrieved warehouse, or an empty Optional if the warehouse doesn't exist
    */
@@ -227,9 +229,9 @@ public class WarehouseDAO {
       transaction.begin();
       String jpql = "SELECT w FROM Warehouse w WHERE w.owner = :owner AND w.name = :name AND w.isDeleted = false";
       Warehouse warehouse = em.createQuery(jpql, Warehouse.class)
-          .setParameter("name", name)
-          .setParameter("owner", owner)
-          .getSingleResult();
+              .setParameter("name", name)
+              .setParameter("owner", owner)
+              .getSingleResult();
       transaction.commit();
 
       return Optional.ofNullable(warehouse);
@@ -241,12 +243,44 @@ public class WarehouseDAO {
   }
 
   /**
+   * Retrieves a list of WarehouseRentalAgreementDto objects for a specific owner.
+   * This method fetches warehouses along with their rental agreements, providing details
+   * such as warehouse name, address, size, status, storage type, climate condition, and
+   * relevant agent information.
+   *
+   * @param ownerId The ID of the owner for whom the warehouses with rental agreements are to be fetched.
+   * @return A list of WarehouseRentalAgreementDto objects representing
+   * the warehouses with rental agreements for the specified owner.
+   */
+  public List<WarehouseRentalAgreementDto> getWarehousesWithRentalAgreementsForOwner(Long ownerId) {
+
+    EntityManager entityManager = entityManagerFactory.createEntityManager();
+    try {
+      String jpql = "SELECT new bg.tuvarna.sit.wms.dto.WarehouseRentalAgreementDto(w.name, a.street, w.size, w.status, " +
+              "w.storageType.typeName, w.climateCondition, ra.startDate, ra.endDate, ra.pricePerMonth, " +
+              "agent.firstName, agent.email, agent.id) " +
+              "FROM Warehouse w " +
+              "JOIN w.owner owner " +
+              "JOIN w.rentalAgreements ra " +
+              "JOIN ra.agent agent " +
+              "JOIN w.address a " +
+              "WHERE owner.id = :ownerId AND w.isDeleted = false";
+
+      TypedQuery<WarehouseRentalAgreementDto> query = entityManager.createQuery(jpql, WarehouseRentalAgreementDto.class);
+      query.setParameter("ownerId", ownerId);
+      return query.getResultList();
+    } finally {
+      entityManager.close();
+    }
+  }
+
+  /**
    * Handles exceptions and rolls back the transaction.
    * If an exception occurs during the transaction, the transaction is rolled back.
    *
    * @param transaction the EntityTransaction instance
-   * @param message the error message
-   * @param e the exception to propagate
+   * @param message     the error message
+   * @param e           the exception to propagate
    * @return a new WarehouseDAOException with the given message and cause
    */
   private WarehouseDAOException handleExceptionAndRollback(EntityTransaction transaction, String message, Exception e) {

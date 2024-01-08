@@ -2,6 +2,7 @@ package bg.tuvarna.sit.wms.controllers;
 
 import bg.tuvarna.sit.wms.context.ApplicationContext;
 import bg.tuvarna.sit.wms.contracts.DialogController;
+import bg.tuvarna.sit.wms.controllers.base.BaseMenuController;
 import bg.tuvarna.sit.wms.dto.RentalRequestDTO;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.entities.Agent;
@@ -41,7 +42,7 @@ import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.showAlert;
  * Displays a table with details of pending requests for the logged-in agent.
  * Allows the agent to view request details and accept or decline the request.
  */
-public class IncomingRequestsController {
+public class IncomingRequestsController extends BaseMenuController {
 
   @FXML
   private TableView<RentalRequestDTO> requestsTable;
@@ -80,6 +81,8 @@ public class IncomingRequestsController {
    * table columns with appropriate cell factories and populates the request table,
    */
   public void initialize() {
+
+    super.initialize();
 
     newRequestsButton.setToggleGroup(toggleGroup);
     acceptedRequestsButton.setToggleGroup(toggleGroup);

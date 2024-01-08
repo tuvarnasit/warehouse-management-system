@@ -1,6 +1,7 @@
 package bg.tuvarna.sit.wms.controllers;
 
 import bg.tuvarna.sit.wms.contracts.DialogController;
+import bg.tuvarna.sit.wms.controllers.base.BaseMenuController;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.User;
@@ -35,7 +36,7 @@ import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.showAlert;
  * A controller class, which allows an owner to interact with the data of every warehouse he owns in a table.
  * This class also manages the creation, editing and deletion of warehouses.
  */
-public class WarehouseControlPanelController {
+public class WarehouseControlPanelController extends BaseMenuController {
 
   @FXML
   private TableView<WarehouseDTO> warehousesTable;
@@ -67,6 +68,8 @@ public class WarehouseControlPanelController {
    */
   @FXML
   public void initialize() {
+
+    super.initialize();
 
     owner = getOwnerFromUserSession();
 

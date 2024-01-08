@@ -6,30 +6,40 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.ToggleButton?>
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      stylesheets="@../styles/tableView.css, @../styles/incomingRequests.css"
-      fx:controller="bg.tuvarna.sit.wms.controllers.IncomingRequestsController"
-      styleClass="wrapper"
-      prefHeight="576" prefWidth="1024">
-    <Text styleClass="title" text="Rental requests"/>
-    <HBox styleClass="wrapper">
-        <ToggleButton text="New" fx:id="newRequestsButton" onAction="#displayNewRequests" styleClass="button"/>
-        <ToggleButton text="Accepted" fx:id="acceptedRequestsButton" onAction="#displayAcceptedRequests" styleClass="button"/>
-    </HBox>
-    <TableView fx:id="requestsTable" prefHeight="320" prefWidth="740" maxHeight="320" maxWidth="740">
-        <columns>
-            <TableColumn fx:id="warehouseNameColumn" maxWidth="168" minWidth="168" prefWidth="168" text="Warehouse"/>
-            <TableColumn fx:id="ownerNamesColumn" maxWidth="128" minWidth="128" prefWidth="128" text="Owner"/>
-            <TableColumn fx:id="rentPriceColumn" maxWidth="96" minWidth="96" prefWidth="96" text="Price"/>
-            <TableColumn fx:id="startDateColumn" maxWidth="96" minWidth="96" prefWidth="96" text="Start date"/>
-            <TableColumn fx:id="endDateColumn" maxWidth="96" minWidth="96" prefWidth="96" text="End date"/>
-            <TableColumn fx:id="detailsColumn" editable="false" maxWidth="64" minWidth="64" prefWidth="64" text="View"/>
-            <TableColumn fx:id="actionColumn" editable="false" maxWidth="64" minWidth="64" prefWidth="64"/>
-        </columns>
-        <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-        </columnResizePolicy>
-    </TableView>
 
-</VBox>
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="bg.tuvarna.sit.wms.controllers.IncomingRequestsController"
+            stylesheets="@../styles/tableView.css, @../styles/incomingRequests.css, @../styles/application.css" prefHeight="576.0" prefWidth="1024.0">
+
+    <left>
+        <VBox fx:id="sideMenu" styleClass="side-menu"/>
+    </left>
+    <center>
+
+        <VBox styleClass="wrapper">
+            <Text styleClass="title" text="Rental requests"/>
+            <HBox styleClass="wrapper">
+                <ToggleButton text="New" fx:id="newRequestsButton" onAction="#displayNewRequests" styleClass="button"/>
+                <ToggleButton text="Accepted" fx:id="acceptedRequestsButton" onAction="#displayAcceptedRequests"
+                              styleClass="button"/>
+            </HBox>
+            <TableView fx:id="requestsTable" prefHeight="320" prefWidth="740" maxHeight="320" maxWidth="740">
+                <columns>
+                    <TableColumn fx:id="warehouseNameColumn" maxWidth="168" minWidth="168" prefWidth="168"
+                                 text="Warehouse"/>
+                    <TableColumn fx:id="ownerNamesColumn" maxWidth="128" minWidth="128" prefWidth="128" text="Owner"/>
+                    <TableColumn fx:id="rentPriceColumn" maxWidth="96" minWidth="96" prefWidth="96" text="Price"/>
+                    <TableColumn fx:id="startDateColumn" maxWidth="96" minWidth="96" prefWidth="96" text="Start date"/>
+                    <TableColumn fx:id="endDateColumn" maxWidth="96" minWidth="96" prefWidth="96" text="End date"/>
+                    <TableColumn fx:id="detailsColumn" editable="false" maxWidth="64" minWidth="64" prefWidth="64"
+                                 text="View"/>
+                    <TableColumn fx:id="actionColumn" editable="false" maxWidth="64" minWidth="64" prefWidth="64"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+            </TableView>
+
+        </VBox>
+    </center>
+</BorderPane>

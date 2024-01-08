@@ -1,5 +1,6 @@
 package bg.tuvarna.sit.wms.controllers;
 
+import bg.tuvarna.sit.wms.controllers.base.BaseMenuController;
 import bg.tuvarna.sit.wms.dto.AgentDTO;
 import bg.tuvarna.sit.wms.dto.RequestDetailsDTO;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
@@ -28,7 +29,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 import static bg.tuvarna.sit.wms.util.ValidationUtils.validateDatePickers;
@@ -41,7 +41,7 @@ import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.showAlert;
  * Utilizes RentalRequestService and WarehouseService for business logic.
  *
  */
-public class WarehouseRentalController {
+public class WarehouseRentalController extends BaseMenuController {
 
   @FXML
   private ValidatingComboBox<WarehouseDTO> warehousesComboBox;
@@ -76,6 +76,7 @@ public class WarehouseRentalController {
    */
   public void initialize() {
 
+    super.initialize();
     owner = getOwnerFromUserSession();
     try {
       availableWarehouses.setAll(warehouseService.getAvailableWarehouseDTOsByOwner(owner));

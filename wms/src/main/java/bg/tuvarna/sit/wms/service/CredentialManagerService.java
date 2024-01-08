@@ -1,13 +1,17 @@
 package bg.tuvarna.sit.wms.service;
 
+import bg.tuvarna.sit.wms.context.ApplicationContext;
 import bg.tuvarna.sit.wms.exceptions.CredentialSavingException;
+import bg.tuvarna.sit.wms.exceptions.RegistrationException;
 import bg.tuvarna.sit.wms.session.Credentials;
 import bg.tuvarna.sit.wms.session.KeyUtil;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +36,19 @@ public class CredentialManagerService {
 
   @Setter(value = AccessLevel.PACKAGE)
   private SecretKey key;
+
+  static {
+    try {
+      String keyFilename = "encryption.key";
+      Path keyPath = Paths.get(keyFilename);
+      if (!Files.exists(keyPath)) {
+        SecretKey key = ApplicationContext.getENCRYPTION_SERVICE().generateKey();
+        KeyUtil.saveSecretKey(key, keyFilename);
+      }
+    } catch (NoSuchAlgorithmException | IOException e) {
+      LOGGER.error("Error during credential service initialization: ", e);
+    }
+  }
 
   private final EncryptionService encryptionService;
 
