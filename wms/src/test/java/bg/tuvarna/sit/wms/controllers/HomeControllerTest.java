@@ -1,11 +1,10 @@
 package bg.tuvarna.sit.wms.controllers;
 
 import bg.tuvarna.sit.wms.entities.User;
-import bg.tuvarna.sit.wms.service.UserService;
 import bg.tuvarna.sit.wms.service.CredentialManagerService;
+import bg.tuvarna.sit.wms.service.UserService;
 import bg.tuvarna.sit.wms.session.UserSession;
 import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,12 +31,9 @@ public class HomeControllerTest {
     controller = new HomeController(userService, credentialManagerService);
 
     controller.userSession = userSessionMock;
-    controller.registerButton = new Button();
     controller.loginButton = new Button();
     controller.welcomeUserText = new Text();
-    controller.welcomeMessageContainer = new StackPane();
     controller.ssoButton = new Button();
-    controller.logoutButton = new Button();
   }
 
   @Test
@@ -49,16 +45,10 @@ public class HomeControllerTest {
 
     controller.initialize();
 
-    assertTrue(controller.registerButton.isVisible());
-    assertTrue(controller.registerButton.isManaged());
     assertFalse(controller.loginButton.isVisible());
     assertFalse(controller.loginButton.isManaged());
     assertFalse(controller.ssoButton.isVisible());
     assertFalse(controller.ssoButton.isManaged());
-    assertTrue(controller.logoutButton.isVisible());
-    assertTrue(controller.logoutButton.isManaged());
-    assertEquals(controller.welcomeUserText.getText(), "Hello, John");
-    assertTrue(controller.welcomeMessageContainer.isVisible());
   }
 
   @Test
@@ -68,15 +58,10 @@ public class HomeControllerTest {
 
     controller.initialize();
 
-    assertFalse(controller.registerButton.isVisible());
-    assertFalse(controller.registerButton.isManaged());
     assertTrue(controller.loginButton.isVisible());
     assertTrue(controller.loginButton.isManaged());
     assertTrue(controller.ssoButton.isVisible());
     assertTrue(controller.ssoButton.isManaged());
-    assertFalse(controller.logoutButton.isVisible());
-    assertFalse(controller.logoutButton.isManaged());
     assertEquals(controller.welcomeUserText.getText(), "");
-    assertFalse(controller.welcomeMessageContainer.isVisible());
   }
 }

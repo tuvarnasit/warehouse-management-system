@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.Button?>
+
+<?import bg.tuvarna.sit.wms.validation.ValidatingTextField?>
+<?import bg.tuvarna.sit.wms.validation.ValidatingComboBox?>
+<?import javafx.scene.layout.Region?>
+<?import bg.tuvarna.sit.wms.validation.ValidatingTextArea?>
+<VBox prefHeight="542.0" prefWidth="331.0" stylesheets="@../styles/warehouseCreation.css"
+      xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <VBox>
+        <Text text="Name"/>
+        <ValidatingTextField fx:id="nameField"/>
+    </VBox>
+    <VBox>
+        <Text text="Street"/>
+        <ValidatingTextField fx:id="streetField"/>
+    </VBox>
+    <HBox>
+        <VBox>
+            <Text text="City"/>
+            <ValidatingTextField fx:id="cityField"/>
+        </VBox>
+        <VBox>
+            <Text text="Zip code"/>
+            <ValidatingTextField fx:id="zipCodeField"/>
+        </VBox>
+        <VBox>
+            <Text text="Country"/>
+            <ValidatingTextField fx:id="countryField"/>
+        </VBox>
+    </HBox>
+    <VBox>
+        <Text text="Size"/>
+        <ValidatingTextField fx:id="sizeField"/>
+    </VBox>
+    <VBox>
+        <Text text="Climate Condition"/>
+        <ValidatingComboBox fx:id="climateConditionComboBox"/>
+    </VBox>
+    <VBox>
+        <Text text="Storage Type"/>
+        <ValidatingTextField id="storage-type" fx:id="storageTypeField"/>
+    </VBox>
+    <VBox>
+        <Text text="Storage Type Description"/>
+        <ValidatingTextArea fx:id="storageTypeDescArea" prefHeight="140.0" wrapText="true"/>
+    </VBox>
+    <HBox id="buttons-wrapper">
+        <Button id="save" onAction="#onSave" text="Save"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button id="cancel" onAction="#onCancel" text="Cancel"/>
+    </HBox>
+</VBox>

@@ -12,11 +12,6 @@
     <StackPane styleClass="text-background">
         <Text text="Welcome to the WMS application!" styleClass="heading"/>
     </StackPane>
-    <StackPane fx:id="welcomeMessageContainer" styleClass="text-background">
-        <Text fx:id="welcomeUserText" styleClass="text-node" text="Welcome User"/>
-    </StackPane>
-    <Button text="Register" onAction="#handleRegisterAction" fx:id="registerButton" styleClass="button-common, button-register"/>
     <Button text="Login" onAction="#handleLoginAction" fx:id="loginButton" styleClass="button-common, button-login"/>
     <Button text="SSO" onAction="#handleSsoAction" fx:id="ssoButton" styleClass="button-common, button-login"/>
-    <Button text="Logout" onAction="#handleLogoutAction" fx:id="logoutButton" styleClass="button-common, button-logout"/>
 </VBox>

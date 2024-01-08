@@ -1,0 +1,46 @@
+Text {
+    -fx-fill: #2d2d2d;
+    -fx-font-size: 12.5;
+}
+
+VBox, HBox {
+    -fx-spacing: 4;
+    -fx-padding: 4 24;
+}
+
+HBox VBox {
+    -fx-alignment: center;
+    -fx-padding: 0;
+}
+
+HBox#buttons-wrapper {
+    -fx-padding: 16 24;
+}
+
+Button {
+    -fx-text-alignment: center;
+    -fx-text-fill: #f0f0f0;
+    -fx-min-width: 80;
+    -fx-font-size: 14;
+}
+
+#save {
+    -fx-background-color: #49a3e0;
+}
+
+#save:hover {
+    -fx-background-color: #248CD2;
+}
+
+#cancel {
+    -fx-background-color: transparent;
+    -fx-text-fill: #bf2519;
+    -fx-border-color: #bf2519;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 5;
+}
+
+#cancel:hover {
+    -fx-border-color: #af2519;
+    -fx-text-fill: #af2519;
+}

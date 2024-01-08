@@ -22,17 +22,11 @@ import javafx.scene.text.Text;
 public class HomeController {
 
   @FXML
-  Button registerButton;
-  @FXML
   Button loginButton;
   @FXML
   Button ssoButton;
   @FXML
-  Button logoutButton;
-  @FXML
   Text welcomeUserText;
-  @FXML
-  StackPane welcomeMessageContainer;
   UserSession userSession = UserSession.getInstance();
   private final UserService userService;
   private final CredentialManagerService credentialManagerService;
@@ -49,22 +43,8 @@ public class HomeController {
   @FXML
   void initialize() {
 
-    updateRegisterButtonVisibility();
     updateLoginButtonVisibility();
     updateSsoButtonVisibility();
-    updateLogoutButtonVisibility();
-    updateUserWelcomeMessage();
-  }
-
-  /**
-   * Handles the action to navigate to the registration view.
-   *
-   * @param event The event that triggered the action.
-   */
-  @FXML
-  void handleRegisterAction(ActionEvent event) {
-
-    loadView("/views/registration.fxml", event);
   }
 
   /**
@@ -98,7 +78,7 @@ public class HomeController {
               credentials.get().getPassword());
 
       if (loginSuccessful) {
-        loadView("/views/home.fxml", event);
+        loadView("/views/application.fxml", event);
       } else {
         showAlert(Alert.AlertType.ERROR, "SSO Login Failed", "Login was unsuccessful.\n" +
                 "Please try again.");
@@ -107,32 +87,6 @@ public class HomeController {
       showAlert(Alert.AlertType.INFORMATION, "SSO", "SSO credentials are missing or have expired.\n" +
               "Login manually to activate new SSO session.");
     }
-  }
-
-  /**
-   * Handles the logout action.
-   * <p>
-   * This method is triggered when the user clicks the logout button. It performs the logout
-   * operation by clearing the current user session and then redirects the user to the home view.
-   *
-   * @param event The event that triggered this action, typically the logout button click.
-   */
-  @FXML
-  void handleLogoutAction(ActionEvent event) {
-
-    userSession.logout();
-    loadView("/views/home.fxml", event);
-  }
-
-  /**
-   * Updates the visibility of the registration button based on the user's login status.
-   * The button is visible and managed if a user is currently logged in.
-   */
-  private void updateRegisterButtonVisibility() {
-
-    User currentUser = userSession.getCurrentUser();
-    registerButton.setVisible(currentUser != null);
-    registerButton.setManaged(currentUser != null);
   }
 
   /**
@@ -151,27 +105,5 @@ public class HomeController {
     User currentUser = userSession.getCurrentUser();
     ssoButton.setVisible(currentUser == null);
     ssoButton.setManaged(currentUser == null);
-  }
-
-  private void updateLogoutButtonVisibility() {
-
-    User currentUser = userSession.getCurrentUser();
-    logoutButton.setVisible(currentUser != null);
-    logoutButton.setManaged(currentUser != null);
-  }
-
-  /**
-   * Updates the welcome message based on the user's login status.
-   * Displays a personalized welcome message if a user is logged in; hides the message otherwise.
-   */
-  private void updateUserWelcomeMessage() {
-
-    User currentUser = userSession.getCurrentUser();
-    if (currentUser != null) {
-      welcomeUserText.setText("Hello, " + currentUser.getFirstName());
-      welcomeMessageContainer.setVisible(true);
-    } else {
-      welcomeMessageContainer.setVisible(false);
-    }
   }
 }

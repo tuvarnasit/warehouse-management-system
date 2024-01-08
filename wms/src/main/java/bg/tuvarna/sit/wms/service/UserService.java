@@ -57,7 +57,7 @@ public class UserService {
   }
 
   /**
-   * Initializes default administrator accounts in the system.
+   * Initializes default user accounts in the system.
    * <p>
    * This method checks for the existence of specific administrator accounts and creates them if they do not exist.
    * This ensures that there are always default administrator accounts available in the system.
@@ -66,14 +66,17 @@ public class UserService {
    * @throws InvalidKeySpecException  If there is an issue with the specification of the key used in password hashing.
    * @throws NoSuchAlgorithmException If the algorithm specified for password hashing does not exist.
    */
-  public void initializeAdministrators() throws RegistrationException, InvalidKeySpecException, NoSuchAlgorithmException {
+  public void initializeUsers() throws RegistrationException, InvalidKeySpecException, NoSuchAlgorithmException {
 
     // TODO: Remove the magic values by setting up an external configuration properties
     if (userDao.findByEmail("admin1@example.com").isEmpty()) {
-      saveUser(createAdmin("Admin1", "One", "1234567890", "admin1@example.com", "securepassword1"));
+      saveUser(createUser("Admin1", "One", "1234567890", "admin1@example.com", "securepassword1", Role.ADMIN));
     }
     if (userDao.findByEmail("admin2@example.com").isEmpty()) {
-      saveUser(createAdmin("Admin2", "Two", "0987654321", "admin2@example.com", "securepassword2"));
+      saveUser(createUser("Admin2", "Two", "0987654321", "admin2@example.com", "securepassword2", Role.ADMIN));
+    }
+    if (userDao.findByEmail("owner1@example.com").isEmpty()) {
+      saveUser(createUser("Owner1", "One", "0987654311", "owner1@example.com", "securepassword1", Role.OWNER));
     }
   }
 
@@ -193,17 +196,29 @@ public class UserService {
     };
   }
 
-  private User createAdmin(String firstName, String lastName, String phone, String email, String rawPassword) throws InvalidKeySpecException, NoSuchAlgorithmException {
-    User admin = new User();
+  private User createUser(String firstName, String lastName, String phone, String email,
+                           String rawPassword, Role role)
+      throws InvalidKeySpecException, NoSuchAlgorithmException, RegistrationException {
 
-    admin.setFirstName(firstName);
-    admin.setLastName(lastName);
-    admin.setPhone(phone);
-    admin.setEmail(email);
-    admin.setPassword(passwordHashingService.generateStrongPasswordHash(rawPassword));
-    admin.setRole(Role.ADMIN);
+    if(role == null) {
+      throw new RegistrationException("Role must not be null");
+    }
 
-    return admin;
+    User user = switch (role) {
+      case ADMIN -> new User();
+      case OWNER -> new Owner();
+      case AGENT -> new Agent();
+      case TENANT -> new Tenant();
+    };
+
+    user.setFirstName(firstName);
+    user.setLastName(lastName);
+    user.setPhone(phone);
+    user.setEmail(email);
+    user.setPassword(passwordHashingService.generateStrongPasswordHash(rawPassword));
+    user.setRole(role);
+
+    return user;
   }
 
   private String normalizePhoneNumber(String phone) {

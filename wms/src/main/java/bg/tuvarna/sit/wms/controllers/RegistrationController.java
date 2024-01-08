@@ -107,7 +107,7 @@ public class RegistrationController {
    */
   @FXML
   void handleBack(ActionEvent event) {
-    loadView("/views/home.fxml", event);
+    loadView("/views/application.fxml", event);
   }
 
   /**

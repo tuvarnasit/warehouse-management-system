@@ -1,0 +1,34 @@
+.addButton {
+    -fx-background-color: #49a3e0;
+    -fx-min-width: 64;
+    -fx-text-fill: #f0f0f0;
+    -fx-font-size: 14;
+}
+
+.heading {
+    -fx-font-size: 22;
+    -fx-font-weight: bold;
+}
+
+.table-view:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.table-cell {
+    -fx-alignment: center;
+    -fx-pref-height: 32;
+ }
+
+.action-button {
+    -fx-cursor: hand;
+    -glyph-size: 24;
+}
+
+.edit-button {
+    -fx-fill: #008080;
+}
+
+.delete-button {
+    -fx-fill: #bf2519;
+}

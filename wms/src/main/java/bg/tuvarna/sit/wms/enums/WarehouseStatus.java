@@ -1,5 +1,8 @@
 package bg.tuvarna.sit.wms.enums;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * This enum represents the rental status of a warehouse.
  * <p>
@@ -12,9 +15,14 @@ package bg.tuvarna.sit.wms.enums;
  * @author Viktor Denchev
  * @since 1.0.0
  */
+@Getter
+@RequiredArgsConstructor
 public enum WarehouseStatus {
 
-  AVAILABLE,
-  PENDING_RENTAL,
-  RENTED,
+  AVAILABLE("Available"),
+  PENDING_RENTAL("Pending"),
+  RENTED("Rented"),
+  ;
+
+  private final String description;
 }

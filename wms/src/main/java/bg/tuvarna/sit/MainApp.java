@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javax.crypto.SecretKey;
@@ -67,7 +68,7 @@ public class MainApp extends Application {
   private void initializeApplication() {
 
     try {
-      ApplicationContext.getUSER_SERVICE().initializeAdministrators();
+      ApplicationContext.getUSER_SERVICE().initializeUsers();
       String keyFilename = "encryption.key";
       Path keyPath = Paths.get(keyFilename);
       if (!Files.exists(keyPath)) {
