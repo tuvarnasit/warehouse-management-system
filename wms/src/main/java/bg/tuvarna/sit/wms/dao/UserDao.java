@@ -1,9 +1,11 @@
 package bg.tuvarna.sit.wms.dao;
 
 import bg.tuvarna.sit.wms.entities.Agent;
-import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.exceptions.UserPersistenceException;
+
+import java.util.List;
+import bg.tuvarna.sit.wms.entities.Owner;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -123,6 +125,24 @@ public class UserDao {
     } finally {
       entityManager.close();
     }
+  }
+
+  public List<Agent> getAllAgents() {
+
+    EntityManager entityManager = entityManagerFactory.createEntityManager();
+    EntityTransaction transaction = entityManager.getTransaction();
+
+    List<Agent> agents;
+    try {
+      transaction.begin();
+      agents = entityManager.createQuery("SELECT a FROM Agent a", Agent.class)
+          .getResultList();
+      transaction.commit();
+    } finally {
+      entityManager.close();
+    }
+
+    return agents;
   }
 
   public Owner findOwnerById(Long id) throws EntityNotFoundException {

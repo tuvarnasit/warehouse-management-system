@@ -53,6 +53,12 @@ public class BaseMenuController {
     addToggleButtonToPane(createToggleButton("My Rentals", e -> loadView("/views/rental-agreements.fxml", e)),
             sideMenu, isOwnerPredicate);
 
+    addToggleButtonToPane(createToggleButton("Rent a warehouse", e ->  loadView("/views/warehouseRental.fxml", e)),
+        sideMenu, isOwnerPredicate);
+
+    addToggleButtonToPane(createToggleButton( "Requests", e -> loadView("/views/incomingRequests.fxml", e)),
+        sideMenu, isAgentPredicate);
+
     addToggleButtonToPane(createToggleButton("Logout", this::handleLogoutAction, Optional.of("logoutButton"),
             Optional.of("button-logout")), sideMenu);
   }

@@ -25,6 +25,7 @@ public class ApplicationController extends BaseMenuController {
 
   @Override
   @FXML
+
   protected void initialize() {
 
     super.initialize();

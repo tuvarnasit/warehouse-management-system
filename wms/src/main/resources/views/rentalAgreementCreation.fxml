@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Text?>
+<?import bg.tuvarna.sit.wms.validation.ValidatingTextField?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Button?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      stylesheets="@../styles/dialogs.css"
+      prefHeight="420.0" prefWidth="280.0">
+    <VBox>
+        <Text text="Tenant Names"/>
+        <ValidatingTextField fx:id="tenantNamesField"/>
+    </VBox>
+    <VBox>
+        <Text text="Company Name"/>
+        <ValidatingTextField fx:id="companyNameField"/>
+    </VBox>
+    <VBox>
+        <Text text="Company ID"/>
+        <ValidatingTextField fx:id="companyIdField"/>
+    </VBox>
+    <VBox>
+        <Text text="Rent Price"/>
+        <ValidatingTextField fx:id="rentField"/>
+    </VBox>
+    <VBox>
+        <Text text="Start Date"/>
+        <DatePicker fx:id="startDatePicker"/>
+    </VBox>
+    <VBox>
+        <Text text="End Date"/>
+        <DatePicker fx:id="endDatePicker"/>
+    </VBox>
+    <HBox id="buttons-wrapper">
+        <Button id="save" onAction="#handleRent" text="Rent"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button id="cancel" onAction="#handleCancel" text="Cancel"/>
+    </HBox>
+</VBox>

@@ -175,9 +175,9 @@ public class WarehouseServiceTest {
   void getWarehouseDTOsByOwner_shouldReturnList() throws WarehouseDAOException, WarehouseServiceException {
 
     Owner owner = new Owner();
-    when(warehouseDAO.getWarehousesByOwner(owner)).thenReturn(Collections.singletonList(createWarehouse()));
+    when(warehouseDAO.getAllWarehousesByOwner(owner)).thenReturn(Collections.singletonList(createWarehouse()));
 
-    List<WarehouseDTO> warehouseDTOsResult = warehouseService.getWarehouseDTOsByOwner(owner);
+    List<WarehouseDTO> warehouseDTOsResult = warehouseService.getAllWarehouseDTOsByOwner(owner);
 
     assertNotNull(warehouseDTOsResult);
     assertFalse(warehouseDTOsResult.isEmpty());
@@ -187,9 +187,9 @@ public class WarehouseServiceTest {
   void getWarehouseDTOsByOwner_warehouseThrowsException_shouldThrowWarehouseServiceException() throws WarehouseDAOException {
 
     Owner owner = new Owner();
-    when(warehouseDAO.getWarehousesByOwner(owner)).thenThrow(new WarehouseDAOException("Retrieving warehouses failed"));
+    when(warehouseDAO.getAllWarehousesByOwner(owner)).thenThrow(new WarehouseDAOException("Retrieving warehouses failed"));
 
-    assertThrows(WarehouseServiceException.class, () -> warehouseService.getWarehouseDTOsByOwner(owner));
+    assertThrows(WarehouseServiceException.class, () -> warehouseService.getAllWarehouseDTOsByOwner(owner));
   }
 
   @Test

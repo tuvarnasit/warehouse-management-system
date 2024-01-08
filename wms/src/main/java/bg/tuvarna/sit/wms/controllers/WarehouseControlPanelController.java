@@ -1,6 +1,7 @@
 package bg.tuvarna.sit.wms.controllers;
 
 import bg.tuvarna.sit.wms.contracts.DialogController;
+import bg.tuvarna.sit.wms.controllers.base.BaseMenuController;
 import bg.tuvarna.sit.wms.dto.WarehouseDTO;
 import bg.tuvarna.sit.wms.entities.Owner;
 import bg.tuvarna.sit.wms.entities.User;
@@ -9,7 +10,6 @@ import bg.tuvarna.sit.wms.enums.WarehouseStatus;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
 import bg.tuvarna.sit.wms.service.WarehouseService;
 import bg.tuvarna.sit.wms.session.UserSession;
-import bg.tuvarna.sit.wms.util.DialogUtil;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,7 +18,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -29,18 +28,20 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.util.List;
 
+import static bg.tuvarna.sit.wms.util.DialogUtil.showDialog;
+import static bg.tuvarna.sit.wms.util.DialogUtil.showConfirmationDialog;
 import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.showAlert;
 
 /**
  * A controller class, which allows an owner to interact with the data of every warehouse he owns in a table.
  * This class also manages the creation, editing and deletion of warehouses.
  */
-public class WarehouseControlPanelController {
+public class WarehouseControlPanelController extends BaseMenuController {
 
   @FXML
-  private TableColumn<WarehouseDTO, String> nameColumn;
-  @FXML
   private TableView<WarehouseDTO> warehousesTable;
+  @FXML
+  private TableColumn<WarehouseDTO, String> nameColumn;
   @FXML
   private TableColumn<WarehouseDTO, String> streetColumn;
   @FXML
@@ -55,7 +56,7 @@ public class WarehouseControlPanelController {
   private TableColumn<WarehouseDTO, String> actionColumn;
 
   private final WarehouseService warehouseService;
-  private Owner owner = getOwnerFromUserSession();
+  private Owner owner;
   private ObservableList<WarehouseDTO> observableData = FXCollections.observableArrayList();
 
   public WarehouseControlPanelController(WarehouseService warehouseService) {
@@ -68,8 +69,12 @@ public class WarehouseControlPanelController {
   @FXML
   public void initialize() {
 
+    super.initialize();
+
+    owner = getOwnerFromUserSession();
+
     try {
-      List<WarehouseDTO> warehouseDTOs = warehouseService.getWarehouseDTOsByOwner(owner);
+      List<WarehouseDTO> warehouseDTOs = warehouseService.getAllWarehouseDTOsByOwner(owner);
       observableData.addAll(warehouseDTOs);
     } catch (WarehouseServiceException e) {
       showAlert(Alert.AlertType.ERROR, "Unable to retrieve warehouse data", e.getMessage());
@@ -99,16 +104,19 @@ public class WarehouseControlPanelController {
 
       final FontAwesomeIconView editButton = new FontAwesomeIconView(FontAwesomeIcon.PENCIL_SQUARE_ALT);
       final FontAwesomeIconView deleteButton = new FontAwesomeIconView(FontAwesomeIcon.TRASH_ALT);
+      final FontAwesomeIconView detailsButton = new FontAwesomeIconView(FontAwesomeIcon.EYE);
 
       {
         editButton.getStyleClass().addAll("action-button", "edit-button");
         deleteButton.getStyleClass().addAll("action-button", "delete-button");
+        detailsButton.getStyleClass().addAll("action-button", "details-button");
+
         editButton.setOnMouseClicked(event -> {
 
           WarehouseDTO warehouseDTO = getTableRow().getItem();
           DialogController controller = new WarehouseUpdateDialogController(warehouseDTO, warehouseService);
           try {
-            DialogUtil.showDialog("/views/warehouseCreation.fxml", "Update warehouse", controller);
+            showDialog("/views/warehouseCreation.fxml", "Update warehouse", controller);
           } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Unable to open update dialog", e.getMessage());
           }
@@ -118,19 +126,27 @@ public class WarehouseControlPanelController {
         deleteButton.setOnMouseClicked(event -> {
 
           WarehouseDTO warehouseDTO = getTableRow().getItem();
+          boolean pressedOK = showConfirmationDialog("Confirm warehouse deletion?", "Do you want to delete this warehouse?");
 
-          Alert confirmDelete = new Alert(Alert.AlertType.NONE, "", ButtonType.YES, ButtonType.NO);
-          confirmDelete.setTitle("Confirm warehouse deletion?");
-          confirmDelete.setHeaderText("Do you want to delete this warehouse?");
-          ButtonType buttonPressed = confirmDelete.showAndWait().get();
-
-          if (buttonPressed.equals(ButtonType.YES)) {
+          if (pressedOK) {
             try {
               warehouseService.deleteWarehouse(warehouseDTO);
             } catch (WarehouseServiceException e) {
               showAlert(Alert.AlertType.ERROR, "Unable to delete warehouse", e.getMessage());
+            } finally {
+              refreshTable();
             }
-            refreshTable();
+          }
+        });
+
+        detailsButton.setOnMouseClicked(event -> {
+
+          WarehouseDTO warehouseDTO = getTableRow().getItem();
+          DialogController controller = new WarehouseDetailsDialogController(warehouseDTO);
+          try {
+            showDialog("/views/warehouseCreation.fxml", "Update warehouse", controller);
+          } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Unable to open details dialog", e.getMessage());
           }
         });
       }
@@ -140,14 +156,18 @@ public class WarehouseControlPanelController {
 
         super.updateItem(item, isEmpty);
         HBox hBox = new HBox(8);
+        hBox.setAlignment(Pos.CENTER);
 
-        if (isEmpty || getTableRow().getItem().getStatus() != WarehouseStatus.AVAILABLE) {
+        if (isEmpty) {
           setGraphic(null);
-        } else {
-          hBox.getChildren().setAll(editButton, deleteButton);
-          hBox.setAlignment(Pos.CENTER);
-          setGraphic(hBox);
+          return;
         }
+        if(getTableRow().getItem().getStatus() == WarehouseStatus.AVAILABLE)  {
+          hBox.getChildren().setAll(editButton, deleteButton);
+        } else {
+          hBox.getChildren().setAll(detailsButton);
+        }
+        setGraphic(hBox);
       }
     };
   }
@@ -161,7 +181,7 @@ public class WarehouseControlPanelController {
 
     DialogController controller = new WarehouseCreationDialogController(warehouseService);
     try {
-      DialogUtil.showDialog("/views/warehouseCreation.fxml", "Add a warehouse", controller);
+      showDialog("/views/warehouseCreation.fxml", "Add a warehouse", controller);
     } catch (IOException e) {
       showAlert(Alert.AlertType.ERROR, "Unable to open creation dialog", e.getMessage());
     }
@@ -175,7 +195,7 @@ public class WarehouseControlPanelController {
   public void refreshTable() {
 
     try {
-      observableData.setAll(warehouseService.getWarehouseDTOsByOwner(owner));
+      observableData.setAll(warehouseService.getAllWarehouseDTOsByOwner(owner));
     } catch (WarehouseServiceException e) {
       showAlert(Alert.AlertType.ERROR, "Unable to refresh warehouse data", e.getMessage());
     }

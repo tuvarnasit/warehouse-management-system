@@ -25,6 +25,7 @@ public class ValidatingTextArea extends TextArea {
    */
   public ValidatingTextArea() {
 
+    validator = value -> true;
     textProperty().addListener((o, oldValue, newValue) -> validate(newValue));
   }
 

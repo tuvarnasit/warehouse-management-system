@@ -27,4 +27,9 @@ public class WarehouseDTO {
   private WarehouseStatus status;
   private ClimateCondition climateCondition;
   private Owner owner;
+
+  @Override
+  public String toString() {
+    return name;
+  }
 }
