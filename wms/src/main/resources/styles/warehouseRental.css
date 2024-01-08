@@ -1,0 +1,23 @@
+.hbox-wrapper {
+    -fx-alignment: center;
+    -fx-spacing: 64;
+}
+
+.vbox-wrapper {
+    -fx-spacing: 16;
+}
+
+.warehouse-picker {
+    -fx-min-width: 96;
+    -fx-max-width: 256;
+}
+
+.agent-filter, .rent-field {
+    -fx-pref-width: 192;
+    -fx-max-width: 192;
+}
+
+.agents-list-view {
+    -fx-pref-width: 320;
+    -fx-pref-height: 192;
+}
