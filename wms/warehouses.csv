@@ -1,0 +1,3 @@
+name,size,ownerId,street,zipCode,cityName,countryName,status,climate,storageTypeName,storageTypeDescription
+Trans Logistics,120.39,3,Center Street,8600,City,Bulgaria,AVAILABLE,HUMIDITY_CONTROLLED,E-Commerce,Used for e-commerce
+Another Warehouse,200.50,3,Main Avenue,1234,Another City,USA,RENTED,TEMPERATURE_CONTROLLED,General,General purpose storage

@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="bg.tuvarna.sit.wms.controllers.HomeController"
-      spacing="20" alignment="CENTER" prefWidth="800" prefHeight="600"
+      spacing="20" alignment="CENTER" prefHeight="576.0" prefWidth="1024.0"
       stylesheets="@../styles/home.css, @../styles/common.css">
 
     <StackPane styleClass="text-background">

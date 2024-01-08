@@ -46,6 +46,7 @@ public class DialogAddReviewController implements DialogController {
   public void onSave() {
 
     if(!validate()){
+      showAlert(Alert.AlertType.ERROR, "Validation Error", "Invalid data provided.");
       return;
     }
 

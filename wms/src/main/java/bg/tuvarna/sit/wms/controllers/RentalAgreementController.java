@@ -125,8 +125,6 @@ public class RentalAgreementController extends BaseMenuController {
       LOGGER.error(e);
       showAlert(Alert.AlertType.ERROR, "Unable to open creation dialog", e.getMessage());
     }
-
-    ViewLoaderUtil.showAlert(Alert.AlertType.INFORMATION, "Worked", dto.getName());
   }
 
   private void loadRentalAgreements() {

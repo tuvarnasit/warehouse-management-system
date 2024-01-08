@@ -13,6 +13,7 @@ import bg.tuvarna.sit.wms.session.UserSession;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -118,6 +119,11 @@ public class UserService {
       LOGGER.error("Login error", e);
       return false;
     }
+  }
+
+  public Owner findOwnerById(Long id) {
+
+    return userDao.findOwnerById(id);
   }
 
   /**

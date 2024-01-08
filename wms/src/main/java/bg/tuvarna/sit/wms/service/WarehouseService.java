@@ -16,10 +16,10 @@ import bg.tuvarna.sit.wms.exceptions.CountryCreationException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
 import bg.tuvarna.sit.wms.exceptions.WarehousePersistenceException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
-import bg.tuvarna.sit.wms.util.JpaUtil;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,12 +36,14 @@ public class WarehouseService {
   private final WarehouseDAO warehouseDAO;
   private final CountryService countryService;
   private final CityService cityService;
+  private final UserService userService;
   private static final Logger LOGGER = LogManager.getLogger(WarehouseService.class);
 
-  public WarehouseService(WarehouseDAO warehouseDAO, CountryService countryService, CityService cityService) {
+  public WarehouseService(WarehouseDAO warehouseDAO, CountryService countryService, CityService cityService, UserService userService) {
     this.warehouseDAO = warehouseDAO;
     this.countryService = countryService;
     this.cityService = cityService;
+    this.userService = userService;
   }
 
   /**
@@ -209,40 +211,72 @@ public class WarehouseService {
       throw new WarehouseServiceException("Error retrieving warehouses with rental agreements for owner.", e);
     }
   }
+  private Warehouse createWarehouse(String name, double size, Long ownerId, String street, String zipCode, String cityName,
+                                    String countryName, WarehouseStatus status, ClimateCondition climate,
+                                    String storageTypeName, String storageTypeDescription)
+          throws CityCreationException, CountryCreationException {
 
-  // TODO: Might be used for demo data initialization
-  public void createAndPersistWarehouse(String name, Owner owner, Double size, Address address,
-                                        WarehouseStatus status, StorageType storageType,
-                                        ClimateCondition climateCondition, boolean isDeleted)
-          throws WarehousePersistenceException {
+    Country country = countryService.getOrCreateCountry(countryName);
+    City city = cityService.getOrCreateCity(cityName, country);
 
-    EntityManager entityManager = JpaUtil.getEntityManagerFactory().createEntityManager();
-    EntityTransaction transaction = entityManager.getTransaction();
+    Address address = new Address();
+    address.setCity(city);
+    address.setStreet(street);
+    address.setZipCode(zipCode);
 
-    try {
-      transaction.begin();
+    StorageType storageType = new StorageType();
+    storageType.setDescription(storageTypeDescription);
+    storageType.setTypeName(storageTypeName);
 
-      Warehouse warehouse = new Warehouse();
-      warehouse.setName(name);
-      warehouse.setOwner(owner);
-      warehouse.setSize(size);
-      warehouse.setAddress(address);
-      warehouse.setStatus(status);
-      warehouse.setStorageType(storageType);
-      warehouse.setClimateCondition(climateCondition);
-      warehouse.setDeleted(isDeleted);
+    Owner owner = userService.findOwnerById(ownerId);
 
-      entityManager.persist(warehouse);
-      transaction.commit();
-    } catch (PersistenceException e) {
-      if (transaction.isActive()) {
-        transaction.rollback();
+    Warehouse warehouse = new Warehouse();
+    warehouse.setName(name);
+    warehouse.setSize(size);
+    warehouse.setOwner(owner);
+    warehouse.setAddress(address);
+    warehouse.setStatus(status);
+    warehouse.setClimateCondition(climate);
+    warehouse.setStorageType(storageType);
+    warehouse.setDeleted(false);
+
+    return warehouse;
+  }
+
+  public void loadWarehousesFromCSV(String csvFilePath) throws IOException, WarehousePersistenceException, WarehouseDAOException, CityCreationException, CountryCreationException {
+    try (BufferedReader br = new BufferedReader(new FileReader(Paths.get(csvFilePath).toFile()))) {
+      String line;
+      boolean header = true;
+      while ((line = br.readLine()) != null) {
+        if (header) {
+          header = false;
+          continue; // Skip header line
+        }
+        String[] values = line.split(",");
+        Warehouse warehouse = createWarehouseFromCSV(values);
+        warehouseDAO.save(warehouse);
       }
-      throw new WarehousePersistenceException("Could not persist warehouse.", e);
-    } finally {
-      entityManager.close();
     }
   }
+
+  private Warehouse createWarehouseFromCSV(String[] values) throws CityCreationException, CountryCreationException {
+    // Assumes that values are in the correct order and format as per the CSV
+    String name = values[0];
+    double size = Double.parseDouble(values[1]);
+    Long ownerId = Long.parseLong(values[2]);
+    String street = values[3];
+    String zipCode = values[4];
+    String cityName = values[5];
+    String countryName = values[6];
+    WarehouseStatus status = WarehouseStatus.valueOf(values[7]);
+    ClimateCondition climate = ClimateCondition.valueOf(values[8]);
+    String storageTypeName = values[9];
+    String storageTypeDescription = values[10];
+
+    return createWarehouse(name, size, ownerId, street, zipCode, cityName, countryName, status, climate, storageTypeName, storageTypeDescription);
+  }
+
+
 
   /**
    * Checks if the name of a warehouse is unique for its owner.

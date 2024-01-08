@@ -7,7 +7,16 @@ import bg.tuvarna.sit.wms.dto.ViewReviewDto;
 import bg.tuvarna.sit.wms.entities.Agent;
 import bg.tuvarna.sit.wms.entities.Review;
 import bg.tuvarna.sit.wms.entities.User;
+import bg.tuvarna.sit.wms.entities.Warehouse;
+import bg.tuvarna.sit.wms.exceptions.CityCreationException;
+import bg.tuvarna.sit.wms.exceptions.CountryCreationException;
 import bg.tuvarna.sit.wms.exceptions.ReviewPersistenceException;
+import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
+import bg.tuvarna.sit.wms.exceptions.WarehousePersistenceException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import lombok.Getter;
@@ -50,6 +59,28 @@ public class ReviewService {
       LOGGER.error("Agent not found with ID: {}", agentId, e);
     } catch (ReviewPersistenceException e) {
       LOGGER.error("Error persisting review: {}", e.getMessage(), e);
+    }
+  }
+
+  public void loadReviewsFromCSV(String csvFilePath) throws IOException {
+    try (BufferedReader br = new BufferedReader(new FileReader(Paths.get(csvFilePath).toFile()))) {
+      String line;
+      boolean header = true;
+      while ((line = br.readLine()) != null) {
+        if (header) {
+          header = false;
+          continue; // Skip header line
+        }
+        String[] values = line.split(",");
+        Agent agent = (Agent) userDao.findByEmail(values[0]).orElseThrow(
+                () -> new IllegalStateException("Agent not found"));
+        User owner = userDao.findByEmail(values[1]).orElseThrow(
+                () -> new IllegalStateException("Owner not found"));
+        deleteAllReviewsForAgent(agent);
+        createAndPersistReview(agent.getId(), owner, new AddReviewDto(Integer.parseInt(values[2]),
+                values[3]));
+        LOGGER.info("Successfully initialized reviews for agent {}", agent.getEmail());
+      }
     }
   }
 
