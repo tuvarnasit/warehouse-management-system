@@ -11,6 +11,10 @@ import bg.tuvarna.sit.wms.validation.ValidatingComboBox;
 import bg.tuvarna.sit.wms.validation.ValidatingTextArea;
 import bg.tuvarna.sit.wms.validation.ValidatingTextField;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,11 +44,13 @@ public abstract class BaseWarehouseDialogController implements DialogController 
   private ValidatingTextField storageTypeField;
   @FXML
   private ValidatingTextArea storageTypeDescArea;
+  @FXML
+  private HBox buttonsWrapper;
 
   @Setter
   @Getter
   private Stage dialogStage;
-  private final Owner owner = getOwnerFromUserSession();
+  private Owner owner;
 
   /**
    * This method initializes the the controller and sets up the validation function and tooltip message
@@ -52,6 +58,17 @@ public abstract class BaseWarehouseDialogController implements DialogController 
    */
   @FXML
   public void initialize() {
+    owner = getOwnerFromUserSession();
+
+    Button saveButton = new Button("Save");
+    Button cancelButton = new Button("Cancel");
+    saveButton.setId("save");
+    cancelButton.setId("cancel");
+    Region region = new Region();
+    HBox.setHgrow(region, Priority.ALWAYS);
+    saveButton.setOnAction(e -> handleSave());
+    cancelButton.setOnAction(e -> handleCancel());
+    buttonsWrapper.getChildren().addAll(saveButton, region, cancelButton);
 
     nameField.setUp(value -> value.matches("^[a-zA-Z0-9\\-_,\"'*()\\[\\]#;<> ]+$"), "Warehouse name can contain only letters, numbers and basic symbols");
     streetField.setUp(value -> value.matches("^[a-zA-Z0-9 .,'\"#\\-]+$"), "Invalid street format");
@@ -63,22 +80,21 @@ public abstract class BaseWarehouseDialogController implements DialogController 
     storageTypeField.setUp(value -> value.matches("^[a-zA-Z0-9\\s.,#()-]+$"), "Invalid storage type format");
     storageTypeDescArea.setUp(value -> value.length() <= 400, "Description must be 400 characters maximum");
 
-
     climateConditionComboBox.getItems().setAll(ClimateCondition.values());
   }
 
   /**
    * An abstract method which is triggered when the save button is clicked. It is implemented by
-   * {@link WarehouseCreationDialogController#onSave()} and {@link WarehouseCreationDialogController#onSave()}
+   * {@link WarehouseCreationDialogController#handleSave()} and {@link WarehouseCreationDialogController#handleSave()}
    */
   @FXML
-  public abstract void onSave();
+  public abstract void handleSave();
 
   /**
    * This method is triggered when the cancel button is clicked. It closes the dialog.
    */
   @FXML
-  public void onCancel() {
+  public void handleCancel() {
     dialogStage.close();
   }
 
@@ -125,6 +141,7 @@ public abstract class BaseWarehouseDialogController implements DialogController 
    * @param warehouseDTO the WarehouseDTO object
    */
   protected void initializeFields(WarehouseDTO warehouseDTO) {
+
     nameField.setText(warehouseDTO.getName());
     streetField.setText(warehouseDTO.getStreet());
     cityField.setText(warehouseDTO.getCityName());
@@ -146,8 +163,9 @@ public abstract class BaseWarehouseDialogController implements DialogController 
   }
 
   private Owner getOwnerFromUserSession() {
+
     User currentUser = UserSession.getInstance().getCurrentUser();
-    if(currentUser.getRole().equals(Role.OWNER)) {
+    if (currentUser.getRole().equals(Role.OWNER)) {
       return (Owner) currentUser;
     }
     throw new IllegalStateException("Only owners are allowed to access this operation");

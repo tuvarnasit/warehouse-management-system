@@ -25,7 +25,7 @@ public class WarehouseCreationDialogController extends BaseWarehouseDialogContro
    * Creates a new warehouseDTO and validates it before saving it to the database.
    */
   @FXML
-  public void onSave() {
+  public void handleSave() {
 
     WarehouseDTO warehouseDTO = createWarehouseDTO();
 
