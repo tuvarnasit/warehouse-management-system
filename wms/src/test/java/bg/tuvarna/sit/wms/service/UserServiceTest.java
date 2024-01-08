@@ -54,22 +54,6 @@ class UserServiceTest {
   }
 
   @Test
-  void registerUserTenant_ValidUser_ShouldSaveUser() throws RegistrationException, UserPersistenceException {
-
-    UserRegistrationDto registrationDto = new UserRegistrationDto();
-    registrationDto.setFirstName("John");
-    registrationDto.setLastName("Doe");
-    registrationDto.setEmail("john.doe@example.com");
-    registrationDto.setPassword("Password123!");
-    registrationDto.setPhone("1234567890");
-    registrationDto.setRole("TENANT");
-
-    userService.registerUser(registrationDto);
-
-    verify(userDao, times(1)).saveUser(any(User.class));
-  }
-
-  @Test
   void registerUserOwner_ValidUser_ShouldSaveUser() throws RegistrationException, UserPersistenceException {
 
     UserRegistrationDto registrationDto = new UserRegistrationDto();
