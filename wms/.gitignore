@@ -47,3 +47,5 @@ env-test
 credentials.txt
 credentials-test.txt
 encryption.key
+start.sh
+start.bat

@@ -7,12 +7,13 @@ import bg.tuvarna.sit.wms.exceptions.RegistrationException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
 import bg.tuvarna.sit.wms.exceptions.WarehousePersistenceException;
 import bg.tuvarna.sit.wms.util.ViewLoaderUtil;
-import static bg.tuvarna.sit.wms.util.ViewLoaderUtil.showAlert;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import javafx.application.Application;
-import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,9 +69,10 @@ public class MainApp extends Application {
   private void initializeApplication() {
 
     try {
-      ApplicationContext.getUSER_SERVICE().initializeUsers();
+      ApplicationContext.getUSER_SERVICE().loadUsersFromCSV("users.csv");
       ApplicationContext.getREVIEW_SERVICE().loadReviewsFromCSV("reviews.csv");
-      ApplicationContext.getWAREHOUSE_SERVICE().loadWarehousesFromCSV("warehouses.csv");
+      ApplicationContext.getWAREHOUSE_SERVICE()
+              .loadWarehousesFromCSV(new BufferedReader(new FileReader(Paths.get("warehouses.csv").toFile())));
     } catch (RegistrationException | InvalidKeySpecException | NoSuchAlgorithmException | WarehouseDAOException |
              CityCreationException | CountryCreationException | IOException | WarehousePersistenceException e) {
       LOGGER.error("Error during application initialization: ", e);

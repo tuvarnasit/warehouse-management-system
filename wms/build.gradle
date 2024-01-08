@@ -41,52 +41,6 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    exclude '**/ApplicationControllerTest.class'
-    exclude '**/HomeControllerTest.class'
-    exclude '**/LoginControllerTest.class'
-    exclude '**/RegistrationControllerTest.class'
 }
-
-// Define the main class and application name
-def mainClassPath = 'bg.tuvarna.sit.MainApp'
-def appName = 'MyJavaFXApp'
-
-// Task to create the jar with all dependencies
-task customJar(type: Jar) {
-    manifest {
-        attributes 'Main-Class': mainClassPath
-    }
-    archiveBaseName.set(appName)
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    with jar
-}
-
-// Task to create the .exe installer using JPackage
-task createExe(type: Exec, dependsOn: customJar) {
-    doFirst {
-        // Define output directory for the installer
-        def outputDir = file("$buildDir/jpackage")
-        mkdir(outputDir)
-
-        // Define JPackage command line parameters
-        commandLine 'jpackage', '--type', 'exe',
-                '--input', "$buildDir/libs",
-                '--name', appName,
-                '--main-jar', "${appName}-${version}.jar", // Use the correct JAR file name
-                '--main-class', mainClassPath,
-                '--dest', outputDir.absolutePath
-        // If you have additional resources like icons, you can specify them here
-        // '--icon', 'path/to/icon.ico'
-
-        // For additional JPackage options, you can add them here
-    }
-}
-
-// Make createExe task depends on customJar task
-tasks.build.dependsOn createExe
-
 
 mainClassName = 'bg.tuvarna.sit.MainApp'

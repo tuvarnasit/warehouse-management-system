@@ -52,4 +52,6 @@ public class RentalAgreement extends BaseEntity {
 
   @Column(name = "price_per_month", nullable = false)
   private BigDecimal pricePerMonth;
+
+
 }

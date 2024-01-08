@@ -79,6 +79,7 @@ public class RentalAgreementCreationController implements DialogController {
 
     try {
       rentalAgreementService.createRentalAgreement(createRentalAgreementDTO());
+      showAlert(Alert.AlertType.INFORMATION, "Success", "Rental agreement is created!");
     } catch (RentalAgreementCreationException e) {
       showAlert(Alert.AlertType.ERROR, "Unable to create rental agreement", e.getMessage());
     }

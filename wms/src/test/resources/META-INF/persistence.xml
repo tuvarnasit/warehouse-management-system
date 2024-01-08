@@ -17,6 +17,7 @@
         <class>bg.tuvarna.sit.wms.entities.User</class>
         <class>bg.tuvarna.sit.wms.entities.Review</class>
         <class>bg.tuvarna.sit.wms.entities.Notification</class>
+        <class>bg.tuvarna.sit.wms.entities.RequestDetails</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:wmstest;DB_CLOSE_DELAY=-1"/>

@@ -105,56 +105,6 @@ public class ReviewServiceTest {
   }
 
   @Test
-  void initializeReviews_ShouldInitializeReviewsSuccessfully() throws ReviewPersistenceException {
-    // Given
-    Agent agent = mock(Agent.class);
-    User owner = mock(User.class);
-
-    when(userDao.findByEmail("agent1@example.com")).thenReturn(Optional.of(agent));
-    when(userDao.findByEmail("owner1@example.com")).thenReturn(Optional.of(owner));
-    when(agent.getId()).thenReturn(1L);
-
-    // When
-    reviewService.initializeReviews();
-
-    // Then
-    verify(userDao).findByEmail("agent1@example.com");
-    verify(userDao).findByEmail("owner1@example.com");
-    verify(reviewDao).deleteAllReviewsForAgent(agent);
-    verify(reviewDao).persistReview(any(Review.class), eq(1L));
-  }
-
-  @Test
-  void initializeReviews_ShouldHandleAgentNotFoundException() throws ReviewPersistenceException {
-    // Given
-    when(userDao.findByEmail("agent1@example.com")).thenReturn(Optional.empty());
-
-    // When
-    Exception exception = assertThrows(IllegalStateException.class, () -> reviewService.initializeReviews());
-
-    // Then
-    assertEquals("Agent not found", exception.getMessage());
-    verify(reviewDao, never()).deleteAllReviewsForAgent(any(Agent.class));
-    verify(reviewDao, never()).persistReview(any(Review.class), anyLong());
-  }
-
-  @Test
-  void initializeReviews_ShouldHandleOwnerNotFoundException() throws ReviewPersistenceException {
-    // Given
-    Agent agent = mock(Agent.class);
-    when(userDao.findByEmail("agent1@example.com")).thenReturn(Optional.of(agent));
-    when(userDao.findByEmail("owner1@example.com")).thenReturn(Optional.empty());
-
-    // When
-    Exception exception = assertThrows(IllegalStateException.class, () -> reviewService.initializeReviews());
-
-    // Then
-    assertEquals("Owner not found", exception.getMessage());
-    verify(reviewDao, never()).deleteAllReviewsForAgent(any(Agent.class));
-    verify(reviewDao, never()).persistReview(any(Review.class), anyLong());
-  }
-
-  @Test
   void getReviewsForCurrentUser_ShouldReturnListOfReviews() {
     // Given
     Long currentUserId = 1L;

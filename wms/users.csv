@@ -1,0 +1,9 @@
+firstName,lastName,phone,email,password,role
+Yavor,Chamov,0878112233,yavor@wms.com,securepassword1,ADMIN
+Victor,Denchev,0878223344,victor@wms.com,securepassword1,ADMIN
+Ivan,Ivanov,2234567999,owner@wms.com,securepassword1,OWNER
+Petar,Petrov,2234567899,agent@wms.com,securepassword1,AGENT
+Agent1,One,0987351311,agent1@example.com,securepassword1,AGENT
+Agent2,Two,0987254351,agent2@example.com,securepassword2,AGENT
+Agent3,Three,0947854511,agent3@example.com,securepassword3,AGENT
+Agent4,Four,0987154319,agent4@example.com,securepassword4,AGENT

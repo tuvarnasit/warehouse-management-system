@@ -14,7 +14,11 @@ import bg.tuvarna.sit.wms.enums.WarehouseStatus;
 import bg.tuvarna.sit.wms.exceptions.CityCreationException;
 import bg.tuvarna.sit.wms.exceptions.CountryCreationException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
+import bg.tuvarna.sit.wms.exceptions.WarehousePersistenceException;
 import bg.tuvarna.sit.wms.exceptions.WarehouseServiceException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.Date;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,8 +51,12 @@ public class WarehouseServiceTest {
   CityService cityService;
   @Mock
   WarehouseDAO warehouseDAO;
+  @Mock
+  private UserService userService;
   @InjectMocks
   WarehouseService warehouseService;
+
+  private BufferedReader bufferedReader;
 
   @BeforeEach
   void setUp() {
@@ -271,6 +279,22 @@ public class WarehouseServiceTest {
 
     assertThrows(WarehouseServiceException.class,
             () -> warehouseService.getWarehousesWithRentalAgreementsForOwner(ownerId));
+  }
+
+  @Test
+  void loadWarehousesFromCSV_ShouldLoadWarehouses() throws IOException, WarehousePersistenceException,
+          WarehouseDAOException, CityCreationException,
+          CountryCreationException {
+
+    String csvData = "name,address,size,status,storageType,climateCondition\n" +
+            "Trans Logistics,120.39,3,Center Street,8600,City,Bulgaria,AVAILABLE,HUMIDITY_CONTROLLED,E-Commerce,Used for e-commerce\n";
+
+    bufferedReader = new BufferedReader(new StringReader(csvData));
+
+    when(warehouseDAO.findByName(anyString())).thenReturn(Optional.empty());
+    warehouseService.loadWarehousesFromCSV(bufferedReader);
+
+    verify(warehouseDAO, times(1)).save(any(Warehouse.class));
   }
 
   private WarehouseDTO createWarehouseDTO() {

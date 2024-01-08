@@ -7,12 +7,7 @@ import bg.tuvarna.sit.wms.dto.ViewReviewDto;
 import bg.tuvarna.sit.wms.entities.Agent;
 import bg.tuvarna.sit.wms.entities.Review;
 import bg.tuvarna.sit.wms.entities.User;
-import bg.tuvarna.sit.wms.entities.Warehouse;
-import bg.tuvarna.sit.wms.exceptions.CityCreationException;
-import bg.tuvarna.sit.wms.exceptions.CountryCreationException;
 import bg.tuvarna.sit.wms.exceptions.ReviewPersistenceException;
-import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
-import bg.tuvarna.sit.wms.exceptions.WarehousePersistenceException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -63,6 +58,7 @@ public class ReviewService {
   }
 
   public void loadReviewsFromCSV(String csvFilePath) throws IOException {
+
     try (BufferedReader br = new BufferedReader(new FileReader(Paths.get(csvFilePath).toFile()))) {
       String line;
       boolean header = true;
@@ -82,24 +78,6 @@ public class ReviewService {
         LOGGER.info("Successfully initialized reviews for agent {}", agent.getEmail());
       }
     }
-  }
-
-  /**
-   * Initializes the reviews by clearing any existing reviews for a specific agent
-   * and creating a new review. The initialization process finds the agent and owner
-   * by their emails, deletes any reviews associated with the agent, and then creates
-   * a new review from the owner to the agent.
-   */
-  public void initializeReviews() {
-
-    Agent agent = (Agent) userDao.findByEmail("agent1@example.com").orElseThrow(
-            () -> new IllegalStateException("Agent not found"));
-    User owner = userDao.findByEmail("owner1@example.com").orElseThrow(
-            () -> new IllegalStateException("Owner not found"));
-
-    deleteAllReviewsForAgent(agent);
-    createAndPersistReview(agent.getId(), owner, new AddReviewDto(5, "Excellent service."));
-    LOGGER.info("Successfully initialized reviews for agent {}", agent.getEmail());
   }
 
   public List<ViewReviewDto> getReviewsForCurrentUser(Long currentUserId) {

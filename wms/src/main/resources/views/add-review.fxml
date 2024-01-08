@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-<VBox prefHeight="350.0" prefWidth="331.0" stylesheets="@../styles/warehouseCreation.css"
+<VBox prefHeight="350.0" prefWidth="331.0" stylesheets="@../styles/dialogs.css"
       xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
     <VBox>
         <Text text="Assessment"/>

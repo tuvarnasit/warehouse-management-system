@@ -10,10 +10,13 @@ import bg.tuvarna.sit.wms.enums.Role;
 import bg.tuvarna.sit.wms.exceptions.RegistrationException;
 import bg.tuvarna.sit.wms.exceptions.UserPersistenceException;
 import bg.tuvarna.sit.wms.session.UserSession;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Optional;
-import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,52 +61,26 @@ public class UserService {
     saveUser(user);
   }
 
-  /**
-   * Initializes default user accounts in the system.
-   * <p>
-   * This method checks for the existence of specific administrator accounts and creates them if they do not exist.
-   * This ensures that there are always default administrator accounts available in the system.
-   *
-   * @throws RegistrationException    If there is a problem with the registration process of the administrators.
-   * @throws InvalidKeySpecException  If there is an issue with the specification of the key used in password hashing.
-   * @throws NoSuchAlgorithmException If the algorithm specified for password hashing does not exist.
-   */
-  public void initializeUsers() throws RegistrationException, InvalidKeySpecException, NoSuchAlgorithmException {
+  public void loadUsersFromCSV(String csvFilePath) throws IOException, RegistrationException, InvalidKeySpecException, NoSuchAlgorithmException {
 
-    // TODO: Remove the magic values by setting up an external configuration properties
-    if (userDao.findByEmail("admin1@example.com").isEmpty()) {
-      saveUser(
-              createUser("Admin1", "One", "1234567890", "admin1@example.com",
-                      "securepassword1", Role.ADMIN));
-    }
-    if (userDao.findByEmail("admin2@example.com").isEmpty()) {
-      saveUser(
-              createUser("Admin2", "Two", "0987654321", "admin2@example.com",
-                      "securepassword2", Role.ADMIN));
-    }
+    try (BufferedReader br = new BufferedReader(new FileReader(Paths.get(csvFilePath).toFile()))) {
+      String line;
+      boolean header = true;
+      while ((line = br.readLine()) != null) {
+        if (header) {
+          header = false;
+          continue;
+        }
+        String[] values = line.split(",");
 
-    if (userDao.findByEmail("owner1@example.com").isEmpty()) {
-      saveUser(
-              createUser("Owner1", "One", "0987654311", "owner1@example.com",
-                      "securepassword1", Role.OWNER));
-    }
+        if (userDao.findByEmail(values[3]).isEmpty()) {
+          saveUser(
+                  createUser(values[0], values[1], values[2], values[3],
+                          values[4], Role.valueOf(values[5])));
+        }
 
-    if (userDao.findByEmail("agent1@example.com").isEmpty()) {
-      saveUser(
-              createUser("Agent1", "One", "0987654312", "agent1@example.com",
-                      "securepassword1", Role.AGENT));
-    }
-    if (userDao.findByEmail("agent1@example.com").isEmpty()) {
-      saveUser(createUser("Agent1", "One", "0987351311", "agent1@example.com", "securepassword1", Role.AGENT));
-    }
-    if (userDao.findByEmail("agent2@example.com").isEmpty()) {
-      saveUser(createUser("Agent2", "Two", "0987254351", "agent2@example.com", "securepassword2", Role.AGENT));
-    }
-    if (userDao.findByEmail("agent3@example.com").isEmpty()) {
-      saveUser(createUser("Agent3", "Three", "0947854511", "agent3@example.com", "securepassword3", Role.AGENT));
-    }
-    if (userDao.findByEmail("agent4@example.com").isEmpty()) {
-      saveUser(createUser("Agent4", "Four", "0987154319", "agent4@example.com", "securepassword4", Role.AGENT));
+        LOGGER.info("Successfully initialized user with email: {}", values[3]);
+      }
     }
   }
 

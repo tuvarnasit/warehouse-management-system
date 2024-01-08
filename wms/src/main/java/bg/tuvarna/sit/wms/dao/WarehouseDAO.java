@@ -2,6 +2,7 @@ package bg.tuvarna.sit.wms.dao;
 
 import bg.tuvarna.sit.wms.dto.WarehouseRentalAgreementDto;
 import bg.tuvarna.sit.wms.entities.Owner;
+import bg.tuvarna.sit.wms.entities.User;
 import bg.tuvarna.sit.wms.entities.Warehouse;
 import bg.tuvarna.sit.wms.enums.WarehouseStatus;
 import bg.tuvarna.sit.wms.exceptions.WarehouseDAOException;
@@ -269,6 +270,23 @@ public class WarehouseDAO {
       TypedQuery<WarehouseRentalAgreementDto> query = entityManager.createQuery(jpql, WarehouseRentalAgreementDto.class);
       query.setParameter("ownerId", ownerId);
       return query.getResultList();
+    } finally {
+      entityManager.close();
+    }
+  }
+
+  public Optional<Warehouse> findByName(String name) {
+
+    EntityManager entityManager = entityManagerFactory.createEntityManager();
+    try {
+      String jpql = "SELECT w FROM Warehouse w WHERE w.name = :name";
+      TypedQuery<Warehouse> query = entityManager.createQuery(jpql, Warehouse.class)
+              .setParameter("name", name);
+      Warehouse warehouse = query.getSingleResult();
+
+      return Optional.of(warehouse);
+    } catch (NoResultException e) {
+      return Optional.empty();
     } finally {
       entityManager.close();
     }
