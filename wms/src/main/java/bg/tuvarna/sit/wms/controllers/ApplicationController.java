@@ -37,7 +37,8 @@ public class ApplicationController {
   void initialize() {
 
     addMenuButton("Warehouses", Optional.empty(), Optional.empty(), e -> loadView("/views/warehouseControlPanel.fxml", e));
-    addMenuButton("Warehouses", Optional.empty(), Optional.empty(), e -> loadView("/views/warehouseControlPanel.fxml", e));
+    addMenuButton("Rent a warehouse", Optional.empty(), Optional.empty(), e -> loadView("/views/warehouseRental.fxml", e));
+    addMenuButton("Requests", Optional.empty(), Optional.empty(), e -> loadView("/views/incomingRequests.fxml", e));
     addMenuButton("Warehouses", Optional.empty(), Optional.empty(), e -> loadView("/views/warehouseControlPanel.fxml", e));
     addMenuButton("Register", Optional.of("registerButton"), Optional.empty(), e -> loadView("/views/registration.fxml", e));
     addMenuButton("Logout", Optional.of("logoutButton"), Optional.of("button-logout"), this::handleLogoutAction);
