@@ -82,18 +82,6 @@ public class UserService {
         LOGGER.info("Successfully initialized user with email: {}", values[3]);
       }
     }
-    if (userDao.findByEmail("agent1@example.com").isEmpty()) {
-      saveUser(createUser("Agent1", "One", "0987351311", "agent1@example.com", "securepassword1", Role.AGENT));
-    }
-    if (userDao.findByEmail("agent2@example.com").isEmpty()) {
-      saveUser(createUser("Agent2", "Two", "0987254351", "agent2@example.com", "securepassword2", Role.AGENT));
-    }
-    if (userDao.findByEmail("agent3@example.com").isEmpty()) {
-      saveUser(createUser("Agent3", "Three", "0947854511", "agent3@example.com", "securepassword3", Role.AGENT));
-    }
-    if (userDao.findByEmail("agent4@example.com").isEmpty()) {
-      saveUser(createUser("Agent4", "Four", "0987154319", "agent4@example.com", "securepassword4", Role.AGENT));
-    }
   }
 
   /**

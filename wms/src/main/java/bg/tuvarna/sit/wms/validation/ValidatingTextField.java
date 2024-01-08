@@ -38,7 +38,7 @@ public class ValidatingTextField extends TextField {
    */
   private void validate(String textValue) {
 
-    if (textValue.trim().isEmpty() || !validator.test(textValue.trim())) {
+    if (!validator.test(textValue.trim())) {
       isValid.set(false);
       setStyle("-fx-text-box-border: red;-fx-focus-color:red;-fx-faint-focus-color: transparent;");
       tooltipProperty().set(tooltip);

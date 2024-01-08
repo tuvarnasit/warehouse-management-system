@@ -154,8 +154,10 @@ public class WarehouseRentalController extends BaseMenuController {
     } catch (WarehouseServiceException e) {
       showAlert(Alert.AlertType.ERROR, "Error", e.getMessage());
     }
+    rentPriceField.setUp(value -> value.matches("^.*$"), "");
     rentPriceField.clear();
-    warehousesComboBox.setValue(null);
+    rentPriceField.setUp(value -> value.matches("^\\d{1,3}(,?\\d{3})*(\\.\\d{1,2})?$"), "Invalid money format");
+    warehousesComboBox.setValue(new WarehouseDTO());
     uncheckAllCheckboxes();
   }
 
@@ -184,6 +186,7 @@ public class WarehouseRentalController extends BaseMenuController {
 
     try {
       rentalRequestService.createRentalRequests(selectedAgents, createRequestDetailsDTO());
+      showAlert(Alert.AlertType.INFORMATION, "Success!", "Request is successfully send!");
     } catch (RequestCreationException e) {
       showAlert(Alert.AlertType.ERROR, "Unable to send requests", e.getMessage());
     }
